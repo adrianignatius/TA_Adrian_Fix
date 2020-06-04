@@ -1,0 +1,57 @@
+﻿<Page
+    x:Class="SahabatSurabaya.MakeLostFoundReportPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:SahabatSurabaya.Shared"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:Maps="using:Windows.UI.Xaml.Controls.Maps"
+    mc:Ignorable="d"
+    RequestedTheme="Light"
+    Loaded="LostFoundPageLoaded"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <VisualStateManager.VisualStateGroups>
+        <VisualStateGroup>
+            <VisualState>
+                <VisualState.StateTriggers>
+                    <AdaptiveTrigger MinWindowWidth="500"></AdaptiveTrigger>
+                </VisualState.StateTriggers>
+                <VisualState.Setters>
+                    <Setter Target="txtDescBarang.Width" Value="400"></Setter>
+                </VisualState.Setters>
+            </VisualState>
+        </VisualStateGroup>
+    </VisualStateManager.VisualStateGroups>
+    <Grid Margin="20">
+        <ScrollViewer Name="rootPanel">
+            <StackPanel Orientation="Vertical">
+                <TextBlock FontSize="28" Text="Buat Laporan Lost &amp; Found" FontWeight="ExtraBold" HorizontalAlignment="Stretch"></TextBlock>
+                <TextBlock Margin="0,40,0,0" FontSize="20" Text="Judul Laporan"></TextBlock>
+                <TextBox Name="txtJudulLaporan" FontSize="20" Margin="0,10,20,0"  HorizontalAlignment="Stretch"></TextBox>
+                <TextBlock Margin="0,40,0,0" FontSize="20" Text="Pilih Jenis Laporan"></TextBlock>
+                <StackPanel Orientation="Horizontal" Margin="0,10,20,0">
+                    <RadioButton Name="rbFoundItem" FontSize="17" Margin="0,0,20,0 " IsChecked="True">Penemuan Barang</RadioButton>
+                    <RadioButton Name="rbLostItem" FontSize="17">Kehilangan Barang</RadioButton>
+                </StackPanel>
+                <TextBlock Margin="0,40,0,0" FontSize="20" Text="Jenis Barang Yang Ditemukan"></TextBlock>
+                <ComboBox Name="cbJenisBarang" HorizontalAlignment="Stretch" Margin="0,10,20,0" FontSize="20">
+                    
+                </ComboBox>
+                <TextBlock Margin="0,30,0,0" Text="Deskripsi Barang" FontSize="20"></TextBlock>
+                <TextBox Name="txtDescBarang" Margin="0,10,20,0" HorizontalAlignment="Stretch" FontSize="20"  Height="150" TextWrapping="Wrap"></TextBox>
+                <TextBlock Margin="0,30,0,0" Text="Lokasi Barang Ditemukan" FontSize="20" ></TextBlock>
+                <WebView Margin="0,10,0,0" Name="webViewMap"  Height="500" HorizontalAlignment="Stretch" Source="http://localhost/map.php"></WebView>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock  Margin="0,30,0,10" Text="Upload Gambar" FontSize="20"></TextBlock>
+                    <Button Click="chooseImage" Content="Pilih File.." Margin="10,30,0,0"></Button>
+                </StackPanel>
+                <StackPanel Name="stackFile" Orientation="Vertical"></StackPanel>
+                <TextBlock Name="txtImageCount" Margin="0,15,0,15" Text="0 gambar terpilih(Max. 2 Gambar) " FontSize="15" Foreground="Gray" ></TextBlock>    
+                <Button Click="goToDetail" CornerRadius="5" Foreground="AntiqueWhite" Background="Green" FontSize="20" Width="150" Margin="0,30,0,0" Content="Selanjutnya" HorizontalAlignment="Center"></Button>
+                
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+    
+</Page>

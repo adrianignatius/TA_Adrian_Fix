@@ -1,0 +1,44 @@
+﻿<Page
+    x:Class="SahabatSurabaya.HomeNavigationPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:SahabatSurabaya.Shared"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid>
+        <NavigationView x:Name="NavView"
+							ItemInvoked="NavView_ItemInvoked"
+		Loaded="NavView_Loaded"
+                        IsBackButtonVisible="Collapsed">
+
+            <NavigationView.MenuItems>
+                <NavigationViewItem x:Uid="HomeNavItem" Content="Home" Tag="home">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE10F;"/>
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItemSeparator/>
+                <NavigationViewItemHeader Content="Main pages"/>
+                <NavigationViewItem x:Uid="PageBuatLaporanLostFound" Icon="PostUpdate" Content="Buat Laporan Lost &amp; Found" Tag="MakeLostFoundReportPage"/>
+                <NavigationViewItem x:Uid="PageBuatLaporanKriminalitas" Icon="PostUpdate" Content="Buat Laporan Kriminalitas" Tag="MakeCrimeReportPage"/>
+                <NavigationViewItem x:Uid="HomeNavItem" Content="Sign Out" Tag="SignOut">
+                    <NavigationViewItem.Icon>
+                        <BitmapIcon UriSource="/Assets/signout.png"/>
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+            </NavigationView.MenuItems>
+
+            <Frame x:Name="ContentFrame" Margin="10,40,10,25">
+                <Frame.ContentTransitions>
+                    <TransitionCollection>
+                        <NavigationThemeTransition/>
+                    </TransitionCollection>
+                </Frame.ContentTransitions>
+            </Frame>
+        </NavigationView>
+
+    </Grid>
+</Page>

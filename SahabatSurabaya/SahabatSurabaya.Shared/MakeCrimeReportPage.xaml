@@ -1,0 +1,36 @@
+﻿<Page
+    x:Class="SahabatSurabaya.MakeCrimeReportPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:SahabatSurabaya.Shared"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    RequestedTheme="Light"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid Margin="20">
+        <ScrollViewer Name="rootPanel">
+            <StackPanel Orientation="Vertical">
+                <TextBlock FontSize="28" Text="Buat Laporan Kriminalitas" FontWeight="ExtraBold" HorizontalAlignment="Stretch"></TextBlock>
+                <TextBlock Margin="0,40,0,0" FontSize="20" Text="Judul Laporan"></TextBlock>
+                <TextBox Name="txtJudulLaporan" FontSize="20" Margin="0,10,20,0"  HorizontalAlignment="Stretch"></TextBox>
+                <TextBlock Margin="0,40,0,0" FontSize="20" Text="Kategori kejadian yang dilaporkan"></TextBlock>
+                <ComboBox Name="cbJenisKejadian" HorizontalAlignment="Stretch" Margin="0,10,20,0" FontSize="20">
+
+                </ComboBox>
+                <TextBlock Margin="0,30,0,0" Text="Deskripsi Kejadian" FontSize="20"></TextBlock>
+                <TextBox Name="txtDescKejadian" Margin="0,10,20,0" HorizontalAlignment="Stretch" FontSize="20"  Height="150" TextWrapping="Wrap"></TextBox>
+                <TextBlock Margin="0,30,0,0" Text="Lokasi Kejadian" FontSize="20" ></TextBlock>
+                <WebView Margin="0,10,0,0" Name="webViewMap"  Height="500" HorizontalAlignment="Stretch" Source="http://localhost/map.php"></WebView>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock  Margin="0,30,0,10" Text="Upload Gambar" FontSize="20"></TextBlock>
+                    <Button Click="chooseImage"  Content="Pilih File.." Margin="10,30,0,0"></Button>
+                </StackPanel>
+                <StackPanel Name="stackFile" Orientation="Vertical"></StackPanel>
+                <TextBlock Name="txtImageCount" Margin="0,5,0,15" Text="0 gambar terpilih(Max. 2 Gambar) " FontSize="15" Foreground="Gray" ></TextBlock>
+                <Button Click="goToDetail" CornerRadius="5" Foreground="AntiqueWhite" Background="Green" FontSize="20" Width="150" Margin="0,30,0,0" Content="Selanjutnya" HorizontalAlignment="Center"></Button>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Page>

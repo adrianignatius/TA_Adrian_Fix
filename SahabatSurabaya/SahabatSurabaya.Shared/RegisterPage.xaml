@@ -1,0 +1,100 @@
+﻿<Page
+    x:Class="SahabatSurabaya.RegisterPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:SahabatSurabaya.Shared"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    RequestedTheme="Light"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid>
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup>
+                <VisualState x:Name="Phone">
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="0"></AdaptiveTrigger>
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="textBlockRegister.Margin" Value="30,-0,0,0"></Setter>
+                        <Setter Target="column1.Width" Value="0"></Setter>
+                        <Setter Target="rootPanel.Margin" Value="20"></Setter>
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="Desktop">  
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="700"></AdaptiveTrigger>
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="appIconBg.Height" Value="0"></Setter>
+                        <Setter Target="column1.Width" Value="3*"></Setter>
+                        <Setter Target="column2.Width" Value="3*"></Setter>
+                        <Setter Target="rootPanel.Margin" Value="20"></Setter>
+                        <Setter Target="textBlockFullName.FontSize" Value="20"></Setter>
+                        <Setter Target="txtFullName.FontSize" Value="20"></Setter>
+                        <Setter Target="textBlockEmail.FontSize" Value="20"></Setter>
+                        <Setter Target="txtEmail.FontSize" Value="20"></Setter>
+                        <Setter Target="textBlockPhone.FontSize" Value="20"></Setter>
+                        <Setter Target="txtPhone.FontSize" Value="20"></Setter>
+                        <Setter Target="textBlockPassword.FontSize" Value="20"></Setter>
+                        <Setter Target="txtPassword.FontSize" Value="20"></Setter>
+                        <Setter Target="imgAppIcon.Width" Value="350"></Setter>
+                        <Setter Target="imgAppIcon.Height" Value="450"></Setter>
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="LargeDesktop">
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="1200"></AdaptiveTrigger>
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="appIconBg.Height" Value="0"></Setter>
+                        <Setter Target="imgAppIcon.Width" Value="350"></Setter>
+                        <Setter Target="imgAppIcon.Height" Value="450"></Setter>
+                        <Setter Target="rootPanel.Margin" Value="30"></Setter>
+                                                <Setter Target="textBlockFullName.FontSize" Value="20"></Setter>
+                        <Setter Target="txtFullName.FontSize" Value="20"></Setter>
+                        <Setter Target="textBlockEmail.FontSize" Value="20"></Setter>
+                        <Setter Target="txtEmail.FontSize" Value="20"></Setter>
+                        <Setter Target="textBlockPhone.FontSize" Value="20"></Setter>
+                        <Setter Target="txtPhone.FontSize" Value="20"></Setter>
+                        <Setter Target="textBlockPassword.FontSize" Value="20"></Setter>
+                        <Setter Target="txtPassword.FontSize" Value="20"></Setter>
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition x:Name="column1" Width="3*"></ColumnDefinition>
+                <ColumnDefinition x:Name="column2" Width="2*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Hidden">
+                <StackPanel x:Name="rootPanel" Margin="60" Orientation="Vertical">
+                    <Image Margin="0,-25,0,0" Name="appIconBg" Source="/Assets/appicon.png" Width="200" Height="200"></Image>
+                    <TextBlock Name="textBlockRegister" Foreground="Black" FontSize="40" Margin="30,30,0,0" FontWeight="ExtraBold">Register</TextBlock>
+                    <TextBlock TextWrapping="Wrap" Margin="30,10,0,20" Foreground="Black" FontSize="15" >Already have an account? <Hyperlink Click="goToLogin">Login with your account here</Hyperlink></TextBlock>
+                    <TextBlock x:Name="textBlockFullName"  FontSize="20" Margin="30,0,0,0">Full Name</TextBlock>
+                    <TextBox Name="txtFullName" Padding="8" Foreground="Black" Margin="30,10,30,0" FontSize="20" Height="50"></TextBox>
+                    <TextBlock x:Name="textBlockEmail" FontSize="20" Margin="30,15,0,0">Email</TextBlock>
+                    <TextBox Name="txtEmail" Padding="8" Foreground="Black" Margin="30,15,30,0" FontSize="20" Height="50" ></TextBox>
+                    <TextBlock Name="textBlockPhone" FontSize="20" Margin="30,15,0,0">Phone Number</TextBlock>
+                    <TextBox Name="txtPhone" Padding="8" Foreground="Black" Margin="30,15,30,0" FontSize="20" Height="50" ></TextBox>
+                    <TextBlock Name="textBlockPassword" FontSize="20" Margin="30,15,0,0">Password</TextBlock>
+                    <PasswordBox Name="txtPassword" Padding="8" Foreground="Black" Margin="30,15,30,0" FontSize="20" Height="50" ></PasswordBox>
+                    <Button Click="register" Foreground="AntiqueWhite" x:Name="btnRegister" Background="DarkGreen" FontWeight="SemiBold" Padding="15" Content="Register" HorizontalAlignment="Stretch" Margin="30,35,30,0" FontSize="30" />
+                </StackPanel>
+            </ScrollViewer>
+            
+            <Grid Grid.Column="0">
+                <Grid.Background>
+                    <ImageBrush Opacity="0.7" Stretch="Fill" ImageSource="/Assets/bg.jpg"></ImageBrush>
+                </Grid.Background>
+                <StackPanel>
+                    <Image Name="imgAppIcon" Source="/Assets/appicon.png" Width="500" Height="500" HorizontalAlignment="Center"></Image>
+                    <TextBlock x:Name="textBlockDescApp" FontWeight="SemiBold" Foreground="Black" HorizontalAlignment="Stretch" Margin="20,-40,20,0" FontSize="30" TextAlignment="Center"   Text="A platform that connects people to share lost &amp; found information and also crime activity around you." TextWrapping="Wrap"></TextBlock>
+                </StackPanel>
+            </Grid>
+        </Grid>
+    </Grid>
+</Page>
