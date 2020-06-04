@@ -13,10 +13,9 @@ namespace SahabatSurabaya.Droid
         )]
     public class MainActivity : Windows.UI.Xaml.ApplicationActivity
     {
-        private void Asd()
+        protected override void OnCreate(Bundle bundle)
         {
-            TextView asd = new TextView(this);
-            asd.Text = "asd";
+            base.OnCreate(bundle);
             
         }
     }

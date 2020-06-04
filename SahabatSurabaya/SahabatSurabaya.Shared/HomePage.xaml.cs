@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SahabatSurabaya.Shared;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -22,9 +23,15 @@ namespace SahabatSurabaya
     /// </summary>
     public sealed partial class HomePage : Page
     {
+        XamarinAPI xamarinAPI;
         public HomePage()
         {
             this.InitializeComponent();
+        }
+        public void HomePageLoaded(object sender, RoutedEventArgs e)
+        {
+            xamarinAPI = new XamarinAPI();
+            xamarinAPI.getLocation();
         }
     }
 }
