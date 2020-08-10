@@ -26,7 +26,7 @@
     <Grid Margin="20">
         <ScrollViewer Name="rootPanel">
             <StackPanel Orientation="Vertical">
-                <TextBlock FontSize="28" Text="Buat Laporan Lost &amp; Found" FontWeight="ExtraBold" HorizontalAlignment="Stretch"></TextBlock>
+                <TextBlock FontSize="24" Text="Buat Laporan Lost &amp; Found" FontWeight="ExtraBold" HorizontalAlignment="Stretch"></TextBlock>
                 <TextBlock Margin="0,40,0,0" FontSize="20" Text="Judul Laporan"></TextBlock>
                 <TextBox Name="txtJudulLaporan" FontSize="20" Margin="0,10,20,0"  HorizontalAlignment="Stretch"></TextBox>
                 <TextBlock Margin="0,40,0,0" FontSize="20" Text="Pilih Jenis Laporan"></TextBlock>
@@ -40,7 +40,10 @@
                 </ComboBox>
                 <TextBlock Margin="0,30,0,0" Text="Deskripsi Barang" FontSize="20"></TextBlock>
                 <TextBox Name="txtDescBarang" Margin="0,10,20,0" HorizontalAlignment="Stretch" FontSize="20"  Height="150" TextWrapping="Wrap"></TextBox>
-                <TextBlock Margin="0,30,0,0" Text="Lokasi Barang Ditemukan" FontSize="20" ></TextBlock>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock  Margin="0,30,0,10" Text="Lokasi Barang Ditemukan" FontSize="20"></TextBlock>
+                    <Button Click="useLocation" Content="Gunakan Lokasi Sekarang" Margin="10,30,0,0"></Button>
+                </StackPanel>
                 <WebView Margin="0,10,0,0" Name="webViewMap"  Height="500" HorizontalAlignment="Stretch" Source="http://localhost/map.php"></WebView>
                 <StackPanel Orientation="Horizontal">
                     <TextBlock  Margin="0,30,0,10" Text="Upload Gambar" FontSize="20"></TextBlock>

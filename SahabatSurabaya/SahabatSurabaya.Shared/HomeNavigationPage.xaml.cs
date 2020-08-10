@@ -79,6 +79,10 @@ namespace SahabatSurabaya
                 case "SignOut":
                     this.Frame.Navigate(typeof(LoginPage));
                     break;
+
+                case "PoliceStationPage":
+                    ContentFrame.Navigate(typeof(PoliceStationPage));
+                    break;
                 
             }
         }

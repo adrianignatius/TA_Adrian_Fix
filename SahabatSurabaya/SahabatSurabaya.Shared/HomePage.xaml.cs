@@ -1,11 +1,15 @@
-﻿using SahabatSurabaya.Shared;
+﻿using Newtonsoft.Json;
+using SahabatSurabaya.Shared;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -13,6 +17,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using Xamarin.Essentials;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -24,14 +29,28 @@ namespace SahabatSurabaya
     public sealed partial class HomePage : Page
     {
         XamarinAPI xamarinAPI;
+        ObservableCollection<LaporanLostFound> listLaporan;
         public HomePage()
         {
             this.InitializeComponent();
+            listLaporan = new ObservableCollection<LaporanLostFound>();
         }
-        public void HomePageLoaded(object sender, RoutedEventArgs e)
+        public async void HomePageLoaded(object sender, RoutedEventArgs e)
         {
-            xamarinAPI = new XamarinAPI();
-            xamarinAPI.getLocation();
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri("http://localhost:8080/");
+                client.DefaultRequestHeaders.Accept.Clear();
+                HttpResponseMessage response = await client.GetAsync("/getHeadlineLaporanLostFound");
+                if (response.IsSuccessStatusCode)
+                {
+                    var jsonString = await response.Content.ReadAsStringAsync();
+                    var responseData = response.Content.ReadAsStringAsync().Result;
+                    listLaporan = JsonConvert.DeserializeObject<ObservableCollection<LaporanLostFound>>(responseData);
+                    lvLaporanKriminalitas.ItemsSource = listLaporan;
+                }
+            }
+
         }
     }
 }

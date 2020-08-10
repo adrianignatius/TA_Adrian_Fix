@@ -8,6 +8,7 @@ using System.Net.Http;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Xamarin.Essentials;
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
 namespace SahabatSurabaya
@@ -28,9 +29,26 @@ namespace SahabatSurabaya
             listSettingKategoriLostFound = new List<SettingKategori>();
         }
 
+        public async void useLocation(object sender, RoutedEventArgs e)
+        {
+            var location = await Geolocation.GetLastKnownLocationAsync();
+            if (location == null)
+            {
+                location = await Geolocation.GetLocationAsync(new GeolocationRequest
+                {
+                    DesiredAccuracy = GeolocationAccuracy.Medium,
+                    Timeout = TimeSpan.FromSeconds(30)
+                }); ;
+            }
+            var messageBox = new MessageDialog(location.Latitude + "-" + location.Longitude);
+            await messageBox.ShowAsync();
+            string[] args = { location.Latitude.ToString(), location.Longitude.ToString() };
+            string lat = await webViewMap.InvokeScriptAsync("myFunction", args);
+        }
+
         private async void LostFoundPageLoaded(object sender, RoutedEventArgs e)
         {
-            using (var client = new HttpClient())
+            using (var client = new HttpClient()) 
             {
                 client.BaseAddress = new Uri("http://localhost:8080/");
                 client.DefaultRequestHeaders.Accept.Clear();
@@ -39,7 +57,6 @@ namespace SahabatSurabaya
                 {
                     var jsonString = await response.Content.ReadAsStringAsync();
                     var responseData = response.Content.ReadAsStringAsync().Result;
-
                     //int length = ((JArray)json["data"]).Count;
                     listSettingKategoriLostFound = JsonConvert.DeserializeObject<List<SettingKategori>>(responseData);
                     cbJenisBarang.ItemsSource = listSettingKategoriLostFound;
@@ -82,6 +99,9 @@ namespace SahabatSurabaya
             stackFile.Children.Remove((UIElement)this.FindName("sp" + selectedBtn.Tag.ToString()));
             imageCount--;
             updateTxtImageCount();
+            string[] args = { "5","6"};
+            string lat = await webViewMap.InvokeScriptAsync("myFunction",args);
+            
         }
 
         private async void chooseImage(object sender, RoutedEventArgs e)

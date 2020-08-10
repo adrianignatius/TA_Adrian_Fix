@@ -1,0 +1,43 @@
+﻿<Page
+    x:Class="SahabatSurabaya.PoliceStationPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:SahabatSurabaya.Shared"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    RequestedTheme="Light"
+    Loaded="PoliceStationPageLoaded"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid Margin="20">
+        <ScrollViewer Name="rootPanel">
+            <StackPanel Orientation="Vertical">
+                <TextBlock FontSize="24" FontWeight="ExtraBold">Data Kantor Polisi</TextBlock>
+                <GridView Tapped="goToDetail" Margin="0,10,0,0" Name="gvListKantorPolisi">
+                    <GridView.ItemTemplate>
+                        <DataTemplate x:Name="ImageOverlayDataTemplate">
+                            <Grid Width="210" Height="180">
+                                <Image Source="/Assets/bg.jpg" Stretch="UniformToFill"/>
+                                <StackPanel Orientation="Vertical" Height="60" VerticalAlignment="Bottom" Background="LightGray" Padding="12">
+                                    <TextBlock Text="{Binding nama_kantor_polisi }"/>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Image Margin="0,0,10,0" Width="20" Height="20" Source="/Assets/icon/distance.png"></Image>
+                                        <TextBlock FontSize="14" Text="{Binding distance}" Style="{ThemeResource CaptionTextBlockStyle}" Foreground="{ThemeResource SystemControlPageTextBaseMediumBrush}"/>
+                                        <TextBlock FontSize="14" Text="Km" Style="{ThemeResource CaptionTextBlockStyle}" Foreground="{ThemeResource SystemControlPageTextBaseMediumBrush}"></TextBlock>
+                                    </StackPanel>
+                                    
+                                </StackPanel>
+                            </Grid>
+                        </DataTemplate>
+                    </GridView.ItemTemplate>
+                    <GridView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <ItemsWrapGrid MaximumRowsOrColumns="2" Orientation="Horizontal"/>
+                        </ItemsPanelTemplate>
+                    </GridView.ItemsPanel>
+                </GridView>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Page>

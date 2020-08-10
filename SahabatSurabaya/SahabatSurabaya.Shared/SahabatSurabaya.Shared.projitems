@@ -26,6 +26,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)HomePage.xaml.cs">
       <DependentUpon>HomePage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)KantorPolisi.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LaporanLostFound.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LoginPage.xaml.cs">
       <DependentUpon>LoginPage.xaml</DependentUpon>
     </Compile>
@@ -38,6 +40,12 @@
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)MakeLostFoundReportPage.xaml.cs">
       <DependentUpon>MakeLostFoundReportPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)PoliceStationDetailPage.xaml.cs">
+      <DependentUpon>PoliceStationDetailPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)PoliceStationPage.xaml.cs">
+      <DependentUpon>PoliceStationPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)RegisterPage.xaml.cs">
       <DependentUpon>RegisterPage.xaml</DependentUpon>
@@ -72,6 +80,14 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="$(MSBuildThisFileDirectory)PoliceStationDetailPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)PoliceStationPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="$(MSBuildThisFileDirectory)RegisterPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -79,9 +95,13 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="$(MSBuildThisFileDirectory)Assets\appicon.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Assets\avatar-profile.png" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\bg.jpg" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\border.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Assets\icon\back.png" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\icon\bag-icon.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Assets\emergency-icon.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Assets\icon\distance.png" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\icon\handphone-icon.png" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\icon\hitandrun-icon.png" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\icon\jewerly-icon.png" />

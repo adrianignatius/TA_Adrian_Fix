@@ -57,6 +57,8 @@ namespace SahabatSurabaya
 
                 rootFrame.NavigationFailed += OnNavigationFailed;
 
+
+
                 if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
                 {
                     //TODO: Load state from previously suspended application

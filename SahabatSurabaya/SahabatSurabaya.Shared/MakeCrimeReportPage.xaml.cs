@@ -1,10 +1,13 @@
-﻿using Plugin.FilePicker;
+﻿using Newtonsoft.Json;
+using Plugin.FilePicker;
 using Plugin.FilePicker.Abstractions;
 using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Xamarin.Essentials;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -24,6 +27,24 @@ namespace SahabatSurabaya
             listImage = new List<UploadedImage>();
             listSetingKategoriKriminalitas = new List<SettingKategori>();
         }
+        public async void CrimeReportPageLoaded(object sender,RoutedEventArgs e)
+        {
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri("http://localhost:8080/");
+                client.DefaultRequestHeaders.Accept.Clear();
+                HttpResponseMessage response = await client.GetAsync("/getAllKategoriCrime");
+                if (response.IsSuccessStatusCode)
+                {
+                    var jsonString = await response.Content.ReadAsStringAsync();
+                    var responseData = response.Content.ReadAsStringAsync().Result;
+                    listSetingKategoriKriminalitas = JsonConvert.DeserializeObject<List<SettingKategori>>(responseData);
+                    cbJenisKejadian.ItemsSource = listSetingKategoriKriminalitas;
+                    cbJenisKejadian.DisplayMemberPath = "nama_kategori";
+                    cbJenisKejadian.SelectedValuePath = "id_kategori";
+                }
+            }
+        }
         async void deleteFile(object sender, RoutedEventArgs e)
         {
             Button selectedBtn = sender as Button;
@@ -38,6 +59,23 @@ namespace SahabatSurabaya
             txtImageCount.Text = imageCount + " gambar terpilih(Max. 2 Gambar)";
         }
 
+        public async void useLocation(object sender, RoutedEventArgs e)
+        {
+            var location = await Geolocation.GetLastKnownLocationAsync();
+            if (location == null)
+            {
+                location = await Geolocation.GetLocationAsync(new GeolocationRequest
+                {
+                    DesiredAccuracy = GeolocationAccuracy.Medium,
+                    Timeout = TimeSpan.FromSeconds(30)
+                }); ;
+            }
+            var messageBox = new MessageDialog(location.Latitude + "-" + location.Longitude);
+            await messageBox.ShowAsync();
+            string[] args = {location.Latitude.ToString(), location.Longitude.ToString() };
+            string lat = await webViewMap.InvokeScriptAsync("myFunction", args);
+        }
+
         public async void goToDetail(object sender, RoutedEventArgs e)
         {
             string judulLaporan = txtJudulLaporan.Text;
@@ -47,48 +85,7 @@ namespace SahabatSurabaya
             string alamatLaporan = await webViewMap.InvokeScriptAsync("eval", getAddress);
             string[] getLat = new string[] { @"document.getElementById('valueLat').value" };
             string lat = await webViewMap.InvokeScriptAsync("eval", getLat);
-            //var title = "Konfirmasi Data Laporan";
-            //var content = "Apakah anda yakin data laporan sudah sesuai?";
-            //var yesCommand = new UICommand("Yes", cmd => {  });
-            //var noCommand = new UICommand("No", cmd => { });
-            //var cancelCommand = new UICommand("Cancel", cmd => { });
-
-            //var dialog = new MessageDialog(content, title);
-            //dialog.Options = MessageDialogOptions.None;
-            //dialog.Commands.Add(yesCommand);
-
-            //dialog.DefaultCommandIndex = 0;
-            //dialog.CancelCommandIndex = 0;
-
-            //if (noCommand != null)
-            //{
-            //    dialog.Commands.Add(noCommand);
-            //    dialog.CancelCommandIndex = (uint)dialog.Commands.Count - 1;
-            //}
-
-            //if (cancelCommand != null)
-            //{
-            //    dialog.Commands.Add(cancelCommand);
-            //    dialog.CancelCommandIndex = (uint)dialog.Commands.Count - 1;
-            //}
-
-            //var command = await dialog.ShowAsync();
-
-            //if (command == yesCommand)
-            //{
-            //    var messageBox = new MessageDialog("yes");
-            //    await messageBox.ShowAsync();
-            //}
-            //else if (command == noCommand)
-            //{
-            //    var messageBox = new MessageDialog("no");
-            //    await messageBox.ShowAsync();
-            //}
-            //else
-            //{
-            //    var messageBox = new MessageDialog("cancel");
-            //    await messageBox.ShowAsync();
-            //}
+           
         }
 
         public async void chooseImage(object sender, RoutedEventArgs e)
