@@ -28,7 +28,6 @@ namespace SahabatSurabaya
     /// </summary>
     public sealed partial class HomePage : Page
     {
-        XamarinAPI xamarinAPI;
         ObservableCollection<LaporanLostFound> listLaporan;
         public HomePage()
         {
@@ -51,6 +50,12 @@ namespace SahabatSurabaya
                 }
             }
 
+        }
+
+        public void goToDetailPage(object sender, RoutedEventArgs e)
+        {
+            int index = lvLaporanKriminalitas.SelectedIndex;
+            this.Frame.Navigate(typeof(ReportDetailPage),listLaporan[index]);
         }
     }
 }

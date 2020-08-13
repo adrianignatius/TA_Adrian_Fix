@@ -29,7 +29,7 @@
                         <SymbolIcon Symbol="PhoneBook"></SymbolIcon>
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem x:Uid="MyAccount" Icon="Contact" Content="Akun Saya" Tag="MyAccount"/>
+                <NavigationViewItem x:Uid="MyAccount" Icon="Contact" Content="Akun Saya" Tag="ProfilePage"/>
                 <NavigationViewItem x:Uid="HomeNavItem" Content="Sign Out" Tag="SignOut">
                     <NavigationViewItem.Icon>
                         <BitmapIcon UriSource="/Assets/signout.png"/>

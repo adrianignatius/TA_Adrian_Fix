@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace SahabatSurabaya.Shared
+namespace SahabatSurabaya
 {
     class LaporanLostFound
     {

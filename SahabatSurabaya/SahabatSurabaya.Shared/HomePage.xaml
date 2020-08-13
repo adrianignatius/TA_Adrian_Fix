@@ -14,8 +14,7 @@
         <ScrollViewer Name="rootPanel">
             <StackPanel Orientation="Vertical">
                 <Border CornerRadius="12" BorderBrush="YellowGreen" BorderThickness="4" Background="YellowGreen">
-                    
-<StackPanel Orientation="Horizontal">
+                    <StackPanel Orientation="Horizontal">
                         <Canvas Height="90">
                             <Ellipse Canvas.Left="10" Canvas.Top="10" Width="70" Height="70">
                                 <Ellipse.Fill>
@@ -41,7 +40,7 @@
                     <TextBlock Grid.Column="1" Margin="10,5,0,0" Foreground="Green" FontWeight="Medium" FontSize="12" Text="Lihat semua"></TextBlock>
                 </Grid>
 
-                <ListView Margin="0,5,0,0" Name="lvLaporanKriminalitas" ScrollViewer.VerticalScrollBarVisibility="Disabled" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                <ListView Margin="0,5,0,0" Name="lvLaporanKriminalitas" Tapped="goToDetailPage" ScrollViewer.VerticalScrollBarVisibility="Disabled" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
     ScrollViewer.HorizontalScrollMode="Enabled"                  
     ScrollViewer.VerticalScrollMode="Disabled">
                     <ListView.ItemsPanel>

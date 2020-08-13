@@ -83,7 +83,10 @@ namespace SahabatSurabaya
                 case "PoliceStationPage":
                     ContentFrame.Navigate(typeof(PoliceStationPage));
                     break;
-                
+
+                case "ProfilePage":
+                    ContentFrame.Navigate(typeof(ProfilePage));
+                    break;
             }
         }
     }

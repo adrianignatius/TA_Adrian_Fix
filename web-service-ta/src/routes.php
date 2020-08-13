@@ -18,7 +18,7 @@ return function (App $app) {
     });
 
     $app->get('/getHeadlineLaporanLostFound', function ($request, $response) {
-        $sql = "SELECT * FROM laporan_lostfound_barang order by tanggal_laporan desc, waktu_laporan desc LIMIT 5";
+        $sql = "SELECT * FROM laporan_lostfound_barang order by tanggal_laporan desc, waktu_laporan asc LIMIT 5";
         $stmt = $this->db->prepare($sql);
         $stmt->execute();
         $result = $stmt->fetchAll();
@@ -102,7 +102,28 @@ return function (App $app) {
             });
     });
         
-    
+        $app->post('/insertKomentarLaporanLostFound', function ($request, $response) {
+            $new_komentar = $request->getParsedBody();
+            $datetime = DateTime::createFromFormat('d/m/Y', $new_komentar["tanggal_komentar"]);
+            $day=$datetime->format('d');
+            $month=$datetime->format('m');
+            $year=$datetime->format('Y');
+            $formatDate=$year.$month.$day;
+            $sql = "INSERT INTO komentar_laporan_lostfound (id_laporan,isi_komentar, tanggal_komentar, waktu_komentar,email_user) VALUE (:id_laporan,:isi_komentar, :tanggal_komentar, :waktu_komentar, :email_user)";
+            $stmt = $this->db->prepare($sql);
+            $data = [
+                ":id_laporan" => $new_komentar["id_laporan"],
+                ":isi_komentar"=>$new_komentar["isi_komentar"],
+                ":tanggal_komentar" => $formatDate,
+                ":waktu_komentar" => $new_komentar["waktu_komentar"],
+                ":email_user" => $new_komentar["email_user"]
+            ];
+        
+            if($stmt->execute($data))
+            return $response->withJson(["status" => "success", "data" => "1"], 200);
+            
+            return $response->withJson(["status" => "failed", "data" => "0"], 200);
+            });
 
         $app->post('/insertLaporanLostFound', function(Request $request, Response $response,$args) {
             $new_laporan = $request->getParsedBody();
@@ -110,12 +131,12 @@ return function (App $app) {
             $day=$datetime->format('d');
             $month=$datetime->format('m');
             $year=$datetime->format('Y');
+            $formatDate=$year.$month.$day;
             $id_laporan="LF".$day.$month.$year;
             $sql="SELECT COUNT(*)+1 from laporan_lostfound_barang where id_laporan like'%$id_laporan%'";
             $stmt = $this->db->prepare($sql);
             $stmt->execute();
-            $result = $stmt->fetchColumn();
-            $formatDate=$year.$month.$day;
+            $result = $stmt->fetchColumn();           
             $id_laporan=$id_laporan.str_pad($result,5,"0",STR_PAD_LEFT);
             $sql = "INSERT INTO laporan_lostfound_barang VALUES(:id_laporan,:judul_laporan,:jenis_laporan,:tanggal_laporan,:waktu_laporan,:alamat_laporan,:lat_laporan,:lng_laporan,:deskripsi_barang,:email_pelapor,:status_laporan) ";
             $stmt = $this->db->prepare($sql);
@@ -155,6 +176,15 @@ return function (App $app) {
                     $increment=$increment+1;
                 }
             }
+        });
+
+        $app->get('/getKomentarLaporanLostFound/{id_laporan}', function ($request, $response,$args) {
+            $id_laporan=$args["id_laporan"];
+            $sql = "SELECT * FROM komentar_laporan_lostfound where id_laporan=:id_laporan order by tanggal_komentar DESC, waktu_komentar DESC ";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([":id_laporan" => $id_laporan]);
+            $result = $stmt->fetchAll();
+            return $response->withJson($result, 200);
         });
 
         $app->get('/[{name}]', function (Request $request, Response $response, array $args) use ($container) {

@@ -43,6 +43,16 @@ namespace SahabatSurabaya
             On_BackRequested();     
         }
 
+        private bool On_BackRequested()
+        {
+            if (this.Frame.CanGoBack)
+            {
+                this.Frame.GoBack();
+                return true;
+            }
+            return false;
+        }
+
         private async void mapLoadCompleted(object sender, WebViewNavigationCompletedEventArgs e)
         {
             var location = await Geolocation.GetLastKnownLocationAsync();
@@ -56,16 +66,6 @@ namespace SahabatSurabaya
             }
             string[] args = { location.Latitude.ToString().Replace(",", "."), location.Longitude.ToString().Replace(",", "."), selected.lat_kantor_polisi, selected.lng_kantor_polisi };
             string lat = await webViewMap.InvokeScriptAsync("calculateRoute", args);
-        }
-
-        private bool On_BackRequested()
-        {
-            if (this.Frame.CanGoBack)
-            {
-                this.Frame.GoBack();
-                return true;
-            }
-            return false;
         }
     }
 
