@@ -10,43 +10,45 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Grid>
-        <StackPanel Margin="30">
-            <TextBlock Name="txtHeaderDetailLaporan" TextAlignment="Center" TextWrapping="Wrap" HorizontalAlignment="Center" FontWeight="Bold" FontSize="30">Konfirmasi Laporan Kehilangan Barang</TextBlock>
-            <Image Name="imageIconBarang" Width="150" Height="150" Margin="15"></Image>
-            <Border Padding="15" Margin="0,30,0,0" HorizontalAlignment="Center" BorderThickness="2" BorderBrush="Green">
-                <StackPanel>
-                    <Grid Padding="2" ColumnSpacing="8" RowSpacing="5">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="1*"></ColumnDefinition>
-                            <ColumnDefinition></ColumnDefinition>
-                            <ColumnDefinition Width="1*"></ColumnDefinition>
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition></RowDefinition>
-                            <RowDefinition></RowDefinition>
-                            <RowDefinition></RowDefinition>
-                            <RowDefinition></RowDefinition>
-                            <RowDefinition></RowDefinition>
-                        </Grid.RowDefinitions>
-                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Judul Laporan"></TextBlock>
-                        <TextBlock Grid.Row="0" Grid.Column="1">:</TextBlock>
-                        <TextBlock Name="txtJudulLaporan" Grid.Row="0" Grid.Column="2" Text=" asdasd"></TextBlock>
-                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Tanggal Laporan"></TextBlock>
-                        <TextBlock Grid.Row="1" Grid.Column="1" Text=":"></TextBlock>
-                        <TextBlock Name="txtTanggalLaporan" TextWrapping="WrapWholeWords" Grid.Row="1" Grid.Column="2" Text=" asdasd"></TextBlock>
-                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Jenis Barang"></TextBlock>
-                        <TextBlock Grid.Row="2" Grid.Column="1" Text=":"></TextBlock>
-                        <TextBlock Name="txtJenisBarang" Grid.Row="2" Grid.Column="2" Text=" asdasd"></TextBlock>
-                        <TextBlock Name="txtHeaderLokasi" Grid.Row="3" Grid.Column="0" Text="Lokasi Kehilangan"></TextBlock>
-                        <TextBlock Grid.Row="3" Grid.Column="1" Text=":"></TextBlock>
-                        <TextBlock Name="txtLokasiLaporan" TextWrapping="Wrap" Grid.Row="3" Grid.Column="2" Text=" asdasd"></TextBlock>
-                        <TextBlock Grid.Row="4" Grid.Column="0" Text="Deskripsi Barang"></TextBlock>
-                        <TextBlock Grid.Row="4" Grid.Column="1" Text=":"></TextBlock>
-                        <TextBlock Name="txtDescBarang" TextWrapping="Wrap" Grid.Row="4" Grid.Column="2" Text="asdasdasdsadasdsadsadsadsadsadasdsadsadsadsadsadsadaasdasdsadsadasdsadasdsadasdsadsadsadsadasdsadassadasdsadsadsa"></TextBlock>
-                    </Grid>
-                    <Button Name="btnConfirm" Click="konfirmasi_laporan" Foreground="AntiqueWhite" CornerRadius="5" Margin="0,20,0,0" HorizontalAlignment="Center" Content="Konfirmasi" Background="Green"></Button>
-                </StackPanel>
-            </Border>
-        </StackPanel>
+        <ScrollViewer>
+            <StackPanel Orientation="Vertical" Margin="30">
+                <TextBlock Name="txtHeaderDetailLaporan" TextAlignment="Center" TextWrapping="Wrap" HorizontalAlignment="Center" FontWeight="Bold" FontSize="30">Konfirmasi Laporan Kehilangan Barang</TextBlock>
+                <Image Name="imageIconBarang" Width="150" Height="150" Margin="15"></Image>
+                <Border Padding="15" Margin="0,30,0,0" HorizontalAlignment="Center" BorderThickness="2" BorderBrush="Green">
+                    <StackPanel>
+                        <Grid Padding="2" ColumnSpacing="8" RowSpacing="5">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1*"></ColumnDefinition>
+                                <ColumnDefinition></ColumnDefinition>
+                                <ColumnDefinition Width="1*"></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                            </Grid.RowDefinitions>
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="Judul Laporan"></TextBlock>
+                            <TextBlock Grid.Row="0" Grid.Column="1">:</TextBlock>
+                            <TextBlock Name="txtJudulLaporan" Grid.Row="0" Grid.Column="2" Text=" asdasd"></TextBlock>
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Tanggal Laporan"></TextBlock>
+                            <TextBlock Grid.Row="1" Grid.Column="1" Text=":"></TextBlock>
+                            <TextBlock Name="txtTanggalLaporan" TextWrapping="WrapWholeWords" Grid.Row="1" Grid.Column="2" Text=" asdasd"></TextBlock>
+                            <TextBlock Grid.Row="2" Grid.Column="0" Text="Jenis Barang"></TextBlock>
+                            <TextBlock Grid.Row="2" Grid.Column="1" Text=":"></TextBlock>
+                            <TextBlock Name="txtJenisBarang" Grid.Row="2" Grid.Column="2" Text=" asdasd"></TextBlock>
+                            <TextBlock Name="txtHeaderLokasi" Grid.Row="3" Grid.Column="0" Text="Lokasi Kehilangan"></TextBlock>
+                            <TextBlock Grid.Row="3" Grid.Column="1" Text=":"></TextBlock>
+                            <TextBlock Name="txtLokasiLaporan" TextWrapping="Wrap" Grid.Row="3" Grid.Column="2" Text=" asdasd"></TextBlock>
+                            <TextBlock Grid.Row="4" Grid.Column="0" Text="Deskripsi Barang"></TextBlock>
+                            <TextBlock Grid.Row="4" Grid.Column="1" Text=":"></TextBlock>
+                            <TextBlock Name="txtDescBarang" TextWrapping="Wrap" Grid.Row="4" Grid.Column="2" Text="asdasdasdsadasdsadsadsadsadsadasdsadsadsadsadsadsadaasdasdsadsadasdsadasdsadasdsadsadsadsadasdsadassadasdsadsadsa"></TextBlock>
+                        </Grid>
+                        <Button Name="btnConfirm" Click="konfirmasi_laporan" Foreground="AntiqueWhite" CornerRadius="5" Margin="0,20,0,0" HorizontalAlignment="Center" Content="Konfirmasi" Background="Green"></Button>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
     </Grid>
 </Page>

@@ -26,7 +26,9 @@ namespace SahabatSurabaya
 
         public string valueKategoriKejadian { get; set; }
 
-        public CrimeReportParams(string judulLaporan, string lat, string lng, string descLaporan, string tglLaporan, string waktuLaporan, string displayKategoriKejadian, string valueKategoriKejadian, List<UploadedImage>listImage)
+        public string namaFileGambar { get; set; }
+
+        public CrimeReportParams(string judulLaporan, string lat, string lng, string descLaporan, string tglLaporan, string waktuLaporan, string alamatLaporan, string displayKategoriKejadian, string valueKategoriKejadian, List<UploadedImage>listImage,string namaFileGambar)
         {
             this.judulLaporan = judulLaporan;
             this.lat = lat;
@@ -38,6 +40,7 @@ namespace SahabatSurabaya
             this.displayKategoriKejadian = displayKategoriKejadian;
             this.valueKategoriKejadian = valueKategoriKejadian;
             this.listImage = listImage;
+            this.namaFileGambar = namaFileGambar;
         }
     }
 }

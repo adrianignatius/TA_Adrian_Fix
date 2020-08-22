@@ -61,6 +61,9 @@
       <DependentUpon>ReportDetailPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)SettingKategori.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SubscriptionPage.xaml.cs">
+      <DependentUpon>SubscriptionPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)UploadedImage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)User.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)XamarinAPI.cs" />
@@ -114,6 +117,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="$(MSBuildThisFileDirectory)SubscriptionPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Content Include="$(MSBuildThisFileDirectory)Assets\appicon.png" />
@@ -127,14 +134,16 @@
     <Content Include="$(MSBuildThisFileDirectory)Assets\icon\handphone-icon.png" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\icon\hitandrun-icon.png" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\icon\jewerly-icon.png" />
-    <Content Include="$(MSBuildThisFileDirectory)Assets\icon\kidnapping-icon.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Assets\icon\kidnap-icon.png" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\icon\pet-icon.png" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\icon\robbery-icon.png" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\icon\shoes-icon.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Assets\icon\suspicious-activity-icon.png" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\icon\vandalism-icon.png" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\icon\violence-icon.png" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\icon\watch-icon.png" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\LockScreenLogo.scale-200.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Assets\payment-illustration.png" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\signout.png" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\SplashScreen.scale-200.png" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\Square150x150Logo.scale-200.png" />

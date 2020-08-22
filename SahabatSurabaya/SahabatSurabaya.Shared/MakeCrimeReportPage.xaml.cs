@@ -70,8 +70,6 @@ namespace SahabatSurabaya
                     Timeout = TimeSpan.FromSeconds(30)
                 }); ;
             }
-            var messageBox = new MessageDialog(location.Latitude + "-" + location.Longitude);
-            await messageBox.ShowAsync();
             string[] args = {location.Latitude.ToString(), location.Longitude.ToString() };
             string lat = await webViewMap.InvokeScriptAsync("myFunction", args);
         }
@@ -87,15 +85,13 @@ namespace SahabatSurabaya
             string displayJeniskejadian = listSetingKategoriKriminalitas[cbJenisKejadian.SelectedIndex].nama_kategori.ToString();
             string valueJenisKejadian = cbJenisKejadian.SelectedValue.ToString();
             string lat = await webViewMap.InvokeScriptAsync("eval", getLat);
-            var s = new MessageDialog(lat.ToString());
-            await s.ShowAsync();
             string[] getLng = new string[] { @"document.getElementById('valueLng').value" };
             string lng = await webViewMap.InvokeScriptAsync("eval", getLng);
             string tglLaporan = DateTime.Now.ToString("dd/MM/yyyy");
             string waktuLaporan = DateTime.Now.ToString("HH:mm:ss");
             string namaFileGambar = listSetingKategoriKriminalitas[cbJenisKejadian.SelectedIndex].file_gambar_kategori;
-            CrimeReportParams param = new CrimeReportParams(judulLaporan, lat, lng, descKejadian, tglLaporan, waktuLaporan, displayJeniskejadian, valueJenisKejadian, listImage);
-            this.Frame.Navigate(typeof(LostFoundReportDetailPage), param);
+            CrimeReportParams param = new CrimeReportParams(judulLaporan, lat, lng, descKejadian, tglLaporan, waktuLaporan, alamatLaporan, displayJeniskejadian, valueJenisKejadian, listImage,namaFileGambar);
+            this.Frame.Navigate(typeof(CrimeReportDetailPage), param);
         }
 
         public async void chooseImage(object sender, RoutedEventArgs e)

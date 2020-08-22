@@ -29,7 +29,7 @@ namespace SahabatSurabaya
         LaporanLostFound selected;
         ObservableCollection<KomentarLaporanLostFound> listKomentar;
         public ReportDetailPage()
-        {
+        {          
             this.InitializeComponent();
         }
 
@@ -56,12 +56,10 @@ namespace SahabatSurabaya
             txtDeskripsiLaporan.Text = selected.deskripsi_barang;
             txtJudulLaporan.Text = selected.judul_laporan;
             loadKomentarLaporan();
-            loadMapLokasi(); 
         }
-
-        public async void loadMapLokasi()
+        private async void mapLoadedCompleted(object sender, WebViewNavigationCompletedEventArgs e)
         {
-            string[] args = { selected.lat_laporan, selected.lng_laporan };
+            string[] args = {selected.lat_laporan,selected.lng_laporan };
             string lat = await webVieMapLokasi.InvokeScriptAsync("displayMap", args);
         }
 

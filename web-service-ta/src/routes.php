@@ -32,11 +32,6 @@ return function (App $app) {
         $result = $stmt->fetchAll();
         return $response->withJson($result, 200);
     });
-
-    $app->get('/getCoba', function ($request, $response) {
-        $arr=[1,2,3];
-        return $response->withJson($arr, 200);
-    });
     
     $app->get('/getAllKategoriCrime', function ($request, $response) {
         $sql = "SELECT * FROM setting_kategori_kriminalitas";
@@ -53,7 +48,6 @@ return function (App $app) {
         $result = $stmt->fetchAll();
         return $response->withJson($result, 200);
     });
-
 
     $app->group('/user', function () use ($app) {
         $app->get('/getAllUser', function ($request, $response) {
@@ -82,6 +76,108 @@ return function (App $app) {
             $stmt->execute([":id" => $id]);
             $result = $stmt->fetchAll();
             return $response->withJson(["status" => "success", "data" => $result], 200);
+        });
+
+        $app->put('/updateCreditCardToken', function ($request, $response) {
+            $body = $request->getParsedBody();
+            $sql = "UPDATE user set credit_card_token=:credit_card_token where id_user=:id_user";
+            $stmt = $this->db->prepare($sql);
+            $data = [
+                ":credit_card_token" => $body["credit_card_token"],
+                ":id_user"=>$body["id_user"]
+            ];
+            if($stmt->execute($data)){
+                return $response->withJson(["status" => "success", "data" => "1"], 200);
+            }else{
+                return $response->withJson(["status" => "failed", "data" => "0"], 200);
+            }
+            //return $response->withJson(["status" => "success", "data" => $result], 200);
+        });
+
+        $app->post('/chargeUser', function ($request, $response) {
+            $body = $request->getParsedBody();
+            $id_user=$body["id_user"];
+            $sql = "SELECT * FROM user where id_user='$id_user'";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute();
+            $row = $stmt->fetch();
+            $credit_card_token = $row["credit_card_token"];    
+            $milliseconds = round(microtime(true) * 1000);
+            $id_order="ORDER".$milliseconds;
+            $curl = curl_init();
+            curl_setopt_array($curl, array(
+                CURLOPT_URL => "https://api.sandbox.midtrans.com/v2/charge",
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING => "",
+                CURLOPT_MAXREDIRS => 10,
+                CURLOPT_TIMEOUT => 0,
+                CURLOPT_FOLLOWLOCATION => true,
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST => "POST",
+                CURLOPT_POSTFIELDS =>  json_encode([
+                    "payment_type" => "credit_card",
+                    "transaction_details" => [
+                        "order_id" => $id_order,
+                        "gross_amount" => 50000
+                    ],
+                    "credit_card" => [
+                        "token_id" => $credit_card_token,
+                    ],
+                    "item_details" => [[
+                        "id" => "SSMEMBER01",
+                        "price" => 50000,
+                        "quantity" => 1,
+                        "name" => "Membership Sahabat Surabaya 1 Bulan",
+                        "merchant_name" => "Sahabat Surabaya"
+                    ]],
+                    "customer_details" => [
+                        "first_name" => $row["nama_user"],
+                        "email" => $row["email_user"],
+                        "phone" => $row["telpon_user"],
+                    ]
+                ]),
+                CURLOPT_HTTPHEADER => array(
+                    "Content-Type: application/json",
+                    "Accept: application/json",
+                    "Authorization: Basic U0ItTWlkLXNlcnZlci1GQjRNSERieVhlcFc5OFNRWjY0SHhNeEU="
+                ),
+            ));
+            $curl_response = curl_exec($curl);  
+            $json = json_decode(utf8_encode($curl_response), true);
+            curl_close($curl);
+            if($json["status_code"]=="200"){
+                 $datetime=date('Y-m-d');
+                $sql = "INSERT INTO order_subscription(id_order,order_ammount, order_date) VALUE (:id_order,:order_ammount,:order_date)";
+                $data = [
+                    ":id_order" => $id_order,
+                    ":order_ammount"=>50000,
+                    ":order_date" => $datetime
+                ];
+                $stmt=$this->db->prepare($sql);
+                $stmt->execute($data);
+                $available_until = strtotime($datetime);
+                $final = date("Y-m-d", strtotime("+1 month", $available_until));
+                $sql="UPDATE user set premium_available_until=:premium_available_until,status_user=2 where id_user=:id_user";
+                $data=[
+                  ":premium_available_until"=> $final,
+                  ":id_user"=>$id_user
+                ];
+                $stmt=$this->db->prepare($sql);
+                $stmt->execute($data);
+                return $response->withJson(200); 
+            }else{
+                return $response->withJson(400); 
+            }
+           
+           
+            
+            //return $response->withJson($row);
+            // if($stmt->execute($data)){
+            //     return $response->withJson(["status" => "success", "data" => "1"], 200);
+            // }else{
+            //     return $response->withJson(["status" => "failed", "data" => "0"], 200);
+            // }
+            //return $response->withJson(["status" => "success", "data" => $result], 200);
         });
 
        $app->post('/insertUser', function ($request, $response) {
@@ -178,6 +274,59 @@ return function (App $app) {
             }
         });
 
+        $app->post('/insertLaporanKriminalitas', function(Request $request, Response $response,$args) {
+            $new_laporan = $request->getParsedBody();
+            $datetime = DateTime::createFromFormat('d/m/Y', $new_laporan["tanggal_laporan"]);
+            $day=$datetime->format('d');
+            $month=$datetime->format('m');
+            $year=$datetime->format('Y');
+            $formatDate=$year.$month.$day;
+            $id_laporan="CR".$day.$month.$year;
+            $sql="SELECT COUNT(*)+1 from laporan_kriminalitas where id_laporan like'%$id_laporan%'";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute();
+            $result = $stmt->fetchColumn();           
+            $id_laporan=$id_laporan.str_pad($result,5,"0",STR_PAD_LEFT);
+            $sql = "INSERT INTO laporan_kriminalitas VALUES(:id_laporan,:judul_laporan,:jenis_kejadian,:deskripsi_kejadian,:tanggal_laporan,:waktu_laporan,:alamat_laporan,:lat_laporan,:lng_laporan,:email_pelapor,:status_laporan) ";
+            $stmt = $this->db->prepare($sql);
+            $data = [
+                ":id_laporan" => $id_laporan,
+                ":judul_laporan"=>$new_laporan["judul_laporan"],
+                ":jenis_kejadian" => $new_laporan["jenis_kejadian"],
+                ":deskripsi_kejadian"=>$new_laporan["deskripsi_kejadian"],
+                ":tanggal_laporan"=>$formatDate,
+                ":waktu_laporan"=>$new_laporan["waktu_laporan"],
+                ":alamat_laporan"=>$new_laporan["alamat_laporan"],
+                ":lat_laporan"=>$new_laporan["lat_laporan"],
+                ":lng_laporan"=>$new_laporan["lng_laporan"],
+                ":email_pelapor"=>$new_laporan["email_pelapor"],
+                ":status_laporan"=>0
+            ];
+            $stmt->execute($data);
+            // return $response->withJson(["status" => "success", "data" => "1"], 200);
+            // return $response->withJson(["status" => "failed", "data" => "0"], 400);
+            $increment=1;
+            $uploadedFiles = $request->getUploadedFiles();
+            foreach($uploadedFiles['image'] as $uploadedFile){
+                if ($uploadedFile->getError() === UPLOAD_ERR_OK) {
+                    $id_gambar=$id_laporan.$increment;
+                    $extension = pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION);
+                    $filename=$id_gambar.".".$extension;
+                    $sql = "INSERT INTO gambar_kriminalitas VALUES(:id_gambar,:nama_file,:id_laporan) ";
+                    $stmt = $this->db->prepare($sql);
+                    $data = [
+                        ":id_gambar" => $id_gambar,
+                        ":nama_file"=>$filename,
+                        ":id_laporan" => $id_laporan
+                    ];
+                    $stmt->execute($data);
+                    $directory = $this->get('settings')['upload_directory'];
+                    $uploadedFile->moveTo($directory . DIRECTORY_SEPARATOR . $filename); 
+                    $increment=$increment+1;
+                }
+            }
+        });
+
         $app->get('/getKomentarLaporanLostFound/{id_laporan}', function ($request, $response,$args) {
             $id_laporan=$args["id_laporan"];
             $sql = "SELECT * FROM komentar_laporan_lostfound where id_laporan=:id_laporan order by tanggal_komentar DESC, waktu_komentar DESC ";
@@ -187,7 +336,7 @@ return function (App $app) {
             return $response->withJson($result, 200);
         });
 
-        $app->get('/[{name}]', function (Request $request, Response $response, array $args) use ($container) {
+        $app->get('/[{name}]', function (Request     $request, Response $response, array $args) use ($container) {
             // Sample log message
             $container->get('logger')->info("Slim-Skeleton '/' route");
 

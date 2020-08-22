@@ -64,7 +64,7 @@ namespace SahabatSurabaya
                     Timeout = TimeSpan.FromSeconds(30)
                 });
             }
-            string[] args = { location.Latitude.ToString().Replace(",", "."), location.Longitude.ToString().Replace(",", "."), selected.lat_kantor_polisi, selected.lng_kantor_polisi };
+            string[] args = { location.Latitude.ToString().Replace(",", "."), location.Longitude.ToString().Replace(",", "."), selected.lat_kantor_polisi, selected.lng_kantor_polisi, selected.nama_kantor_polisi };
             string lat = await webViewMap.InvokeScriptAsync("calculateRoute", args);
         }
     }

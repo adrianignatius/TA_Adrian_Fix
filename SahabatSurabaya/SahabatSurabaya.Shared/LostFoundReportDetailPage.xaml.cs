@@ -81,8 +81,6 @@ namespace SahabatSurabaya
             txtJudulLaporan.Text = param.judulLaporan;
             txtDescBarang.Text = param.descLaporan;
             txtLokasiLaporan.Text = param.alamatLaporan;
-            var d = new MessageDialog(param.namaFileGambar.ToString());
-            await d.ShowAsync();
         }
     }
 }

@@ -18,10 +18,10 @@ return [
 
         // Database Settings
         'db' => [
-            'host' => 'localhost',
-            'user' => 'root',
-            'pass' => '',
-            'dbname' => 'sahabat_surabaya',
+            'host' => 'ta-istts.com',
+            'user' => 'u648955938_ta_adrian',
+            'pass' => '=6WN4dCUw',
+            'dbname' => 'u648955938_ta_adrian',
             'driver' => 'mysql'
         ]
     ],

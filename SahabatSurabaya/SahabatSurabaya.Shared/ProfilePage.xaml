@@ -32,7 +32,7 @@
                 <TextBlock Margin="0,15,0,0" FontSize="16" Text="Tipe Akun" FontWeight="SemiBold"></TextBlock>
                 <TextBlock Margin="0,10,0,0" FontSize="14" Text="Free Account" ></TextBlock>
 
-                <Button Margin="0,15,0,0" FontSize="20" CornerRadius="10" Content="Upgrade Akun Sekarang" HorizontalAlignment="Center" Background="Green" Foreground="White"></Button>
+                <Button Click="goToSubscriptionPage" Margin="0,15,0,0" FontSize="20" CornerRadius="10" Content="Upgrade to Premium" HorizontalAlignment="Center" Background="Green" Foreground="White"></Button>
                 <Button Margin="0,15,0,0" FontSize="20" CornerRadius="10" Content="Simpan Perubahan" HorizontalAlignment="Center" Background="Green" Foreground="White"></Button>
             </StackPanel>
         </ScrollViewer>

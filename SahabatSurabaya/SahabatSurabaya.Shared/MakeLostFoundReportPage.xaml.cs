@@ -40,8 +40,6 @@ namespace SahabatSurabaya
                     Timeout = TimeSpan.FromSeconds(30)
                 }); ;
             }
-            var messageBox = new MessageDialog(location.Latitude + "-" + location.Longitude);
-            await messageBox.ShowAsync();
             string[] args = { location.Latitude.ToString(), location.Longitude.ToString() };
             string lat = await webViewMap.InvokeScriptAsync("myFunction", args);
         }
@@ -57,7 +55,6 @@ namespace SahabatSurabaya
                 {
                     var jsonString = await response.Content.ReadAsStringAsync();
                     var responseData = response.Content.ReadAsStringAsync().Result;
-                    //int length = ((JArray)json["data"]).Count;
                     listSettingKategoriLostFound = JsonConvert.DeserializeObject<List<SettingKategori>>(responseData);
                     cbJenisBarang.ItemsSource = listSettingKategoriLostFound;
                     cbJenisBarang.DisplayMemberPath = "nama_kategori";
@@ -78,8 +75,6 @@ namespace SahabatSurabaya
             string valueJenisBarang = cbJenisBarang.SelectedValue.ToString();
             string[] getLat = new string[] { @"document.getElementById('valueLat').value" };
             string lat = await webViewMap.InvokeScriptAsync("eval", getLat);
-            var s = new MessageDialog(lat.ToString());
-            await s.ShowAsync();
             string[] getLng = new string[] { @"document.getElementById('valueLng').value" };
             string lng = await webViewMap.InvokeScriptAsync("eval", getLng);
             string tglLaporan = DateTime.Now.ToString("dd/MM/yyyy");

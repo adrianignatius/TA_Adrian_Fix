@@ -26,5 +26,10 @@ namespace SahabatSurabaya
         {
             this.InitializeComponent();
         }
+
+        public void goToSubscriptionPage(object sender, RoutedEventArgs e)
+        {
+            this.Frame.Navigate(typeof(SubscriptionPage));
+        }
     }
 }

@@ -23,9 +23,7 @@ using Xamarin.Essentials;
 
 namespace SahabatSurabaya
 {
-    /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
-    /// </summary>
+
     public sealed partial class PoliceStationPage : Page
     {
         public PoliceStationPage()
@@ -63,8 +61,6 @@ namespace SahabatSurabaya
                     destinations.Remove(destinations.Length - 1, 1);
                     using (var client2 = new HttpClient())
                     {
-
-                        //string reqUri = "https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=-7.350755,112.786107&destinations=-7.291303,112.758831&key=AIzaSyA9rHJZEGWe6rX4nAHTGXFxCubmw-F0BBw";
                         string reqUri = "https://maps.googleapis.com/maps/api/distancematrix/json?units=metrics&origins=" + origins + "&destinations=" + destinations + "&key=AIzaSyA9rHJZEGWe6rX4nAHTGXFxCubmw-F0BBw";
                         HttpResponseMessage response2 = await client2.GetAsync(reqUri);
                         if (response2.IsSuccessStatusCode)
@@ -77,8 +73,6 @@ namespace SahabatSurabaya
                                 string distance = json["rows"][0]["elements"][i]["distance"]["text"].ToString().Split(" ")[0].Replace(".",",");
                                 listKantorPolisi[i].distance = Convert.ToDouble(distance);
                             }
-                            //var message = new MessageDialog(json["rows"][0]["elements"][0]["distance"].ToString());
-                            //await message.ShowAsync();
                         }
                         else
                         {
