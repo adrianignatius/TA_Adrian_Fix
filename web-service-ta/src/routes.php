@@ -62,11 +62,16 @@ return function (App $app) {
             $user = $request->getParsedBody();
             $email=$user["email"];
             $password=$user["password"];
-            $sql = "SELECT count(*) as ada FROM user where email_user='$email' and password_user='$password'";
+            $sql = "SELECT * FROM user where email_user='$email' and password_user='$password'";
             $stmt = $this->db->prepare($sql);
             $stmt->execute();
-            $result = $stmt->fetchColumn();
-            return $response->withJson(["status" => "success", "data" => $result], 200);
+            $result = $stmt->fetch();
+            if($result==null){
+                return $response->withJson(["status" => "400"]);
+            }else{
+                return $response->withJson(["status" => "200", "data" => $result], 200);
+            }
+            
         });
 
         $app->get('/getUser/{id}', function ($request, $response,$args) {

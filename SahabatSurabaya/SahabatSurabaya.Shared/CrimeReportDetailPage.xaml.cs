@@ -61,7 +61,8 @@ namespace SahabatSurabaya
                 }
                 else
                 {
-
+                    var message = new MessageDialog("Gagal membuat laporan! Silahkan coba beberapa saat lagi");
+                    await message.ShowAsync();
                 }
             }
         }
