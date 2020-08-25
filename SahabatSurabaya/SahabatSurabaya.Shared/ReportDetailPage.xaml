@@ -9,8 +9,8 @@
     RequestedTheme="Light"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <Grid Margin="20">
-        <ScrollViewer>
+    <ScrollViewer>
+        <Grid Margin="20">
             <StackPanel Orientation="Vertical">
                 <Button Margin="-5,-5,0,0" Name="btnBack" Click="Back_Click" HorizontalAlignment="Left" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
                     <SymbolIcon Symbol="Back"></SymbolIcon>
@@ -70,7 +70,8 @@
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
+                <Button Click="goToChatPage" HorizontalAlignment="Stretch" Margin="0,15,0,0" Foreground="White" Background="Green" FontSize="16" Content="Hubungi Pelapor" ></Button>
             </StackPanel>
-        </ScrollViewer>
-    </Grid>
+        </Grid>
+    </ScrollViewer>
 </Page>

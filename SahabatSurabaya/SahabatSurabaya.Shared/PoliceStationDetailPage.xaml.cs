@@ -29,7 +29,7 @@ namespace SahabatSurabaya
         {
             this.InitializeComponent();
         }
-        protected async override void OnNavigatedTo(NavigationEventArgs e)
+        protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
             selected = e.Parameter as KantorPolisi;
@@ -38,7 +38,7 @@ namespace SahabatSurabaya
             txtNoTelpKantorPolisi.Text = selected.notelp_kantor_polisi;       
         }
 
-        private async void Back_Click(object sender, RoutedEventArgs e)
+        private void Back_Click(object sender, RoutedEventArgs e)
         {
             On_BackRequested();     
         }

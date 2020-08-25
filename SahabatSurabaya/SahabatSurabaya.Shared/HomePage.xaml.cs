@@ -28,6 +28,7 @@ namespace SahabatSurabaya
     /// </summary>
     public sealed partial class HomePage : Page
     {
+        User userLogin;
         ObservableCollection<LaporanLostFound> listLaporan;
         public HomePage()
         {
@@ -56,6 +57,21 @@ namespace SahabatSurabaya
         {
             int index = lvLaporanKriminalitas.SelectedIndex;
             this.Frame.Navigate(typeof(ReportDetailPage),listLaporan[index]);
+        }
+
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+            userLogin = e.Parameter as User;
+            txtNamaUser.Text ="Selamat Datang,  "+userLogin.email_user+"!";
+            if (userLogin.status_user == 1)
+            {
+                txtStatusUser.Text = "Premium Account";
+            }
+            else
+            {
+                txtStatusUser.Text = "Free Account";
+            }
         }
     }
 }

@@ -71,7 +71,6 @@ return function (App $app) {
             }else{
                 return $response->withJson(["status" => "200", "data" => $result], 200);
             }
-            
         });
 
         $app->get('/getUser/{id}', function ($request, $response,$args) {
@@ -79,8 +78,8 @@ return function (App $app) {
             $sql = "SELECT * FROM user where id_user=:id";
             $stmt = $this->db->prepare($sql);
             $stmt->execute([":id" => $id]);
-            $result = $stmt->fetchAll();
-            return $response->withJson(["status" => "success", "data" => $result], 200);
+            $result = $stmt->fetch();
+            return $response->withJson($result);
         });
 
         $app->put('/updateCreditCardToken', function ($request, $response) {
@@ -96,7 +95,6 @@ return function (App $app) {
             }else{
                 return $response->withJson(["status" => "failed", "data" => "0"], 200);
             }
-            //return $response->withJson(["status" => "success", "data" => $result], 200);
         });
 
         $app->post('/chargeUser', function ($request, $response) {
@@ -162,7 +160,7 @@ return function (App $app) {
                 $stmt->execute($data);
                 $available_until = strtotime($datetime);
                 $final = date("Y-m-d", strtotime("+1 month", $available_until));
-                $sql="UPDATE user set premium_available_until=:premium_available_until,status_user=2 where id_user=:id_user";
+                $sql="UPDATE user set premium_available_until=:premium_available_until,status_user=1 where id_user=:id_user";
                 $data=[
                   ":premium_available_until"=> $final,
                   ":id_user"=>$id_user
@@ -173,16 +171,6 @@ return function (App $app) {
             }else{
                 return $response->withJson(400); 
             }
-           
-           
-            
-            //return $response->withJson($row);
-            // if($stmt->execute($data)){
-            //     return $response->withJson(["status" => "success", "data" => "1"], 200);
-            // }else{
-            //     return $response->withJson(["status" => "failed", "data" => "0"], 200);
-            // }
-            //return $response->withJson(["status" => "success", "data" => $result], 200);
         });
 
        $app->post('/insertUser', function ($request, $response) {
@@ -226,6 +214,26 @@ return function (App $app) {
             return $response->withJson(["status" => "failed", "data" => "0"], 200);
             });
 
+            $app->post('/insertChat', function ($request, $response) {
+                $new_chat = $request->getParsedBody();
+                $date = date("Y/m/d");
+                $time = date("H:i");
+                $sql = "INSERT INTO detail_chat (id_user_pengirim, id_user_penerima, isi_chat, tanggal_chat, waktu_chat) VALUE (:id_user_pengirim,:id_user_penerima, :isi_chat, :tanggal_chat, :waktu_chat)";
+                $stmt = $this->db->prepare($sql);
+                $data = [
+                    ":id_user_pengirim" => $new_chat["id_user_pengirim"],
+                    ":id_user_penerima"=>$new_chat["id_user_penerima"],
+                    ":tanggal_chat" => $date,
+                    ":isi_chat" => $new_chat["isi_chat"],
+                    ":waktu_chat" => $new_chat["waktu_chat"]
+                ];
+            
+                if($stmt->execute($data))
+                return $response->withJson(["status" => "success", "data" => "1"], 200);
+                
+                return $response->withJson(["status" => "failed", "data" => "0"], 200);
+                });
+
         $app->post('/insertLaporanLostFound', function(Request $request, Response $response,$args) {
             $new_laporan = $request->getParsedBody();
             $datetime = DateTime::createFromFormat('d/m/Y', $new_laporan["tanggal_laporan"]);
@@ -255,8 +263,6 @@ return function (App $app) {
                 ":status_laporan"=>0
             ];
             $stmt->execute($data);
-            // return $response->withJson(["status" => "success", "data" => "1"], 200);
-            // return $response->withJson(["status" => "failed", "data" => "0"], 400);
             $increment=1;
             $uploadedFiles = $request->getUploadedFiles();
             foreach($uploadedFiles['image'] as $uploadedFile){

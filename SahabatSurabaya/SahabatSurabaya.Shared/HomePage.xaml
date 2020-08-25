@@ -24,8 +24,8 @@
                         </Canvas>
                         <StackPanel Orientation="Horizontal">
                             <StackPanel Margin="90,20,0,0" Orientation="Vertical">
-                                <TextBlock FontSize="15" FontWeight="SemiBold">Selamat Datang, adrianignatius@xyz.com!</TextBlock>
-                                <TextBlock FontSize="12" FontWeight="SemiBold">Free Account</TextBlock>
+                                <TextBlock Name="txtNamaUser" FontSize="15" FontWeight="SemiBold">Selamat Datang, adrianignatius@xyz.com!</TextBlock>
+                                <TextBlock Name="txtStatusUser" FontSize="12" FontWeight="SemiBold">Free Account</TextBlock>
                             </StackPanel>
                         </StackPanel>
                         
@@ -59,10 +59,6 @@
                                             <TextBlock Text="{Binding tanggal_laporan}" FontSize="12"></TextBlock>
                                             <TextBlock Text="Pukul" FontSize="12"></TextBlock>
                                             <TextBlock Text="{Binding waktu_laporan}" FontSize="12"></TextBlock>
-                                        </StackPanel>
-                                        <StackPanel Margin="0,2,0,0" Orientation="Horizontal">
-                                            <TextBlock Text="Oleh" FontSize="12"></TextBlock>
-                                            <TextBlock Text="{Binding email_pelapor}" FontSize="12"></TextBlock>
                                         </StackPanel>
                                         <Border BorderThickness="1" BorderBrush="Black"></Border>
                                         <StackPanel Margin="0,5,0,5" Orientation="Horizontal">

@@ -23,7 +23,7 @@ namespace SahabatSurabaya
 
         public string deskripsi_barang { get; set; }
 
-        public string email_pelapor { get; set; }
+        public int  id_user_pelapor { get; set; }
 
         public int status_laporan { get; set; }
     }

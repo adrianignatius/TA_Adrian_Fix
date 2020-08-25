@@ -19,6 +19,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Chat.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ChatPage.xaml.cs">
+      <DependentUpon>ChatPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)ChatPageParams.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CrimeReportDetailPage.xaml.cs">
       <DependentUpon>CrimeReportDetailPage.xaml</DependentUpon>
     </Compile>
@@ -45,6 +50,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)MakeLostFoundReportPage.xaml.cs">
       <DependentUpon>MakeLostFoundReportPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)PersonalChatPage.xaml.cs">
+      <DependentUpon>PersonalChatPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)PoliceStationDetailPage.xaml.cs">
       <DependentUpon>PoliceStationDetailPage.xaml</DependentUpon>
     </Compile>
@@ -69,6 +77,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)XamarinAPI.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="$(MSBuildThisFileDirectory)ChatPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="$(MSBuildThisFileDirectory)CrimeReportDetailPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -94,6 +106,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="$(MSBuildThisFileDirectory)MakeLostFoundReportPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)PersonalChatPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

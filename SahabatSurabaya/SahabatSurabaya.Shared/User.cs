@@ -23,13 +23,22 @@ namespace SahabatSurabaya
         [JsonProperty("telpon_user")]
         public string telpon_user { get; set; }
 
-        public User(int id_user, string email_user, string nama_user, string password_user, string telpon_user)
+        public int status_user { get; set; }
+
+        public string credit_card_token { get; set; }
+
+        public string premium_available_until { get; set; }
+
+        public User(int id_user, string email_user, string nama_user, string password_user, string telpon_user, int status_user, string credit_card_token, string premium_available_until)
         {
             this.id_user = id_user;
             this.email_user = email_user;
             this.nama_user = nama_user;
             this.password_user = password_user;
             this.telpon_user = telpon_user;
+            this.status_user = status_user;
+            this.credit_card_token = credit_card_token;
+            this.premium_available_until = premium_available_until;
         }
     }
 

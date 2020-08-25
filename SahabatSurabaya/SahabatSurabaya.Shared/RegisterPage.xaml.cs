@@ -55,52 +55,39 @@ namespace SahabatSurabaya
             }
             else
             {
-                using (var client = new HttpClient())
-                {
-                    User baru = new User(0, email.Text, fullName.Text, password.Password, phoneNumber.Text);
-                    client.BaseAddress = new Uri("http://localhost:8080/");
-                    client.DefaultRequestHeaders.Accept.Clear();
-                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                    JObject oJsonObject = (JObject)JToken.FromObject(baru);
-                    var content = new StringContent(oJsonObject.ToString(), Encoding.UTF8, "application/json");
-                //    HttpResponseMessage response = await client.PostAsync(
-                //"user/insertUser/", new StringContent(oJsonObject.ToString(),Encoding.UTF8));
-                    var result = await client.PostAsync("user/insertUser", content);
-                    if (result.IsSuccessStatusCode)
-                    {
-                        var dialog = new MessageDialog("Register Berhasil!");
-                        await dialog.ShowAsync();
-                        fullName.Text = "";
-                        password.Password = "";
-                        phoneNumber.Text = "";
-                        email.Text = "";
-                    }
+                //using (var client = new HttpClient())
+                //{
+                //    User baru = new User(0, email.Text, fullName.Text, password.Password, phoneNumber.Text);
+                //    client.BaseAddress = new Uri("http://localhost:8080/");
+                //    client.DefaultRequestHeaders.Accept.Clear();
+                //    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                //    JObject oJsonObject = (JObject)JToken.FromObject(baru);
+                //    var content = new StringContent(oJsonObject.ToString(), Encoding.UTF8, "application/json");
+                ////    HttpResponseMessage response = await client.PostAsync(
+                ////"user/insertUser/", new StringContent(oJsonObject.ToString(),Encoding.UTF8));
+                //    var result = await client.PostAsync("user/insertUser", content);
+                //    if (result.IsSuccessStatusCode)
+                //    {
+                //        var dialog = new MessageDialog("Register Berhasil!");
+                //        await dialog.ShowAsync();
+                //        fullName.Text = "";
+                //        password.Password = "";
+                //        phoneNumber.Text = "";
+                //        email.Text = "";
+                //    }
 
 
-                    //HttpResponseMessage response = await client.GetAsync("user/getAllUser/");
-                    //string jsonString = await response.Content.ReadAsStringAsync();
-                    //var dialog = new MessageDialog(jsonString);
-                    //await dialog.ShowAsync();
-                    //TextBox cb = (TextBox)this.FindName("txtFullName");
-                    //cb.Text = jsonString;
-                }
+                //    //HttpResponseMessage response = await client.GetAsync("user/getAllUser/");
+                //    //string jsonString = await response.Content.ReadAsStringAsync();
+                //    //var dialog = new MessageDialog(jsonString);
+                //    //await dialog.ShowAsync();
+                //    //TextBox cb = (TextBox)this.FindName("txtFullName");
+                //    //cb.Text = jsonString;
+                //}
             }
             
                 
             
         }
-
-        
-
-        //static async Task RunAsync(RoutedEventArgs e)
-        //{
-        //    client.BaseAddress = new Uri("http://localhost:8080/");
-        //    client.DefaultRequestHeaders.Accept.Clear();
-        //    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-        //    HttpResponseMessage response = await client.GetAsync("user/getAllUser/");
-        //    string jsonString = await response.Content.ReadAsStringAsync();
-        //    Console.WriteLine(jsonString);
-        //    FrameworkElement s=e.OriginalSource as FrameworkElement;
-        //}
     }
 }

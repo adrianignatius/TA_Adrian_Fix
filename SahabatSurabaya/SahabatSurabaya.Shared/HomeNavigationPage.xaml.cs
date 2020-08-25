@@ -20,6 +20,7 @@ namespace SahabatSurabaya
 
     public sealed partial class HomeNavigationPage : Page
     {
+        User userLogin;
         public HomeNavigationPage()
         {
             this.InitializeComponent();
@@ -63,7 +64,7 @@ namespace SahabatSurabaya
             switch (item.Tag)
             {
                 case "home":
-                    ContentFrame.Navigate(typeof(HomePage));
+                    ContentFrame.Navigate(typeof(HomePage),userLogin);
                     break;
 
                 case "MakeLostFoundReportPage":
@@ -85,7 +86,17 @@ namespace SahabatSurabaya
                 case "ProfilePage":
                     ContentFrame.Navigate(typeof(ProfilePage));
                     break;
+
+                case "chatPage":
+                    ContentFrame.Navigate(typeof(PersonalChatPage));
+                    break;
             }
+        }
+
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+            userLogin = e.Parameter as User;
         }
     }
 }

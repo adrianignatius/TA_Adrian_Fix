@@ -32,6 +32,8 @@ namespace SahabatSurabaya
             this.InitializeComponent();
         }
 
+        public object JsonCovert { get; private set; }
+
         public void goToRegister(object sender, RoutedEventArgs e)
         {
             this.Frame.Navigate(typeof(RegisterPage));
@@ -61,10 +63,12 @@ namespace SahabatSurabaya
                     {
                         var responseData = response.Content.ReadAsStringAsync().Result;
                         JObject json = JObject.Parse(responseData);
-                        string checkLogin = json["data"].ToString();
-                        if (checkLogin == "1")
+                        string statusCode = json["status"].ToString();
+                        if (statusCode == "200")
                         {
-                            this.Frame.Navigate(typeof(HomeNavigationPage));
+                            string data = json["data"].ToString();
+                            User userLogin= JsonConvert.DeserializeObject<User>(data);
+                            this.Frame.Navigate(typeof(HomeNavigationPage),userLogin);
                         }
                         else
                         {
@@ -72,33 +76,6 @@ namespace SahabatSurabaya
                             await dialog.ShowAsync();
                         }
                     }
-
-                    //    //var jsonString = await response.Content.ReadAsStringAsync();
-
-                    //    //string data = json["data"][0].ToString();
-                    //    //User user = JsonConvert.DeserializeObject<User>(data);
-
-                    //    //string a = json["data"][0]["email_user"].ToString();
-                    //    //var dialog = new MessageDialog(user.email_user.ToString());
-                    //    //await dialog.ShowAsync();
-                    //    //var result = JsonConvert.DeserializeObject<ApiDataUser>(responseData);
-                    //    //var jsonString = await response.Content.ReadAsStringAsync();
-                    //    //JObject json = JObject.Parse(jsonString);
-                    //    //string data = json["data"][0].ToString();
-                    //    //User user = JsonConvert.DeserializeObject<User>(data);
-                    //    ////string a = json["status"][0]["ada"].ToString();
-                    //    //string a = json["data"][0]["email_user"].ToString();
-
-                    //    if (checkLogin == "1")
-                    //    {
-                    //        this.Frame.Navigate(typeof(HomeNavigationPage));
-                    //    }
-                    //    else
-                    //    {
-                    //        var dialog = new MessageDialog("Username/Password salah!");
-                    //        await dialog.ShowAsync();
-                    //    }                       
-                    //}
 
                 }
             }

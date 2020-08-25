@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -47,11 +48,27 @@ namespace SahabatSurabaya
             }
             return false;
         }
-        protected override void OnNavigatedTo(NavigationEventArgs e)
+        protected async override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
             selected = e.Parameter as LaporanLostFound;
-            txtNamaPengguna.Text = selected.email_pelapor;
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri("http://localhost:8080/");
+                client.DefaultRequestHeaders.Accept.Clear();
+                HttpResponseMessage response = await client.GetAsync("user/getUser/"+selected.id_user_pelapor);
+                if (response.IsSuccessStatusCode)
+                {
+                    var responseData = response.Content.ReadAsStringAsync().Result;
+                    User userSelected = JsonConvert.DeserializeObject<User>(responseData);
+                    txtNamaPengguna.Text = userSelected.email_user;
+                }
+                else
+                {
+                    var message = new MessageDialog(response.StatusCode.ToString());
+                    await message.ShowAsync();
+                }
+            }
             txtTanggalUpload.Text = selected.tanggal_laporan + " Pukul " + selected.waktu_laporan;
             txtDeskripsiLaporan.Text = selected.deskripsi_barang;
             txtJudulLaporan.Text = selected.judul_laporan;
@@ -79,7 +96,13 @@ namespace SahabatSurabaya
                 }
             }
         }
-        public async void sendComment(object sender,RoutedEventArgs e)
+
+        private void goToChatPage(object sender, RoutedEventArgs e)
+        {
+            this.Frame.Navigate(typeof(PersonalChatPage));
+        }
+
+        private async void sendComment(object sender,RoutedEventArgs e)
         {
             if (txtKomentar.Text.Length != 0)
             {
