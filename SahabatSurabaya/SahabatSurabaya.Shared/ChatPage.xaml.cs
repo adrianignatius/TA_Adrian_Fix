@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using SahabatSurabaya.Shared;
 using System;
 using System.Collections.Generic;
@@ -8,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Runtime.InteropServices.WindowsRuntime;
+using Uno.Extensions;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.Popups;
@@ -37,6 +39,7 @@ namespace SahabatSurabaya
         
         private async void loadHeaderChat()
         {
+            listDisplayHeaderChat = new ObservableCollection<DisplayHeaderChat>();
             using (var client = new HttpClient())
             {
                 client.BaseAddress = new Uri("http://localhost:8080/");
@@ -51,11 +54,30 @@ namespace SahabatSurabaya
                         HttpResponseMessage response2 = await client.GetAsync("getLastMessage/" + tempHeaderChat[i].id_chat);
                         if (response2.IsSuccessStatusCode)
                         {
-                            var jsonString = await response2.Content.ReadAsStringAsync();
-                            var asd = "wtrqwewq";
+                            string namaDisplay = "";
+                            if (userLogin.id_user == tempHeaderChat[i].id_user_1)
+                            {
+                                namaDisplay = tempHeaderChat[i].nama_user_2;
+                            }
+                            else
+                            {
+                                namaDisplay = tempHeaderChat[i].nama_user_1;
+                            }
+                            DisplayHeaderChat displayHeaderChat=new DisplayHeaderChat(tempHeaderChat[i].id_chat,namaDisplay,null);
+                            var jsonString = response2.Content.ReadAsStringAsync().Result;
+                            if (jsonString!="false")
+                            {
+                                JObject json = JObject.Parse(jsonString);
+                                displayHeaderChat.waktu_chat = DateTime.ParseExact(json["waktu_chat"].ToString(), "yyyy-MM-dd HH:mm:ss", null);
+                                displayHeaderChat.pesan_display = json["isi_chat"].ToString();
+                            }
+                            listDisplayHeaderChat.Add(displayHeaderChat);
                         }
                     }
-                    
+                    listDisplayHeaderChat = new ObservableCollection<DisplayHeaderChat>(listDisplayHeaderChat.OrderBy(k => k.waktu_chat));
+                    lvDaftarChat.ItemsSource = listDisplayHeaderChat;
+                    var message = new MessageDialog(listDisplayHeaderChat.Count.ToString());
+                    await message.ShowAsync();
                 }
             }
         }

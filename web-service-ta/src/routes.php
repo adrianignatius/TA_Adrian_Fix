@@ -5,6 +5,8 @@ use Slim\Http\Request;
 use Slim\Http\Response;
 use Slim\Http\UploadedFile;
 
+date_default_timezone_set("Asia/Jakarta");
+
 return function (App $app) {
     $container = $app->getContainer();
     $container['upload_directory'] = __DIR__ . '/uploads';
@@ -40,6 +42,7 @@ return function (App $app) {
         $result = $stmt->fetchAll();
         return $response->withJson($result, 200);
     });
+    
 
     $app->get('/getAllKantorPolisi', function ($request, $response) {   
         $sql = "SELECT * FROM kantor_polisi";
@@ -228,14 +231,14 @@ return function (App $app) {
 
             $app->get('/getLastMessage/{id_chat}', function ($request, $response,$args) {   
                 $id_chat=$args["id_chat"];
-                $sql = "SELECT d.id_chat,d.id_user_pengirim,d.id_user_penerima,d.isi_chat,d.tanggal_chat,d.waktu_chat,u1.nama_user as nama_user_pengirim,u2.nama_user as nama_user_penerima FROM detail_chat d,user u1,user u2 where d.id_chat=:id_chat and d.id_user_pengirim=u1.id_user and d.id_user_penerima=u2.id_user order by d.tanggal_chat desc, d.waktu_chat desc LIMIT 1";
+                $sql = "SELECT d.id_chat,d.id_user_pengirim,d.id_user_penerima,d.isi_chat,d.waktu_chat,u1.nama_user as nama_user_pengirim,u2.nama_user as nama_user_penerima FROM detail_chat d,user u1,user u2 where d.id_chat=:id_chat and d.id_user_pengirim=u1.id_user and d.id_user_penerima=u2.id_user order by d.waktu_chat desc LIMIT 1";
                 $stmt = $this->db->prepare($sql);
                 $data = [
                     ":id_chat" => $id_chat
                 ];
                 $stmt->execute($data);
-                $result = $stmt->fetchAll();
-                return $response->withJson($result, 200);
+                $result = $stmt->fetch();
+                return $response->withJson($result);
             });
 
             $app->post('/insertHeaderChat', function ($request, $response) {
@@ -255,16 +258,15 @@ return function (App $app) {
 
             $app->post('/insertDetailChat', function ($request, $response) {
                 $new_chat = $request->getParsedBody();
-                $date = date("Y/m/d");
-                $time = date("H:i");
-                $sql = "INSERT INTO detail_chat (id_user_pengirim, id_user_penerima, isi_chat, tanggal_chat, waktu_chat) VALUE (:id_user_pengirim,:id_user_penerima, :isi_chat, :tanggal_chat, :waktu_chat)";
+                $datetime = date("Y/m/d H:i");
+                $sql = "INSERT INTO detail_chat (id_chat,id_user_pengirim, id_user_penerima, isi_chat, waktu_chat) VALUE (:id_chat,:id_user_pengirim,:id_user_penerima, :isi_chat, :waktu_chat)";
                 $stmt = $this->db->prepare($sql);
                 $data = [
+                    ":id_chat"=>$new_chat["id_chat"],
                     ":id_user_pengirim" => $new_chat["id_user_pengirim"],
                     ":id_user_penerima"=>$new_chat["id_user_penerima"],
-                    ":tanggal_chat" => $date,
                     ":isi_chat" => $new_chat["isi_chat"],
-                    ":waktu_chat" => $new_chat["waktu_chat"]
+                    ":waktu_chat" => $datetime
                 ];
             
                 if($stmt->execute($data))
