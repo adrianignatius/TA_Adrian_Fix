@@ -52,7 +52,7 @@ namespace SahabatSurabaya
                         if (response2.IsSuccessStatusCode)
                         {
                             var jsonString = await response2.Content.ReadAsStringAsync();
-                            //listDisplayHeaderChat.Add(new DisplayHeaderChat());
+                            var asd = "wtrqwewq";
                         }
                     }
                     
