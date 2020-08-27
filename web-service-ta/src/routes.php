@@ -214,7 +214,46 @@ return function (App $app) {
             return $response->withJson(["status" => "failed", "data" => "0"], 200);
             });
 
-            $app->post('/insertChat', function ($request, $response) {
+            $app->get('/getHeaderChat/{id_user}', function ($request, $response,$args) {   
+                $id_user=$args["id_user"];
+                $sql = "SELECT h.id_chat,h.id_user_1,h.id_user_2,u.nama_user as nama_user_1,u2.nama_user as nama_user_2 from header_chat h,user u, user u2 where h.id_user_1=u.id_user and h.id_user_2=u2.id_user and h.id_user_1=:id_user OR h.id_user_2=:id_user";
+                $stmt = $this->db->prepare($sql);
+                $data = [
+                    ":id_user" => $id_user
+                ];
+                $stmt->execute($data);
+                $result = $stmt->fetchAll();
+                return $response->withJson($result, 200);
+            });
+
+            $app->get('/getLastMessage/{id_chat}', function ($request, $response,$args) {   
+                $id_chat=$args["id_chat"];
+                $sql = "SELECT d.id_chat,d.id_user_pengirim,d.id_user_penerima,d.isi_chat,d.tanggal_chat,d.waktu_chat,u1.nama_user as nama_user_pengirim,u2.nama_user as nama_user_penerima FROM detail_chat d,user u1,user u2 where d.id_chat=:id_chat and d.id_user_pengirim=u1.id_user and d.id_user_penerima=u2.id_user order by d.tanggal_chat desc, d.waktu_chat desc LIMIT 1";
+                $stmt = $this->db->prepare($sql);
+                $data = [
+                    ":id_chat" => $id_chat
+                ];
+                $stmt->execute($data);
+                $result = $stmt->fetchAll();
+                return $response->withJson($result, 200);
+            });
+
+            $app->post('/insertHeaderChat', function ($request, $response) {
+                $body = $request->getParsedBody();
+                $sql = "INSERT INTO header_chat (id_user_1,id_user_2)VALUE(:id_user_1,:id_user_2)";
+                $stmt = $this->db->prepare($sql);
+                $data = [
+                    ":id_user_1" => $body["id_user_1"],
+                    ":id_user_2"=>$body["id_user_2"]
+                ];
+                if($stmt->execute($data)){
+                    return $response->withJson(200);
+                }else{
+                    return $response->withJson(400);
+                }
+            });
+
+            $app->post('/insertDetailChat', function ($request, $response) {
                 $new_chat = $request->getParsedBody();
                 $date = date("Y/m/d");
                 $time = date("H:i");

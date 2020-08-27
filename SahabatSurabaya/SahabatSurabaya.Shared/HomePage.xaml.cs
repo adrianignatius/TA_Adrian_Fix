@@ -56,7 +56,8 @@ namespace SahabatSurabaya
         public void goToDetailPage(object sender, RoutedEventArgs e)
         {
             int index = lvLaporanKriminalitas.SelectedIndex;
-            this.Frame.Navigate(typeof(ReportDetailPage),listLaporan[index]);
+            ReportDetailPageParams param = new ReportDetailPageParams(userLogin, listLaporan[index]);
+;           this.Frame.Navigate(typeof(ReportDetailPage),param);
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)

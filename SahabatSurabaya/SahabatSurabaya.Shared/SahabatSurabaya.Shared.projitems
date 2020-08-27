@@ -28,6 +28,8 @@
       <DependentUpon>CrimeReportDetailPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)CrimeReportParams.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DisplayHeaderChat.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)HeaderChat.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)HomeNavigationPage.xaml.cs">
       <DependentUpon>HomeNavigationPage.xaml</DependentUpon>
     </Compile>
@@ -68,6 +70,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)ReportDetailPage.xaml.cs">
       <DependentUpon>ReportDetailPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)ReportDetailPageParams.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SettingKategori.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SubscriptionPage.xaml.cs">
       <DependentUpon>SubscriptionPage.xaml</DependentUpon>
@@ -139,6 +142,7 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="$(MSBuildThisFileDirectory)Assets\app-icon.png" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\appicon.png" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\avatar-profile.png" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\bg.jpg" />

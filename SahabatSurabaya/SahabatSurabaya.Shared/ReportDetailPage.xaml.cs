@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using SahabatSurabaya.Shared;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -27,7 +28,8 @@ namespace SahabatSurabaya
     /// </summary>
     public sealed partial class ReportDetailPage : Page
     {
-        LaporanLostFound selected;
+        ReportDetailPageParams param;
+        User userSelected;
         ObservableCollection<KomentarLaporanLostFound> listKomentar;
         public ReportDetailPage()
         {          
@@ -51,7 +53,12 @@ namespace SahabatSurabaya
         protected async override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
-            selected = e.Parameter as LaporanLostFound;
+            param = e.Parameter as ReportDetailPageParams;
+            LaporanLostFound selected = param.laporanSelected;
+            if (param.userLogin.id_user == selected.id_user_pelapor)
+            {
+                btnChatPage.IsEnabled = false;
+            }
             using (var client = new HttpClient())
             {
                 client.BaseAddress = new Uri("http://localhost:8080/");
@@ -60,7 +67,7 @@ namespace SahabatSurabaya
                 if (response.IsSuccessStatusCode)
                 {
                     var responseData = response.Content.ReadAsStringAsync().Result;
-                    User userSelected = JsonConvert.DeserializeObject<User>(responseData);
+                    userSelected = JsonConvert.DeserializeObject<User>(responseData);
                     txtNamaPengguna.Text = userSelected.email_user;
                 }
                 else
@@ -76,7 +83,7 @@ namespace SahabatSurabaya
         }
         private async void mapLoadedCompleted(object sender, WebViewNavigationCompletedEventArgs e)
         {
-            string[] args = {selected.lat_laporan,selected.lng_laporan };
+            string[] args = {param.laporanSelected.lat_laporan, param.laporanSelected.lng_laporan };
             string lat = await webVieMapLokasi.InvokeScriptAsync("displayMap", args);
         }
 
@@ -86,7 +93,7 @@ namespace SahabatSurabaya
             {
                 client.BaseAddress = new Uri("http://localhost:8080/");
                 client.DefaultRequestHeaders.Accept.Clear();
-                HttpResponseMessage response = await client.GetAsync("/getKomentarLaporanLostFound/"+selected.id_laporan);
+                HttpResponseMessage response = await client.GetAsync("/getKomentarLaporanLostFound/"+ param.laporanSelected.id_laporan);
                 if (response.IsSuccessStatusCode)
                 {
                     var jsonString = await response.Content.ReadAsStringAsync();
@@ -99,7 +106,8 @@ namespace SahabatSurabaya
 
         private void goToChatPage(object sender, RoutedEventArgs e)
         {
-            this.Frame.Navigate(typeof(PersonalChatPage));
+            ChatPageParams chatParam = new ChatPageParams(param.userLogin.id_user, param.laporanSelected.id_user_pelapor,userSelected.nama_user);
+            this.Frame.Navigate(typeof(PersonalChatPage),chatParam);
         }
 
         private async void sendComment(object sender,RoutedEventArgs e)
@@ -113,7 +121,7 @@ namespace SahabatSurabaya
                 {
                     client.BaseAddress = new Uri("http://localhost:8080/");
                     MultipartFormDataContent form = new MultipartFormDataContent();
-                    form.Add(new StringContent(selected.id_laporan), "id_laporan");
+                    form.Add(new StringContent(param.laporanSelected.id_laporan), "id_laporan");
                     form.Add(new StringContent(isi_komentar), "isi_komentar");
                     form.Add(new StringContent(tanggal_komentar), "tanggal_komentar");
                     form.Add(new StringContent(waktu_komentar), "waktu_komentar");

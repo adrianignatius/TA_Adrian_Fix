@@ -25,6 +25,7 @@ namespace SahabatSurabaya
     {
         ObservableCollection<Chat> listChat;
         HubConnection connection;
+        ChatPageParams param;
         public PersonalChatPage()
         {
             this.InitializeComponent();
@@ -40,11 +41,17 @@ namespace SahabatSurabaya
                  .WithAutomaticReconnect()
                  .Build();
 
-            connection.On<string, string>("ReceiveMessage", async (user, message) =>
+            connection.On("SendMessage", async () =>
             {
-                var m = new MessageDialog(user + "-" + message);
+                var m = new MessageDialog("Test");
                 await m.ShowAsync();
             });
+
+            //connection.On<string, string>("SendMessage", async (user, message) =>
+            //{
+            //    var m = new MessageDialog(user + "-" + message);
+            //    await m.ShowAsync();
+            //});
 
             await connection.StartAsync();
         }
@@ -58,29 +65,30 @@ namespace SahabatSurabaya
                 {
                     client.BaseAddress = new Uri("http://localhost:8080/");
                     MultipartFormDataContent form = new MultipartFormDataContent();
-                    form.Add(new StringContent("1"), "id_user_pengirim");
-                    form.Add(new StringContent("2"), "id_user_penerima");
+                    form.Add(new StringContent(param.id_user_pengirim.ToString()), "id_user_pengirim");
+                    form.Add(new StringContent(param.id_user_penerima.ToString()), "id_user_penerima");
                     form.Add(new StringContent(chatMessage), "isi_chat");
                     form.Add(new StringContent(DateTime.Now.ToString("HH:mm")), "waktu_chat");
-                    HttpResponseMessage response = await client.PostAsync("insertChat", form);
+                    HttpResponseMessage response = await client.PostAsync("insertDetailChat", form);
                     if (response.IsSuccessStatusCode)
                     {
-                        var message = new MessageDialog(response.Content.ReadAsStringAsync().Result);
-                        await message.ShowAsync();
                         txtChatMessage.Text = "";
+                        await connection.SendAsync("SendMessage");
                     }
                 }
             }     
         }
 
-        private void sendMessage()
-        {
-
-        }
-
         private void Back_Click(object sender, RoutedEventArgs e)
         {
             On_BackRequested();     
+        }
+
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+            param = e.Parameter as ChatPageParams;
+            txtNamaUserPenerima.Text = param.nama_user_penerima;
         }
 
         private bool On_BackRequested()

@@ -88,7 +88,7 @@ namespace SahabatSurabaya
                     break;
 
                 case "chatPage":
-                    ContentFrame.Navigate(typeof(PersonalChatPage));
+                    ContentFrame.Navigate(typeof(ChatPage),userLogin);
                     break;
             }
         }

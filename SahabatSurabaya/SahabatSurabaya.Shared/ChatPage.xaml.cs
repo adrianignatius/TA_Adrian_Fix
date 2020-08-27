@@ -1,8 +1,12 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
+using Newtonsoft.Json;
+using SahabatSurabaya.Shared;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
@@ -24,31 +28,43 @@ namespace SahabatSurabaya
     /// </summary>
     public sealed partial class ChatPage : Page
     {
-        HubConnection connection;
+        User userLogin;
+        ObservableCollection<DisplayHeaderChat> listDisplayHeaderChat;
         public ChatPage()
         {
             this.InitializeComponent();
         }
-
-        public async void pageLoaded(object sender, RoutedEventArgs e)
-        {
-            connection = new HubConnectionBuilder()
-                 .WithUrl("http://localhost:61877/ChatHub")
-                 .WithAutomaticReconnect()
-                 .Build();
-
-            connection.On<string, string>("ReceiveMessage", async (user, message) =>
-            {
-                var m = new MessageDialog(user + "-" + message);
-                await m.ShowAsync();
-            });
-
-            await connection.StartAsync();
-        }
         
-        public async void coba(object sender, RoutedEventArgs e)
+        private async void loadHeaderChat()
         {
-            await connection.InvokeAsync("SendMessage", "asd", "abc");
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri("http://localhost:8080/");
+                client.DefaultRequestHeaders.Accept.Clear();
+                HttpResponseMessage response = await client.GetAsync("getHeaderChat/"+userLogin.id_user);
+                if (response.IsSuccessStatusCode)
+                {
+                    var responseData = response.Content.ReadAsStringAsync().Result;
+                    ObservableCollection<HeaderChat>tempHeaderChat = JsonConvert.DeserializeObject<ObservableCollection<HeaderChat>>(responseData);
+                    for (int i = 0; i < tempHeaderChat.Count; i++)
+                    {
+                        HttpResponseMessage response2 = await client.GetAsync("getLastMessage/" + tempHeaderChat[i].id_chat);
+                        if (response2.IsSuccessStatusCode)
+                        {
+                            var jsonString = await response2.Content.ReadAsStringAsync();
+                            //listDisplayHeaderChat.Add(new DisplayHeaderChat());
+                        }
+                    }
+                    
+                }
+            }
+        }
+
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+            userLogin = e.Parameter as User;
+            loadHeaderChat();
         }
 
     }

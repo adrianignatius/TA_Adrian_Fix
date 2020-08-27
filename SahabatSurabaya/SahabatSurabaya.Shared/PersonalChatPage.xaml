@@ -17,7 +17,7 @@
                     <Button Background="GreenYellow" Margin="15,0,0,0" Name="btnBack" Click="Back_Click" HorizontalAlignment="Left">
                         <SymbolIcon Symbol="Back"></SymbolIcon>
                     </Button>
-                    <TextBlock Margin="12,24,0,0" FontSize="20" Text="Nama User"></TextBlock>
+                    <TextBlock Name="txtNamaUserPenerima" Margin="12,24,0,0" FontSize="20" Text="Nama User"></TextBlock>
                 </StackPanel>
             </Grid>
             <ListView Margin="0,10,0,0" SelectionMode="None" Name="lvChat">
