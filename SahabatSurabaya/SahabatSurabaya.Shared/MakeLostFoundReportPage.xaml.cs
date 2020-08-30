@@ -8,6 +8,7 @@ using System.Net.Http;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Navigation;
 using Xamarin.Essentials;
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -19,6 +20,7 @@ namespace SahabatSurabaya
     /// 
     public sealed partial class MakeLostFoundReportPage : Page
     {
+        User userLogin;
         int imageCount = 0;
         List<UploadedImage> listImage;
         List<SettingKategori> listSettingKategoriLostFound;
@@ -42,6 +44,12 @@ namespace SahabatSurabaya
             }
             string[] args = { location.Latitude.ToString(), location.Longitude.ToString() };
             string lat = await webViewMap.InvokeScriptAsync("myFunction", args);
+        }
+
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+            userLogin = e.Parameter as User;
         }
 
         private async void LostFoundPageLoaded(object sender, RoutedEventArgs e)
@@ -80,7 +88,7 @@ namespace SahabatSurabaya
             string tglLaporan = DateTime.Now.ToString("dd/MM/yyyy");
             string waktuLaporan = DateTime.Now.ToString("HH:mm:ss");
             string namaFileGambar = listSettingKategoriLostFound[cbJenisBarang.SelectedIndex].file_gambar_kategori;
-            LostFoundReportParams param = new LostFoundReportParams(judulLaporan, jenisLaporan, lat, lng, descLaporan, tglLaporan, displayJenisBarang, valueJenisBarang, listImage, alamatLaporan, waktuLaporan, namaFileGambar);
+            LostFoundReportParams param = new LostFoundReportParams(userLogin,judulLaporan, jenisLaporan, lat, lng, descLaporan, tglLaporan, displayJenisBarang, valueJenisBarang, listImage, alamatLaporan, waktuLaporan, namaFileGambar);
             this.Frame.Navigate(typeof(LostFoundReportDetailPage), param);
         }
         public void updateTxtImageCount()

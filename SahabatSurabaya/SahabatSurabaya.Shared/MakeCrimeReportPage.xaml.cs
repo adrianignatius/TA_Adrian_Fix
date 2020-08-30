@@ -7,6 +7,7 @@ using System.Net.Http;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Navigation;
 using Xamarin.Essentials;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
@@ -21,11 +22,18 @@ namespace SahabatSurabaya
         int imageCount = 0;
         List<UploadedImage> listImage;
         List<SettingKategori> listSetingKategoriKriminalitas;
+        User userLogin;
         public MakeCrimeReportPage()
         {
             this.InitializeComponent();
             listImage = new List<UploadedImage>();
             listSetingKategoriKriminalitas = new List<SettingKategori>();
+        }
+
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+            userLogin = e.Parameter as User;
         }
         public async void CrimeReportPageLoaded(object sender,RoutedEventArgs e)
         {
@@ -90,7 +98,7 @@ namespace SahabatSurabaya
             string tglLaporan = DateTime.Now.ToString("dd/MM/yyyy");
             string waktuLaporan = DateTime.Now.ToString("HH:mm:ss");
             string namaFileGambar = listSetingKategoriKriminalitas[cbJenisKejadian.SelectedIndex].file_gambar_kategori;
-            CrimeReportParams param = new CrimeReportParams(judulLaporan, lat, lng, descKejadian, tglLaporan, waktuLaporan, alamatLaporan, displayJeniskejadian, valueJenisKejadian, listImage,namaFileGambar);
+            CrimeReportParams param = new CrimeReportParams(userLogin,judulLaporan, lat, lng, descKejadian, tglLaporan, waktuLaporan, alamatLaporan, displayJeniskejadian, valueJenisKejadian, listImage,namaFileGambar);
             this.Frame.Navigate(typeof(CrimeReportDetailPage), param);
         }
 

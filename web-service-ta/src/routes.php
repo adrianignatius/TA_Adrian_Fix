@@ -339,7 +339,7 @@ return function (App $app) {
             $stmt->execute();
             $result = $stmt->fetchColumn();           
             $id_laporan=$id_laporan.str_pad($result,5,"0",STR_PAD_LEFT);
-            $sql = "INSERT INTO laporan_kriminalitas VALUES(:id_laporan,:judul_laporan,:jenis_kejadian,:deskripsi_kejadian,:tanggal_laporan,:waktu_laporan,:alamat_laporan,:lat_laporan,:lng_laporan,:email_pelapor,:status_laporan) ";
+            $sql = "INSERT INTO laporan_kriminalitas VALUES(:id_laporan,:judul_laporan,:jenis_kejadian,:deskripsi_kejadian,:tanggal_laporan,:waktu_laporan,:alamat_laporan,:lat_laporan,:lng_laporan,:id_user_pelapor,:status_laporan) ";
             $stmt = $this->db->prepare($sql);
             $data = [
                 ":id_laporan" => $id_laporan,
@@ -351,7 +351,7 @@ return function (App $app) {
                 ":alamat_laporan"=>$new_laporan["alamat_laporan"],
                 ":lat_laporan"=>$new_laporan["lat_laporan"],
                 ":lng_laporan"=>$new_laporan["lng_laporan"],
-                ":email_pelapor"=>$new_laporan["email_pelapor"],
+                ":id_user_pelapor"=>$new_laporan["id_user_pelapor"],
                 ":status_laporan"=>0
             ];
             $stmt->execute($data);

@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Renci.SshNet.Messages;
 using SahabatSurabaya.Shared;
 using System;
 using System.Collections.Generic;
@@ -29,11 +30,13 @@ namespace SahabatSurabaya
     public sealed partial class HomePage : Page
     {
         User userLogin;
-        ObservableCollection<LaporanLostFound> listLaporan;
+        ObservableCollection<LaporanLostFound> listLaporanLostFound;
+        ObservableCollection<LaporanKriminalitas> listLaporanKriminalitas;
         public HomePage()
         {
             this.InitializeComponent();
-            listLaporan = new ObservableCollection<LaporanLostFound>();
+            listLaporanLostFound = new ObservableCollection<LaporanLostFound>();
+            listLaporanKriminalitas = new ObservableCollection<LaporanKriminalitas>();
         }
         public async void HomePageLoaded(object sender, RoutedEventArgs e)
         {
@@ -41,13 +44,26 @@ namespace SahabatSurabaya
             {
                 client.BaseAddress = new Uri("http://localhost:8080/");
                 client.DefaultRequestHeaders.Accept.Clear();
-                HttpResponseMessage response = await client.GetAsync("/getHeadlineLaporanLostFound");
+                HttpResponseMessage response = await client.GetAsync("/getHeadlineLaporanKriminalitas");
                 if (response.IsSuccessStatusCode)
                 {
                     var jsonString = await response.Content.ReadAsStringAsync();
                     var responseData = response.Content.ReadAsStringAsync().Result;
-                    listLaporan = JsonConvert.DeserializeObject<ObservableCollection<LaporanLostFound>>(responseData);
-                    lvLaporanKriminalitas.ItemsSource = listLaporan;
+                    listLaporanKriminalitas = JsonConvert.DeserializeObject<ObservableCollection<LaporanKriminalitas>>(responseData);
+                    lvLaporanKriminalitas.ItemsSource = listLaporanKriminalitas;
+                }
+                else
+                {
+                    var message = new MessageDialog("asd");
+                    await message.ShowAsync();
+                }
+                response = await client.GetAsync("/getHeadlineLaporanLostFound");
+                if (response.IsSuccessStatusCode)
+                {
+                    var jsonString = await response.Content.ReadAsStringAsync();
+                    var responseData = response.Content.ReadAsStringAsync().Result;
+                    listLaporanLostFound = JsonConvert.DeserializeObject<ObservableCollection<LaporanLostFound>>(responseData);
+                    lvLaporanLostFound.ItemsSource = listLaporanLostFound;
                 }
             }
 
@@ -56,7 +72,7 @@ namespace SahabatSurabaya
         public void goToDetailPage(object sender, RoutedEventArgs e)
         {
             int index = lvLaporanKriminalitas.SelectedIndex;
-            ReportDetailPageParams param = new ReportDetailPageParams(userLogin, listLaporan[index]);
+            ReportDetailPageParams param = new ReportDetailPageParams(userLogin, listLaporanLostFound[index]);
 ;           this.Frame.Navigate(typeof(ReportDetailPage),param);
         }
 
