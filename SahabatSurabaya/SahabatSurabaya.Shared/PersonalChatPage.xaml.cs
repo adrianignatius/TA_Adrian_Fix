@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -30,7 +32,6 @@ namespace SahabatSurabaya
         {
             this.InitializeComponent();
             listChat = new ObservableCollection<Chat>();
-            listChat.Add(new Chat(1,1,2,"asd","23","23"));
             lvChat.ItemsSource = listChat;
         }
 
@@ -41,21 +42,35 @@ namespace SahabatSurabaya
                  .WithAutomaticReconnect()
                  .Build();
 
-            connection.On("SendMessage", async () =>
+            connection.On<int,int,int,string,string>("SendMessage", async (id_chat,id_user_pengirim,id_user_penerima,isi_chat,waktu_chat) =>
             {
-                var m = new MessageDialog("Test");
-                await m.ShowAsync();
+                listChat.Add(new Chat(id_chat,id_user_pengirim,id_user_penerima,isi_chat,waktu_chat));
+                svChat.ChangeView(0.0f, double.MaxValue, 1.0f);
             });
 
-            //connection.On<string, string>("SendMessage", async (user, message) =>
-            //{
-            //    var m = new MessageDialog(user + "-" + message);
-            //    await m.ShowAsync();
-            //});
-
             await connection.StartAsync();
+            loadChat();
+            svChat.ChangeView(0.0f, double.MaxValue, 1.0f);
         }
         
+        private async void loadChat()
+        {
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri("http://localhost:8080/");
+                client.DefaultRequestHeaders.Accept.Clear();
+                HttpResponseMessage response = await client.GetAsync("/getAllChat/"+param.id_chat);
+                if (response.IsSuccessStatusCode)
+                {
+                    var responseData = response.Content.ReadAsStringAsync().Result;
+                    listChat = JsonConvert.DeserializeObject<ObservableCollection<Chat>>(responseData);
+                    lvChat.ItemsSource = listChat;
+                }
+                svChat.ChangeView(0.0f, double.MaxValue, 1.0f);
+                svChat.ChangeView(0.0f, double.MaxValue, 1.0f);
+
+            }
+        }
         private async void sendChat(object sender, RoutedEventArgs e)
         {
             string chatMessage = txtChatMessage.Text;
@@ -65,6 +80,7 @@ namespace SahabatSurabaya
                 {
                     client.BaseAddress = new Uri("http://localhost:8080/");
                     MultipartFormDataContent form = new MultipartFormDataContent();
+                    form.Add(new StringContent(param.id_chat.ToString()), "id_chat");
                     form.Add(new StringContent(param.id_user_pengirim.ToString()), "id_user_pengirim");
                     form.Add(new StringContent(param.id_user_penerima.ToString()), "id_user_penerima");
                     form.Add(new StringContent(chatMessage), "isi_chat");
@@ -73,7 +89,8 @@ namespace SahabatSurabaya
                     if (response.IsSuccessStatusCode)
                     {
                         txtChatMessage.Text = "";
-                        await connection.SendAsync("SendMessage");
+                        Chat chatSend = new Chat(param.id_chat, param.id_user_pengirim, param.id_user_penerima, chatMessage, DateTime.Now.ToString("HH:mm"));
+                        await connection.SendAsync("SendMessage",chatSend.id_chat,chatSend.id_user_pengirim,chatSend.id_user_penerima,chatSend.isi_chat,chatSend.waktu_chat);
                     }
                 }
             }     

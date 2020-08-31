@@ -229,6 +229,18 @@ return function (App $app) {
                 return $response->withJson($result, 200);
             });
 
+            $app->get('/getAllChat/{id_chat}', function ($request, $response,$args) {   
+                $id_chat=$args["id_chat"];
+                $sql = "SELECT * from detail_chat where id_chat=:id_chat";
+                $stmt = $this->db->prepare($sql);
+                $data = [
+                    ":id_chat" => $id_chat
+                ];
+                $stmt->execute($data);
+                $result = $stmt->fetchAll();
+                return $response->withJson($result);
+            });
+
             $app->get('/getLastMessage/{id_chat}', function ($request, $response,$args) {   
                 $id_chat=$args["id_chat"];
                 $sql = "SELECT d.id_chat,d.id_user_pengirim,d.id_user_penerima,d.isi_chat,d.waktu_chat,u1.nama_user as nama_user_pengirim,u2.nama_user as nama_user_penerima FROM detail_chat d,user u1,user u2 where d.id_chat=:id_chat and d.id_user_pengirim=u1.id_user and d.id_user_penerima=u2.id_user order by d.waktu_chat desc LIMIT 1";
@@ -239,6 +251,35 @@ return function (App $app) {
                 $stmt->execute($data);
                 $result = $stmt->fetch();
                 return $response->withJson($result);
+            });
+
+            $app->get('/checkHeaderChat/{id_user_1}/{id_user_2}', function ($request, $response,$args) {   
+                $id_user_1=$args["id_user_1"];
+                $id_user_2=$args["id_user_2"];
+                $sql = "SELECT id_chat from header_chat where id_user_1=:id_user_1 and id_user_2=:id_user_2 or id_user_1=:id_user_2 and id_user_2=:id_user_1";
+                $stmt = $this->db->prepare($sql);
+                $data = [
+                    ":id_user_1" => $id_user_1,
+                    ":id_user_2" => $id_user_2
+                ];
+                $stmt->execute($data);
+                $result = $stmt->fetchColumn();
+                if($result==false){
+                    $sql = "INSERT INTO header_chat (id_user_1,id_user_2)VALUE(:id_user_1,:id_user_2)";
+                    $stmt = $this->db->prepare($sql);
+                    $data = [
+                        ":id_user_1" => $id_user_1,
+                        ":id_user_2"=>$id_user_2
+                    ];
+                    if($stmt->execute($data)){
+                        return $response->withJson($this->db->lastInsertId());
+                    }else{
+                        return $response->withJson(400);
+                    }
+                }else{
+                    return $response->withJson($result);
+                }
+                
             });
 
             $app->post('/insertHeaderChat', function ($request, $response) {
@@ -255,6 +296,7 @@ return function (App $app) {
                     return $response->withJson(400);
                 }
             });
+            
 
             $app->post('/insertDetailChat', function ($request, $response) {
                 $new_chat = $request->getParsedBody();

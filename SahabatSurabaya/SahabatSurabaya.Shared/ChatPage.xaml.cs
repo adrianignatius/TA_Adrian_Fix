@@ -54,16 +54,19 @@ namespace SahabatSurabaya
                         HttpResponseMessage response2 = await client.GetAsync("getLastMessage/" + tempHeaderChat[i].id_chat);
                         if (response2.IsSuccessStatusCode)
                         {
+                            int id_target_chat = 0;
                             string namaDisplay = "";
                             if (userLogin.id_user == tempHeaderChat[i].id_user_1)
                             {
                                 namaDisplay = tempHeaderChat[i].nama_user_2;
+                                id_target_chat = tempHeaderChat[i].id_user_2;
                             }
                             else
                             {
                                 namaDisplay = tempHeaderChat[i].nama_user_1;
+                                id_target_chat = tempHeaderChat[i].id_user_1;
                             }
-                            DisplayHeaderChat displayHeaderChat=new DisplayHeaderChat(tempHeaderChat[i].id_chat,namaDisplay,null);
+                            DisplayHeaderChat displayHeaderChat=new DisplayHeaderChat(tempHeaderChat[i].id_chat,id_target_chat,namaDisplay,null);
                             var jsonString = response2.Content.ReadAsStringAsync().Result;
                             if (jsonString!="false")
                             {
@@ -76,10 +79,15 @@ namespace SahabatSurabaya
                     }
                     listDisplayHeaderChat = new ObservableCollection<DisplayHeaderChat>(listDisplayHeaderChat.OrderBy(k => k.waktu_chat));
                     lvDaftarChat.ItemsSource = listDisplayHeaderChat;
-                    var message = new MessageDialog(listDisplayHeaderChat.Count.ToString());
-                    await message.ShowAsync();
                 }
             }
+        }
+
+        private void goToChatPage(object sender,RoutedEventArgs e)
+        {
+            DisplayHeaderChat selected = listDisplayHeaderChat[lvDaftarChat.SelectedIndex];
+            ChatPageParams param = new ChatPageParams(selected.id_chat, userLogin.id_user, selected.id_target_chat, selected.nama_display);
+            this.Frame.Navigate(typeof(PersonalChatPage), param);
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)

@@ -11,40 +11,50 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Grid>
-        <StackPanel Orientation="Vertical">
-            <Grid VerticalAlignment="Top" Background="GreenYellow" Height="100">
-                <StackPanel Orientation="Horizontal">
-                    <Button Background="GreenYellow" Margin="15,0,0,0" Name="btnBack" Click="Back_Click" HorizontalAlignment="Left">
-                        <SymbolIcon Symbol="Back"></SymbolIcon>
-                    </Button>
-                    <TextBlock Name="txtNamaUserPenerima" Margin="12,24,0,0" FontSize="20" Text="Nama User"></TextBlock>
-                </StackPanel>
-            </Grid>
-            <ListView Margin="0,10,0,0" SelectionMode="None" Name="lvChat">
-                <ListView.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <ItemsStackPanel VerticalAlignment="Bottom"
+        <Grid.RowDefinitions>
+            <RowDefinition Height="0.1*"></RowDefinition>
+            <RowDefinition Height="0.8*"></RowDefinition>
+            <RowDefinition Height="0.1*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0" Background="GreenYellow">
+            <StackPanel Orientation="Horizontal">
+                <Button Background="GreenYellow" Margin="15,0,0,0" Name="btnBack" Click="Back_Click" HorizontalAlignment="Left">
+                    <SymbolIcon Symbol="Back"></SymbolIcon>
+                </Button>
+                <TextBlock Name="txtNamaUserPenerima" Margin="12,24,0,0" FontSize="20" Text="Nama User"></TextBlock>
+            </StackPanel>
+        </Grid>
+        <ScrollViewer Name="svChat" Grid.Row="1">
+            <StackPanel>
+                <ListView Margin="0,10,0,10" SelectionMode="None" Name="lvChat" ItemsSource="{Binding listChat}">
+                    <ListView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <ItemsStackPanel VerticalAlignment="Bottom"
                             ItemsUpdatingScrollMode="KeepLastItemInView"/>
-                    </ItemsPanelTemplate>
-                </ListView.ItemsPanel>
-                <ListView.ItemTemplate>
-                    <DataTemplate x:Name="chatTemplate">
-                        <Border CornerRadius="10" Padding="10" Background="LightGray">
-                            <TextBlock TextWrapping="Wrap" Text="{Binding isi_chat}" x:Name="txtChat" FontSize="14"></TextBlock>
-                        </Border>
-                    </DataTemplate>
-                    
-                </ListView.ItemTemplate>
-            </ListView>
-        </StackPanel>
-        <Grid Height="72" VerticalAlignment="Bottom" Background="GreenYellow">
+                        </ItemsPanelTemplate>
+                    </ListView.ItemsPanel>
+                    <ListView.ItemTemplate>
+                        <DataTemplate x:Name="chatTemplate">
+                            <Border Margin="0,10,0,0" CornerRadius="10" Padding="10" Background="LightGray">
+                                <TextBlock TextWrapping="Wrap" Text="{Binding isi_chat}" x:Name="txtChat" FontSize="14"></TextBlock>
+                            </Border>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </StackPanel>
+        </ScrollViewer>
+        <Grid Grid.Row="2"  Background="GreenYellow">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="0.8*"></ColumnDefinition>
                     <ColumnDefinition Width="0.2*"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <TextBox Name="txtChatMessage" PlaceholderText="Enter a message.." Margin="10,0,0,0" Height="52" Grid.Column="0"></TextBox>
-                <Button Click="sendChat" HorizontalAlignment="Stretch" Margin="10,0,10,0" Height="52" Grid.Column="1" Content="Kirim"></Button>
+                <Grid Padding="10" Grid.Column="0">
+                    <TextBox FontSize="14" Name="txtChatMessage" PlaceholderText="Enter a message.." Grid.Column="0" ></TextBox>
+                </Grid>
+                <Grid Padding="10" Grid.Column="1">
+                    <Button Click="sendChat" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Content="Kirim"></Button>
+                </Grid>
             </Grid>
         </Grid>
     </Grid>

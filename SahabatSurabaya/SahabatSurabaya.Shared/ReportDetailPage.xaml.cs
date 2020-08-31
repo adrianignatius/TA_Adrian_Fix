@@ -104,10 +104,20 @@ namespace SahabatSurabaya
             }
         }
 
-        private void goToChatPage(object sender, RoutedEventArgs e)
+        private async void goToChatPage(object sender, RoutedEventArgs e)
         {
-            ChatPageParams chatParam = new ChatPageParams(param.userLogin.id_user, param.laporanSelected.id_user_pelapor,userSelected.nama_user);
-            this.Frame.Navigate(typeof(PersonalChatPage),chatParam);
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri("http://localhost:8080/");
+                client.DefaultRequestHeaders.Accept.Clear();
+                HttpResponseMessage response = await client.GetAsync("/checkHeaderChat/" + param.userLogin.id_user+"/"+param.laporanSelected.id_user_pelapor);
+                if (response.IsSuccessStatusCode)
+                {
+                    string responseData = response.Content.ReadAsStringAsync().Result.ToString().Trim(new char[] { '"' });
+                    ChatPageParams chatParam = new ChatPageParams(Convert.ToInt32(responseData), param.userLogin.id_user, param.laporanSelected.id_user_pelapor, userSelected.nama_user);
+                    this.Frame.Navigate(typeof(PersonalChatPage), chatParam);
+                }
+            }
         }
 
         private async void sendComment(object sender,RoutedEventArgs e)

@@ -71,7 +71,7 @@ namespace SahabatSurabaya
 
         public void goToDetailPage(object sender, RoutedEventArgs e)
         {
-            int index = lvLaporanKriminalitas.SelectedIndex;
+            int index = lvLaporanLostFound.SelectedIndex;
             ReportDetailPageParams param = new ReportDetailPageParams(userLogin, listLaporanLostFound[index]);
 ;           this.Frame.Navigate(typeof(ReportDetailPage),param);
         }
