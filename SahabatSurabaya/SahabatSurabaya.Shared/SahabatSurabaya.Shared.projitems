@@ -20,6 +20,7 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Chat.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ChatAlignmentConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ChatPage.xaml.cs">
       <DependentUpon>ChatPage.xaml</DependentUpon>
     </Compile>

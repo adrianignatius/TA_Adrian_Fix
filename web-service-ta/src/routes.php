@@ -4,6 +4,7 @@ use Slim\App;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use Slim\Http\UploadedFile;
+use Sk\Geohash\Geohash;
 
 date_default_timezone_set("Asia/Jakarta");
 
@@ -17,6 +18,11 @@ return function (App $app) {
         $stmt->execute();
         $result = $stmt->fetchAll();
         return $response->withJson($result, 200);
+    });
+
+    $app->get('/coba', function ($request, $response) {
+        $g = new Geohash();
+        return $response->withJson($g->encode(17.583942, 112.585932, 8));
     });
 
     $app->get('/getHeadlineLaporanLostFound', function ($request, $response) {
@@ -219,7 +225,7 @@ return function (App $app) {
 
             $app->get('/getHeaderChat/{id_user}', function ($request, $response,$args) {   
                 $id_user=$args["id_user"];
-                $sql = "SELECT h.id_chat,h.id_user_1,h.id_user_2,u.nama_user as nama_user_1,u2.nama_user as nama_user_2 from header_chat h,user u, user u2 where h.id_user_1=u.id_user and h.id_user_2=u2.id_user and h.id_user_1=:id_user OR h.id_user_2=:id_user";
+                $sql = "SELECT h.id_chat,h.id_user_1,h.id_user_2,u.nama_user as nama_user_1,u2.nama_user as nama_user_2 from header_chat h,user u, user u2 where h.id_user_1=u.id_user and h.id_user_2=u2.id_user and (h.id_user_1=:id_user OR h.id_user_2=:id_user)";
                 $stmt = $this->db->prepare($sql);
                 $data = [
                     ":id_user" => $id_user
@@ -325,12 +331,13 @@ return function (App $app) {
             $year=$datetime->format('Y');
             $formatDate=$year.$month.$day;
             $id_laporan="LF".$day.$month.$year;
+            $geohash=new Geohash();
             $sql="SELECT COUNT(*)+1 from laporan_lostfound_barang where id_laporan like'%$id_laporan%'";
             $stmt = $this->db->prepare($sql);
             $stmt->execute();
             $result = $stmt->fetchColumn();           
             $id_laporan=$id_laporan.str_pad($result,5,"0",STR_PAD_LEFT);
-            $sql = "INSERT INTO laporan_lostfound_barang VALUES(:id_laporan,:judul_laporan,:jenis_laporan,:tanggal_laporan,:waktu_laporan,:alamat_laporan,:lat_laporan,:lng_laporan,:deskripsi_barang,:email_pelapor,:status_laporan) ";
+            $sql = "INSERT INTO laporan_lostfound_barang VALUES(:id_laporan,:judul_laporan,:jenis_laporan,:tanggal_laporan,:waktu_laporan,:alamat_laporan,:lat_laporan,:lng_laporan,:deskripsi_barang,:email_pelapor,:status_laporan,:geohash_alamat_laporan) ";
             $stmt = $this->db->prepare($sql);
             $data = [
                 ":id_laporan" => $id_laporan,
@@ -343,7 +350,8 @@ return function (App $app) {
                 ":lng_laporan"=>$new_laporan["lng_laporan"],
                 ":deskripsi_barang"=>$new_laporan["deskripsi_barang"],
                 ":email_pelapor"=>$new_laporan["email_pelapor"],
-                ":status_laporan"=>0
+                ":status_laporan"=>0,
+                ":geohash_alamat_laporan"=> $geohash->encode(floatval($new_laporan["lat_laporan"]), floatval($new_laporan["lng_laporan"]), 8)
             ];
             $stmt->execute($data);
             $increment=1;
@@ -376,12 +384,13 @@ return function (App $app) {
             $year=$datetime->format('Y');
             $formatDate=$year.$month.$day;
             $id_laporan="CR".$day.$month.$year;
+            $geohash=new Geohash();
             $sql="SELECT COUNT(*)+1 from laporan_kriminalitas where id_laporan like'%$id_laporan%'";
             $stmt = $this->db->prepare($sql);
             $stmt->execute();
             $result = $stmt->fetchColumn();           
             $id_laporan=$id_laporan.str_pad($result,5,"0",STR_PAD_LEFT);
-            $sql = "INSERT INTO laporan_kriminalitas VALUES(:id_laporan,:judul_laporan,:jenis_kejadian,:deskripsi_kejadian,:tanggal_laporan,:waktu_laporan,:alamat_laporan,:lat_laporan,:lng_laporan,:id_user_pelapor,:status_laporan) ";
+            $sql = "INSERT INTO laporan_kriminalitas VALUES(:id_laporan,:judul_laporan,:jenis_kejadian,:deskripsi_kejadian,:tanggal_laporan,:waktu_laporan,:alamat_laporan,:lat_laporan,:lng_laporan,:id_user_pelapor,:status_laporan,:geohash_alamat_laporan) ";
             $stmt = $this->db->prepare($sql);
             $data = [
                 ":id_laporan" => $id_laporan,
@@ -394,11 +403,10 @@ return function (App $app) {
                 ":lat_laporan"=>$new_laporan["lat_laporan"],
                 ":lng_laporan"=>$new_laporan["lng_laporan"],
                 ":id_user_pelapor"=>$new_laporan["id_user_pelapor"],
-                ":status_laporan"=>0
+                ":status_laporan"=>0,
+                ":geohash_alamat_laporan"=> $geohash->encode(floatval($new_laporan["lat_laporan"]), floatval($new_laporan["lng_laporan"]), 8)
             ];
             $stmt->execute($data);
-            // return $response->withJson(["status" => "success", "data" => "1"], 200);
-            // return $response->withJson(["status" => "failed", "data" => "0"], 400);
             $increment=1;
             $uploadedFiles = $request->getUploadedFiles();
             foreach($uploadedFiles['image'] as $uploadedFile){

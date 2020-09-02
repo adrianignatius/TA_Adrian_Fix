@@ -77,7 +77,7 @@ namespace SahabatSurabaya
                             listDisplayHeaderChat.Add(displayHeaderChat);
                         }
                     }
-                    listDisplayHeaderChat = new ObservableCollection<DisplayHeaderChat>(listDisplayHeaderChat.OrderBy(k => k.waktu_chat));
+                    listDisplayHeaderChat = new ObservableCollection<DisplayHeaderChat>(listDisplayHeaderChat.OrderByDescending(k => k.waktu_chat));
                     lvDaftarChat.ItemsSource = listDisplayHeaderChat;
                 }
             }

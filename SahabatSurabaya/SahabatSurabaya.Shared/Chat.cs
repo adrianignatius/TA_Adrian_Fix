@@ -17,13 +17,16 @@ namespace SahabatSurabaya
 
         public string waktu_chat { get; set; }
 
-        public Chat(int id_chat, int id_user_pengirim, int id_user_penerima, string isi_chat, string waktu_chat)
+        public bool isSender { get; set; }
+
+        public Chat(int id_chat, int id_user_pengirim, int id_user_penerima, string isi_chat, string waktu_chat,bool isSender)
         {
             this.id_chat = id_chat;
             this.id_user_pengirim = id_user_pengirim;
             this.id_user_penerima = id_user_penerima;
             this.isi_chat = isi_chat;
             this.waktu_chat = waktu_chat;
+            this.isSender = isSender;
         }
     }
 }

@@ -57,7 +57,7 @@ namespace SahabatSurabaya
                 {
                     var message = new MessageDialog("Berhasil membuat laporan!");
                     await message.ShowAsync();
-                    this.Frame.Navigate(typeof(HomePage));
+                    this.Frame.Navigate(typeof(HomePage),param.userLogin);
                 }
             }
         }
