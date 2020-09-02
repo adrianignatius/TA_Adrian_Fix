@@ -73,6 +73,7 @@
       <DependentUpon>ReportDetailPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)ReportDetailPageParams.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Session.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SettingKategori.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SubscriptionPage.xaml.cs">
       <DependentUpon>SubscriptionPage.xaml</DependentUpon>

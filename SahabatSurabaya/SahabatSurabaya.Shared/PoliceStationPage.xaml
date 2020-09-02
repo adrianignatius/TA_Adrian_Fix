@@ -18,7 +18,7 @@
                     <GridView.ItemTemplate>
                         <DataTemplate x:Name="ImageOverlayDataTemplate">
                             <Grid Width="210" Height="180">
-                                <Image Source="/Assets/bg.jpg" Stretch="UniformToFill"/>
+                                <Image Source="http://robb-service.ta-istts.com/img-kartu-nama/dummy_2.jpg" Stretch="UniformToFill"/>
                                 <StackPanel Orientation="Vertical" Height="60" VerticalAlignment="Bottom" Background="LightGray" Padding="12">
                                     <TextBlock Text="{Binding nama_kantor_polisi }"/>
                                     <StackPanel Orientation="Horizontal">

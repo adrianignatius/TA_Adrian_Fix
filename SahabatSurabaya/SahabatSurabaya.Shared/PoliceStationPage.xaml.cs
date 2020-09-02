@@ -31,21 +31,26 @@ namespace SahabatSurabaya
             this.InitializeComponent();
         }
         ObservableCollection<KantorPolisi> listKantorPolisi;
+        Session session;
         public async void PoliceStationPageLoaded(object sender,RoutedEventArgs e)
         {
+            session = new Session();
             var location = await Geolocation.GetLastKnownLocationAsync();
             if (location == null)
             {
                 location = await Geolocation.GetLocationAsync(new GeolocationRequest
                 {
-                    DesiredAccuracy = GeolocationAccuracy.Medium,
+                    DesiredAccuracy = GeolocationAccuracy.Best,
                     Timeout = TimeSpan.FromSeconds(30)
                 });
+                
             }
+            var m = new MessageDialog(location.Latitude.ToString() + "-" + location.Longitude.ToString());
+            await m.ShowAsync();
             string origins = location.Latitude.ToString().Replace(",",".") + "," + location.Longitude.ToString().Replace(",", ".");
             using (var client = new HttpClient())
             {
-                client.BaseAddress = new Uri("http://localhost:8080/");
+                client.BaseAddress = new Uri(session.getApiURL());
                 client.DefaultRequestHeaders.Accept.Clear();
                 HttpResponseMessage response = await client.GetAsync("/getAllKantorPolisi");
                 if (response.IsSuccessStatusCode)
@@ -70,7 +75,11 @@ namespace SahabatSurabaya
                             var token = JToken.Parse(hasil)["rows"][0]["elements"].ToList().Count;
                             for (int i = 0; i < token; i++)
                             {
+#if NETFX_CORE
                                 string distance = json["rows"][0]["elements"][i]["distance"]["text"].ToString().Split(" ")[0].Replace(".",",");
+#elif __ANDROID__
+                                string distance = json["rows"][0]["elements"][i]["distance"]["text"].ToString().Split(" ")[0];
+#endif
                                 listKantorPolisi[i].distance = Convert.ToDouble(distance);
                             }
                         }

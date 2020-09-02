@@ -16,7 +16,7 @@
                 <Canvas Margin="0,15,0,0" HorizontalAlignment="Center" Height="100">
                     <Ellipse Canvas.Left="-50" Canvas.Top="10" Width="100" Height="100">
                         <Ellipse.Fill>
-                            <ImageBrush ImageSource="/Assets/avatar-profile.png"></ImageBrush>
+                            <ImageBrush ImageSource="/Assets/appicon.png"></ImageBrush>
                         </Ellipse.Fill>
                     </Ellipse>
                 </Canvas>

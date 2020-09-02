@@ -16,6 +16,7 @@ using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
@@ -27,9 +28,12 @@ namespace SahabatSurabaya
     /// </summary>
     public sealed partial class LoginPage : Page
     {
+        Session session;
         public LoginPage()
         {
             this.InitializeComponent();
+            session = new Session();
+            appIconBg.Source = new BitmapImage(new Uri("http://robb-service.ta-istts.com/img-kartu-nama/dummy_2.jpg"));
         }
 
         public object JsonCovert { get; private set; }
@@ -52,7 +56,7 @@ namespace SahabatSurabaya
             {
                 using (var client = new HttpClient())
                 {                  
-                    client.BaseAddress = new Uri("http://localhost:8080/");
+                    client.BaseAddress = new Uri(session.getApiURL());
                     client.DefaultRequestHeaders.Accept.Clear();
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                     MultipartFormDataContent form = new MultipartFormDataContent();
