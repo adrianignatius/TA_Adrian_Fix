@@ -20,6 +20,7 @@ namespace SahabatSurabaya
     public sealed partial class MakeCrimeReportPage : Page
     {
         int imageCount = 0;
+        Session session;
         List<UploadedImage> listImage;
         List<SettingKategori> listSetingKategoriKriminalitas;
         User userLogin;
@@ -28,6 +29,7 @@ namespace SahabatSurabaya
             this.InitializeComponent();
             listImage = new List<UploadedImage>();
             listSetingKategoriKriminalitas = new List<SettingKategori>();
+            session = new Session();
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -39,7 +41,7 @@ namespace SahabatSurabaya
         {
             using (var client = new HttpClient())
             {
-                client.BaseAddress = new Uri("http://localhost:8080/");
+                client.BaseAddress = new Uri(session.getApiURL());
                 client.DefaultRequestHeaders.Accept.Clear();
                 HttpResponseMessage response = await client.GetAsync("/getAllKategoriCrime");
                 if (response.IsSuccessStatusCode)
@@ -53,7 +55,7 @@ namespace SahabatSurabaya
                 }
             }
         }
-        async void deleteFile(object sender, RoutedEventArgs e)
+       private void deleteFile(object sender, RoutedEventArgs e)
         {
             Button selectedBtn = sender as Button;
             listImage.RemoveAt(Convert.ToInt32(selectedBtn.Tag));

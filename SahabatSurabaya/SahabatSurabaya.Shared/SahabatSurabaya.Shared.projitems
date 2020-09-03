@@ -54,6 +54,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)MakeLostFoundReportPage.xaml.cs">
       <DependentUpon>MakeLostFoundReportPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)MapObject.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PersonalChatPage.xaml.cs">
       <DependentUpon>PersonalChatPage.xaml</DependentUpon>
     </Compile>
