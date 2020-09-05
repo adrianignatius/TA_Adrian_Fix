@@ -72,7 +72,8 @@ namespace SahabatSurabaya
                         {
                             string data = json["data"].ToString();
                             User userLogin= JsonConvert.DeserializeObject<User>(data);
-                            this.Frame.Navigate(typeof(HomeNavigationPage),userLogin);
+                            session.setUserLogin(userLogin);
+                            this.Frame.Navigate(typeof(HomeNavigationPage));
                         }
                         else
                         {

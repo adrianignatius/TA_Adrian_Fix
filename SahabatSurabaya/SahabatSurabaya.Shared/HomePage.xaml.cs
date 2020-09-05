@@ -1,23 +1,19 @@
 ﻿using Newtonsoft.Json;
 using SahabatSurabaya.Shared;
 using System;
-using System.Collections.Generic;
+
 using System.Collections.ObjectModel;
-using System.IO;
-using System.Linq;
+
 using System.Net.Http;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Navigation;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
 namespace SahabatSurabaya
 {
-    /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
-    /// </summary>
+
     public sealed partial class HomePage : Page
     {
         Session session;
@@ -31,10 +27,19 @@ namespace SahabatSurabaya
             listLaporanKriminalitas = new ObservableCollection<LaporanKriminalitas>();
             session = new Session();
         }
+
         public async void HomePageLoaded(object sender, RoutedEventArgs e)
         {
-            var m = new MessageDialog("masuk");
-            await m.ShowAsync();
+            userLogin = session.getUserLogin();
+            txtNamaUser.Text = "Selamat Datang, " + userLogin.nama_user + "!";
+            if (userLogin.status_user == 1)
+            {
+                txtStatusUser.Text = "Premium Account";
+            }
+            else
+            {
+                txtStatusUser.Text = "Free Account";
+            }
             using (var client = new HttpClient())
             {
                 client.BaseAddress = new Uri(session.getApiURL());
@@ -68,22 +73,9 @@ namespace SahabatSurabaya
         {
             int index = lvLaporanLostFound.SelectedIndex;
             ReportDetailPageParams param = new ReportDetailPageParams(userLogin, listLaporanLostFound[index]);
-;           this.Frame.Navigate(typeof(ReportDetailPage),param);
-        }
-
-        protected override void OnNavigatedTo(NavigationEventArgs e)
-        {
-            base.OnNavigatedTo(e);
-            //userLogin = e.Parameter as User;
-            txtNamaUser.Text ="Selamat Datang, asd";
-            //if (userLogin.status_user == 1)
-            //{
-            //    txtStatusUser.Text = "Premium Account";
-            //}
-            //else
-            //{
-            //    txtStatusUser.Text = "Free Account";
-            //}
+            session.setReportDetailPageParams(param);
+            this.Frame.Navigate(typeof(ReportDetailPage));
+              
         }
     }
 }

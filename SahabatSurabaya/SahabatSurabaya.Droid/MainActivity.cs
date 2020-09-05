@@ -3,7 +3,6 @@ using Android.Widget;
 using Android.OS;
 using Android.Content.PM;
 using Android.Views;
-using Xamarin.Essentials;
 
 namespace SahabatSurabaya.Droid
 {
@@ -25,6 +24,7 @@ namespace SahabatSurabaya.Droid
             Xamarin.Essentials.Platform.OnRequestPermissionsResult(requestCode, permissions, grantResults);
             base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
         }
+        
     }
     
 }

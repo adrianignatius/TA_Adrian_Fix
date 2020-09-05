@@ -18,7 +18,7 @@
                         <Canvas Height="90">
                             <Ellipse Canvas.Left="10" Canvas.Top="10" Width="70" Height="70">
                                 <Ellipse.Fill>
-                                    <ImageBrush ImageSource="/Assets/appicon.png"></ImageBrush>
+                                    <ImageBrush ImageSource="/Assets/avatar-profile.png"></ImageBrush>
                                 </Ellipse.Fill>
                             </Ellipse>
                         </Canvas>

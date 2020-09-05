@@ -10,8 +10,8 @@
     RequestedTheme="Light"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <Grid Margin="20">
-        <ScrollViewer Name="rootPanel">
+    <ScrollViewer Name="rootPanel">
+        <Grid Margin="20">
             <StackPanel Orientation="Vertical">
                 <TextBlock FontSize="24" Text="Buat Laporan Kriminalitas" FontWeight="ExtraBold" HorizontalAlignment="Stretch"></TextBlock>
                 <TextBlock Margin="0,40,0,0" FontSize="20" Text="Judul Laporan"></TextBlock>
@@ -26,6 +26,7 @@
                     <TextBlock  Margin="0,30,0,10" Text="Lokasi Kejadian" FontSize="20"></TextBlock>
                     <Button Click="useLocation" Content="Gunakan Lokasi Sekarang" Margin="10,30,0,0"></Button>
                 </StackPanel>
+                <AutoSuggestBox PlaceholderText="Cari Alamat.." TextChanged="autoSuggestBoxTextChanged" SuggestionChosen="autoSuggestBoxSuggestionChosen" Name="suggestBoxAddress" QueryIcon="Find" Margin="0,10,0,0"></AutoSuggestBox>
                 <WebView Margin="0,10,0,0" Name="webViewMap"  Height="500" HorizontalAlignment="Stretch" Source="http://localhost/map.php"></WebView>
                 <StackPanel Orientation="Horizontal">
                     <TextBlock  Margin="0,30,0,10" Text="Upload Gambar" FontSize="20"></TextBlock>
@@ -35,6 +36,6 @@
                 <TextBlock Name="txtImageCount" Margin="0,5,0,15" Text="0 gambar terpilih(Max. 2 Gambar) " FontSize="15" Foreground="Gray" ></TextBlock>
                 <Button Click="goToDetail" CornerRadius="5" Foreground="AntiqueWhite" Background="Green" FontSize="20" Width="150" Margin="0,30,0,0" Content="Selanjutnya" HorizontalAlignment="Center"></Button>
             </StackPanel>
-        </ScrollViewer>
-    </Grid>
+        </Grid>
+    </ScrollViewer>
 </Page>

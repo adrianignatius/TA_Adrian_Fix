@@ -122,7 +122,7 @@ namespace SahabatSurabaya
             }
         }
 
-        private async void Back_Click(object sender, RoutedEventArgs e)
+        private void Back_Click(object sender, RoutedEventArgs e)
         {
             On_BackRequested();
         }

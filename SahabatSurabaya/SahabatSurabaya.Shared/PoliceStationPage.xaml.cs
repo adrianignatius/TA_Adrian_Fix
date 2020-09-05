@@ -95,7 +95,7 @@ namespace SahabatSurabaya
             }
         }
 
-        public async void goToDetail(object sender, RoutedEventArgs e)
+        public void goToDetail(object sender, RoutedEventArgs e)
         {
             int index = gvListKantorPolisi.SelectedIndex;
             this.Frame.Navigate(typeof(PoliceStationDetailPage),listKantorPolisi[index]);

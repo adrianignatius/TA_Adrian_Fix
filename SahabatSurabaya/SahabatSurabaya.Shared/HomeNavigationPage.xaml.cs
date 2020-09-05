@@ -1,19 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
+﻿using System.Linq;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
-// The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
 namespace SahabatSurabaya
 {
@@ -21,9 +10,16 @@ namespace SahabatSurabaya
     public sealed partial class HomeNavigationPage : Page
     {
         User userLogin;
+        Session session;
         public HomeNavigationPage()
         {
             this.InitializeComponent();
+            session = new Session();
+        }
+
+        private void pageLoaded(object sender, RoutedEventArgs e)
+        {
+          userLogin=session.getUserLogin();
         }
 
         private void NavView_Loaded(object sender, RoutedEventArgs e)
@@ -64,15 +60,15 @@ namespace SahabatSurabaya
             switch (item.Tag)
             {
                 case "home":
-                    ContentFrame.Navigate(typeof(HomePage),userLogin);
+                    ContentFrame.Navigate(typeof(HomePage));
                     break;
 
                 case "MakeLostFoundReportPage":
-                    ContentFrame.Navigate(typeof(MakeLostFoundReportPage), userLogin);
+                    ContentFrame.Navigate(typeof(MakeLostFoundReportPage));
                     break;
 
                 case "MakeCrimeReportPage":
-                    ContentFrame.Navigate(typeof(MakeCrimeReportPage),userLogin);
+                    ContentFrame.Navigate(typeof(MakeCrimeReportPage));
                     break;
 
                 case "SignOut":
@@ -88,15 +84,9 @@ namespace SahabatSurabaya
                     break;
 
                 case "chatPage":
-                    ContentFrame.Navigate(typeof(ChatPage),userLogin);
+                    ContentFrame.Navigate(typeof(ChatPage));
                     break;
             }
-        }
-
-        protected override void OnNavigatedTo(NavigationEventArgs e)
-        {
-            base.OnNavigatedTo(e);
-            userLogin = e.Parameter as User;
         }
     }
 }

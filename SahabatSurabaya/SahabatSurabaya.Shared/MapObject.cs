@@ -9,20 +9,16 @@ namespace SahabatSurabaya.Shared
 {
     class MapObject
     {
-        public async Task NavigateToBuilding25()
+        public async Task openMapWithMarker(double lat, double lng, string alamat)
         {
-            var placemark = new Placemark
-            {
-                CountryName = "United States",
-                AdminArea = "WA",
-                Thoroughfare = "Microsoft Building 25",
-                Locality = "Redmond"
-            };
-            var options = new MapLaunchOptions { Name = "Microsoft Building 25" };
-
+            var location = new Location(lat, lng);
             try
             {
-                await Map.OpenAsync(placemark, options);
+                await Map.OpenAsync(location, new MapLaunchOptions
+                {
+                    Name = alamat,
+                    NavigationMode=NavigationMode.None
+                }) ;
             }
             catch (Exception ex)
             {

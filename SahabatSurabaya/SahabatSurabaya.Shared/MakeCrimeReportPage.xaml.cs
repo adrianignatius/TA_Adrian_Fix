@@ -1,9 +1,14 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Plugin.FilePicker;
 using Plugin.FilePicker.Abstractions;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.Linq;
 using System.Net.Http;
+using System.Threading;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -14,31 +19,42 @@ using Xamarin.Essentials;
 
 namespace SahabatSurabaya
 {
-    /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
-    /// </summary>
+
     public sealed partial class MakeCrimeReportPage : Page
     {
+        int time = 0;
         int imageCount = 0;
         Session session;
         List<UploadedImage> listImage;
         List<SettingKategori> listSetingKategoriKriminalitas;
+        ObservableCollection<AutocompleteAddress> listAutoCompleteAddress;
         User userLogin;
+        DispatcherTimer timer;
         public MakeCrimeReportPage()
         {
             this.InitializeComponent();
             listImage = new List<UploadedImage>();
             listSetingKategoriKriminalitas = new List<SettingKategori>();
+            listAutoCompleteAddress = new ObservableCollection<AutocompleteAddress>();
             session = new Session();
+            timer = new DispatcherTimer();
+            timer.Tick += Timer_Tick;
+            timer.Interval = new TimeSpan(0, 0, 1);
+
         }
 
-        protected override void OnNavigatedTo(NavigationEventArgs e)
+        private void Timer_Tick(object sender, object e)
         {
-            base.OnNavigatedTo(e);
-            userLogin = e.Parameter as User;
+            time++;
+            txtDescKejadian.Text = time.ToString();
         }
+
         public async void CrimeReportPageLoaded(object sender,RoutedEventArgs e)
         {
+            timer.Start();
+            suggestBoxAddress.DisplayMemberPath = "alamat";
+            suggestBoxAddress.TextMemberPath = "id";
+            userLogin = session.getUserLogin();
             using (var client = new HttpClient())
             {
                 client.BaseAddress = new Uri(session.getApiURL());
@@ -55,7 +71,64 @@ namespace SahabatSurabaya
                 }
             }
         }
-       private void deleteFile(object sender, RoutedEventArgs e)
+
+        private void autoSuggestBoxSuggestionChosen(AutoSuggestBox sender, AutoSuggestBoxSuggestionChosenEventArgs args)
+        {
+            if (args.SelectedItem.ToString() == "")
+            {
+                sender.Text = "";
+            }
+        }
+
+        private async void autoSuggestBoxTextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
+        {
+            // Only get results when it was a user typing,
+            // otherwise assume the value got filled in by TextMemberPath
+            // or the handler for SuggestionChosen.
+            if (args.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
+            {
+                txtJudulLaporan.Text += "a";
+                //Set the ItemsSource to be your filtered dataset
+                //sender.ItemsSource = dataset;
+                string input = suggestBoxAddress.Text;
+                using (var client = new HttpClient())
+                {
+                    string reqUri = "https://maps.googleapis.com/maps/api/place/autocomplete/json?input=" + input + "&types=geocode&location=-7.252115,112.752849&radius=20000&language=id&components=country:id&strictbounds&key=AIzaSyA9rHJZEGWe6rX4nAHTGXFxCubmw-F0BBw";
+                    HttpResponseMessage response = await client.GetAsync(reqUri);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var jsonString = response.Content.ReadAsStringAsync().Result;
+                        JObject json = JObject.Parse(jsonString);
+                        if (json["status"].ToString() == "OK")
+                        {
+                            listAutoCompleteAddress.Clear();
+                            var token = JToken.Parse(jsonString)["predictions"].ToList().Count;
+                            for (int i = 0; i < token; i++)
+                            {
+                                string description = json["predictions"][i]["description"].ToString();
+                                string placeId = json["predictions"][i]["place_id"].ToString();
+                                listAutoCompleteAddress.Add(new AutocompleteAddress(description,placeId));
+                            }
+                            sender.ItemsSource = listAutoCompleteAddress;
+                            sender.DisplayMemberPath = "description";
+                            sender.TextMemberPath = "description";
+                           
+                        }
+                        else
+                        {
+                            listAutoCompleteAddress.Clear();
+                            listAutoCompleteAddress.Add(new AutocompleteAddress("Tidak ada hasil ditemukan", ""));
+                            sender.ItemsSource = listAutoCompleteAddress;
+                            if (sender.Text.Length == 0)
+                            {
+                                sender.IsSuggestionListOpen = false;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        private void deleteFile(object sender, RoutedEventArgs e)
         {
             Button selectedBtn = sender as Button;
             listImage.RemoveAt(Convert.ToInt32(selectedBtn.Tag));
@@ -80,10 +153,16 @@ namespace SahabatSurabaya
                     Timeout = TimeSpan.FromSeconds(30)
                 }); ;
             }
-            string[] args = {location.Latitude.ToString(), location.Longitude.ToString() };
-            string lat = await webViewMap.InvokeScriptAsync("myFunction", args);
+                string[] args = {location.Latitude.ToString(), location.Longitude.ToString() };
+                string lat = await webViewMap.InvokeScriptAsync("myFunction", args);
         }
 
+        private void getAutoCompleteAddress()
+        {
+            
+            //https://maps.googleapis.com/maps/api/place/autocomplete/json?input=ngagel_jaya_tengah_73%20&types=geocode&location=-7.252115,112.752849&radius=20000&language=id&components=country:id&strictbounds&key=AIzaSyA9rHJZEGWe6rX4nAHTGXFxCubmw-F0BBw
+            
+        }
         public async void goToDetail(object sender, RoutedEventArgs e)
         {
             string judulLaporan = txtJudulLaporan.Text;
@@ -148,7 +227,7 @@ namespace SahabatSurabaya
             else
             {
                 var message = new MessageDialog("Anda hanya dapat mengupload maksimal 3 gambar saja");
-                message.ShowAsync();
+                await message.ShowAsync();
             }
         }
     }

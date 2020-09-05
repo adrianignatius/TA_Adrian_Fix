@@ -19,6 +19,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)AutocompleteAddress.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Chat.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ChatAlignmentConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ChatPage.xaml.cs">
@@ -81,7 +82,6 @@
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)UploadedImage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)User.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)XamarinAPI.cs" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="$(MSBuildThisFileDirectory)ChatPage.xaml">

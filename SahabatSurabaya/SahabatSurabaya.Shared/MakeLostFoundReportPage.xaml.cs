@@ -24,11 +24,13 @@ namespace SahabatSurabaya
         int imageCount = 0;
         List<UploadedImage> listImage;
         List<SettingKategori> listSettingKategoriLostFound;
+        Session session;
         public MakeLostFoundReportPage()
         {
             this.InitializeComponent();
             listImage = new List<UploadedImage>();
             listSettingKategoriLostFound = new List<SettingKategori>();
+            session = new Session();
         }
 
         public async void useLocation(object sender, RoutedEventArgs e)
@@ -38,7 +40,7 @@ namespace SahabatSurabaya
             {
                 location = await Geolocation.GetLocationAsync(new GeolocationRequest
                 {
-                    DesiredAccuracy = GeolocationAccuracy.Medium,
+                    DesiredAccuracy = GeolocationAccuracy.Best,
                     Timeout = TimeSpan.FromSeconds(30)
                 }); ;
             }
@@ -46,17 +48,19 @@ namespace SahabatSurabaya
             string lat = await webViewMap.InvokeScriptAsync("myFunction", args);
         }
 
-        protected override void OnNavigatedTo(NavigationEventArgs e)
+        protected async override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
             userLogin = e.Parameter as User;
+            var m = new MessageDialog(userLogin.nama_user);
+            await m.ShowAsync();
         }
 
         private async void LostFoundPageLoaded(object sender, RoutedEventArgs e)
         {
             using (var client = new HttpClient()) 
             {
-                client.BaseAddress = new Uri("http://localhost:8080/");
+                client.BaseAddress = new Uri(session.getApiURL());
                 client.DefaultRequestHeaders.Accept.Clear();
                 HttpResponseMessage response = await client.GetAsync("/getAllKategoriLostFound");
                 if (response.IsSuccessStatusCode)
@@ -102,8 +106,6 @@ namespace SahabatSurabaya
             stackFile.Children.Remove((UIElement)this.FindName("sp" + selectedBtn.Tag.ToString()));
             imageCount--;
             updateTxtImageCount();
-            string[] args = { "5","6"};
-            string lat = await webViewMap.InvokeScriptAsync("myFunction",args);
             
         }
 
