@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 using System.Threading;
@@ -23,6 +24,7 @@ namespace SahabatSurabaya
     public sealed partial class MakeCrimeReportPage : Page
     {
         int time = 0;
+        string lat, lng = "";
         int imageCount = 0;
         Session session;
         List<UploadedImage> listImage;
@@ -72,11 +74,26 @@ namespace SahabatSurabaya
             }
         }
 
-        private void autoSuggestBoxSuggestionChosen(AutoSuggestBox sender, AutoSuggestBoxSuggestionChosenEventArgs args)
+        private async void autoSuggestBoxSuggestionChosen(AutoSuggestBox sender, AutoSuggestBoxSuggestionChosenEventArgs args)
         {
             if (args.SelectedItem.ToString() == "")
             {
                 sender.Text = "";
+            }
+            else
+            {
+                using (var client = new HttpClient())
+                {
+                    string reqUri = "https://maps.googleapis.com/maps/api/geocode/json?address="+args.SelectedItem.ToString()+"&key=AIzaSyA9rHJZEGWe6rX4nAHTGXFxCubmw-F0BBw";
+                    HttpResponseMessage response = await client.GetAsync(reqUri);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var jsonString = response.Content.ReadAsStringAsync().Result;
+                        JObject json = JObject.Parse(jsonString);
+                        lat = json["results"][0]["geometry"]["location"]["lat"].ToString().Replace(",", ".");
+                        lng = json["results"][0]["geometry"]["location"]["lng"].ToString().Replace(",", "."); ;
+                    }
+                }
             }
         }
 
@@ -88,8 +105,6 @@ namespace SahabatSurabaya
             if (args.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
             {
                 txtJudulLaporan.Text += "a";
-                //Set the ItemsSource to be your filtered dataset
-                //sender.ItemsSource = dataset;
                 string input = suggestBoxAddress.Text;
                 using (var client = new HttpClient())
                 {

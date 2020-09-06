@@ -48,16 +48,9 @@ namespace SahabatSurabaya
             string lat = await webViewMap.InvokeScriptAsync("myFunction", args);
         }
 
-        protected async override void OnNavigatedTo(NavigationEventArgs e)
-        {
-            base.OnNavigatedTo(e);
-            userLogin = e.Parameter as User;
-            var m = new MessageDialog(userLogin.nama_user);
-            await m.ShowAsync();
-        }
-
         private async void LostFoundPageLoaded(object sender, RoutedEventArgs e)
         {
+            userLogin = session.getUserLogin();
             using (var client = new HttpClient()) 
             {
                 client.BaseAddress = new Uri(session.getApiURL());

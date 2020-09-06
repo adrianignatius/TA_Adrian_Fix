@@ -74,8 +74,7 @@ namespace SahabatSurabaya
             int index = lvLaporanLostFound.SelectedIndex;
             ReportDetailPageParams param = new ReportDetailPageParams(userLogin, listLaporanLostFound[index]);
             session.setReportDetailPageParams(param);
-            this.Frame.Navigate(typeof(ReportDetailPage));
-              
+            this.Frame.Navigate(typeof(ReportDetailPage));     
         }
     }
 }

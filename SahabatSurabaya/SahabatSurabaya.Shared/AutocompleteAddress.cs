@@ -18,7 +18,7 @@ namespace SahabatSurabaya
 
         public override string ToString()
         {
-            return place_id;
+            return description;
         }
     }
 }

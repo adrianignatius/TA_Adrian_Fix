@@ -26,9 +26,11 @@ namespace SahabatSurabaya
     public sealed partial class LostFoundReportDetailPage : Page
     {
         string url = "ms-appx:///Assets/icon/";
+        Session session;
         public LostFoundReportDetailPage()
         {
             this.InitializeComponent();
+            session = new Session();
         }
         LostFoundReportParams param;
 
@@ -36,7 +38,7 @@ namespace SahabatSurabaya
         {
             using (var client = new HttpClient())
             {
-                client.BaseAddress = new Uri("http://localhost:8080/");
+                client.BaseAddress = new Uri(session.getApiURL());
                 MultipartFormDataContent form = new MultipartFormDataContent();
                 form.Add(new StringContent(param.judulLaporan), "judul_laporan");
                 form.Add(new StringContent(param.jenisLaporan.ToString()), "jenis_laporan");
