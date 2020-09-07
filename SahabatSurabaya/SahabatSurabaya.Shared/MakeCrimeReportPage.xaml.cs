@@ -23,7 +23,6 @@ namespace SahabatSurabaya
 
     public sealed partial class MakeCrimeReportPage : Page
     {
-        int time = 0;
         string lat, lng = "";
         int imageCount = 0;
         Session session;
@@ -31,7 +30,6 @@ namespace SahabatSurabaya
         List<SettingKategori> listSetingKategoriKriminalitas;
         ObservableCollection<AutocompleteAddress> listAutoCompleteAddress;
         User userLogin;
-        DispatcherTimer timer;
         public MakeCrimeReportPage()
         {
             this.InitializeComponent();
@@ -39,21 +37,11 @@ namespace SahabatSurabaya
             listSetingKategoriKriminalitas = new List<SettingKategori>();
             listAutoCompleteAddress = new ObservableCollection<AutocompleteAddress>();
             session = new Session();
-            timer = new DispatcherTimer();
-            timer.Tick += Timer_Tick;
-            timer.Interval = new TimeSpan(0, 0, 1);
 
-        }
-
-        private void Timer_Tick(object sender, object e)
-        {
-            time++;
-            txtDescKejadian.Text = time.ToString();
         }
 
         public async void CrimeReportPageLoaded(object sender,RoutedEventArgs e)
         {
-            timer.Start();
             suggestBoxAddress.DisplayMemberPath = "alamat";
             suggestBoxAddress.TextMemberPath = "id";
             userLogin = session.getUserLogin();
@@ -76,12 +64,13 @@ namespace SahabatSurabaya
 
         private async void autoSuggestBoxSuggestionChosen(AutoSuggestBox sender, AutoSuggestBoxSuggestionChosenEventArgs args)
         {
-            if (args.SelectedItem.ToString() == "")
+            if (args.SelectedItem.ToString() == "Tidak ada hasil ditemukan")
             {
                 sender.Text = "";
             }
             else
             {
+                sender.Text = args.SelectedItem.ToString();
                 using (var client = new HttpClient())
                 {
                     string reqUri = "https://maps.googleapis.com/maps/api/geocode/json?address="+args.SelectedItem.ToString()+"&key=AIzaSyA9rHJZEGWe6rX4nAHTGXFxCubmw-F0BBw";
@@ -92,6 +81,7 @@ namespace SahabatSurabaya
                         JObject json = JObject.Parse(jsonString);
                         lat = json["results"][0]["geometry"]["location"]["lat"].ToString().Replace(",", ".");
                         lng = json["results"][0]["geometry"]["location"]["lng"].ToString().Replace(",", "."); ;
+                        webViewMap.Navigate(new Uri(session.getUrlWebView() + "location-map.php?lat=" + lat + "&lng=" + lng));
                     }
                 }
             }
@@ -104,7 +94,6 @@ namespace SahabatSurabaya
             // or the handler for SuggestionChosen.
             if (args.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
             {
-                txtJudulLaporan.Text += "a";
                 string input = suggestBoxAddress.Text;
                 using (var client = new HttpClient())
                 {
@@ -168,34 +157,38 @@ namespace SahabatSurabaya
                     Timeout = TimeSpan.FromSeconds(30)
                 }); ;
             }
-                string[] args = {location.Latitude.ToString(), location.Longitude.ToString() };
-                string lat = await webViewMap.InvokeScriptAsync("myFunction", args);
+            lat = location.Latitude.ToString().Replace(",", ".");
+            lng = location.Longitude.ToString().Replace(",", ".");
+            using (var client = new HttpClient())
+            {
+                string latlng = lat + "," + lng;
+                string reqUri = "https://maps.googleapis.com/maps/api/geocode/json?latlng="+latlng+"&key=AIzaSyA9rHJZEGWe6rX4nAHTGXFxCubmw-F0BBw";
+                HttpResponseMessage response = await client.GetAsync(reqUri);
+                if (response.IsSuccessStatusCode)
+                {
+                    var jsonString = response.Content.ReadAsStringAsync().Result;
+                    JObject json = JObject.Parse(jsonString);
+                    string address = json["results"][0]["formatted_address"].ToString();
+                    suggestBoxAddress.Text = address;
+                    webViewMap.Navigate(new Uri(session.getUrlWebView() + "location-map.php?lat=" + lat + "&lng=" + lng));
+                }
+            }
         }
 
-        private void getAutoCompleteAddress()
-        {
-            
-            //https://maps.googleapis.com/maps/api/place/autocomplete/json?input=ngagel_jaya_tengah_73%20&types=geocode&location=-7.252115,112.752849&radius=20000&language=id&components=country:id&strictbounds&key=AIzaSyA9rHJZEGWe6rX4nAHTGXFxCubmw-F0BBw
-            
-        }
-        public async void goToDetail(object sender, RoutedEventArgs e)
+        public void goToDetail(object sender, RoutedEventArgs e)
         {
             string judulLaporan = txtJudulLaporan.Text;
             string descKejadian = txtDescKejadian.Text;
             string valueKategoriKejadian = cbJenisKejadian.SelectedValue.ToString();
-            string[] getAddress = new string[] { @"document.getElementById('valueAddress').value" };
-            string alamatLaporan = await webViewMap.InvokeScriptAsync("eval", getAddress);
-            string[] getLat = new string[] { @"document.getElementById('valueLat').value" };
+            string alamatLaporan = suggestBoxAddress.Text;
             string displayJeniskejadian = listSetingKategoriKriminalitas[cbJenisKejadian.SelectedIndex].nama_kategori.ToString();
             string valueJenisKejadian = cbJenisKejadian.SelectedValue.ToString();
-            string lat = await webViewMap.InvokeScriptAsync("eval", getLat);
-            string[] getLng = new string[] { @"document.getElementById('valueLng').value" };
-            string lng = await webViewMap.InvokeScriptAsync("eval", getLng);
             string tglLaporan = DateTime.Now.ToString("dd/MM/yyyy");
             string waktuLaporan = DateTime.Now.ToString("HH:mm:ss");
             string namaFileGambar = listSetingKategoriKriminalitas[cbJenisKejadian.SelectedIndex].file_gambar_kategori;
             CrimeReportParams param = new CrimeReportParams(userLogin,judulLaporan, lat, lng, descKejadian, tglLaporan, waktuLaporan, alamatLaporan, displayJeniskejadian, valueJenisKejadian, listImage,namaFileGambar);
-            this.Frame.Navigate(typeof(CrimeReportDetailPage), param);
+            session.setCrimeReportDetailPageParams(param);
+            this.Frame.Navigate(typeof(CrimeReportDetailPage));
         }
 
         public async void chooseImage(object sender, RoutedEventArgs e)

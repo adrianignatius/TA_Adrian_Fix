@@ -31,10 +31,18 @@ namespace SahabatSurabaya
     public sealed partial class ChatPage : Page
     {
         User userLogin;
+        Session session;
         ObservableCollection<DisplayHeaderChat> listDisplayHeaderChat;
         public ChatPage()
         {
             this.InitializeComponent();
+            session = new Session();
+        }
+
+        public void pageLoaded(object sender, RoutedEventArgs e)
+        {
+            userLogin = session.getUserLogin();
+            loadHeaderChat();
         }
         
         private async void loadHeaderChat()
@@ -42,7 +50,7 @@ namespace SahabatSurabaya
             listDisplayHeaderChat = new ObservableCollection<DisplayHeaderChat>();
             using (var client = new HttpClient())
             {
-                client.BaseAddress = new Uri("http://localhost:8080/");
+                client.BaseAddress = new Uri(session.getApiURL());
                 client.DefaultRequestHeaders.Accept.Clear();
                 HttpResponseMessage response = await client.GetAsync("getHeaderChat/"+userLogin.id_user);
                 if (response.IsSuccessStatusCode)
@@ -88,13 +96,6 @@ namespace SahabatSurabaya
             DisplayHeaderChat selected = listDisplayHeaderChat[lvDaftarChat.SelectedIndex];
             ChatPageParams param = new ChatPageParams(selected.id_chat, userLogin.id_user, selected.id_target_chat, selected.nama_display);
             this.Frame.Navigate(typeof(PersonalChatPage), param);
-        }
-
-        protected override void OnNavigatedTo(NavigationEventArgs e)
-        {
-            base.OnNavigatedTo(e);
-            userLogin = e.Parameter as User;
-            loadHeaderChat();
         }
 
     }

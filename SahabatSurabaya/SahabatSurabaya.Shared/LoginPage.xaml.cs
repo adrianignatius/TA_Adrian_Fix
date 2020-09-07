@@ -32,8 +32,7 @@ namespace SahabatSurabaya
         public LoginPage()
         {
             this.InitializeComponent();
-            session = new Session();
-            appIconBg.Source = new BitmapImage(new Uri("http://robb-service.ta-istts.com/img-kartu-nama/dummy_2.jpg"));
+            session = new Session();          
         }
 
         public object JsonCovert { get; private set; }

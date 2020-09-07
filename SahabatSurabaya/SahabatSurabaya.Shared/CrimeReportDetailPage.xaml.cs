@@ -25,18 +25,30 @@ namespace SahabatSurabaya
     /// </summary>
     public sealed partial class CrimeReportDetailPage : Page
     {
+        Session session;
         CrimeReportParams param;
         string url = "ms-appx:///Assets/icon/";
         public CrimeReportDetailPage()
         {
             this.InitializeComponent();
+            session = new Session();
         }
 
+        public void pageLoaded(object sender, RoutedEventArgs e)
+        {
+            param = session.getCrimeReportParams();
+            txtJudulLaporan.Text = param.judulLaporan;
+            txtJenisKejadian.Text = param.displayKategoriKejadian;
+            txtTanggalLaporan.Text = param.tglLaporan;
+            txtLokasiLaporan.Text = param.alamatLaporan;
+            txtDescKejadian.Text = param.descLaporan;
+            imageIconKejadian.Source = new BitmapImage(new Uri(url + param.namaFileGambar));
+        }
         public async void konfirmasi_laporan(object sender,RoutedEventArgs e)
         {
             using (var client = new HttpClient())
             {
-                client.BaseAddress = new Uri("http://localhost:8080/");
+                client.BaseAddress = new Uri(session.getApiURL());
                 MultipartFormDataContent form = new MultipartFormDataContent();
                 form.Add(new StringContent(param.judulLaporan), "judul_laporan");
                 form.Add(new StringContent(param.displayKategoriKejadian), "jenis_kejadian");
@@ -65,18 +77,6 @@ namespace SahabatSurabaya
                     await message.ShowAsync();
                 }
             }
-        }
-
-        protected override void OnNavigatedTo(NavigationEventArgs e)
-        {
-            base.OnNavigatedTo(e);
-            param = e.Parameter as CrimeReportParams;
-            txtJudulLaporan.Text = param.judulLaporan;
-            txtJenisKejadian.Text = param.displayKategoriKejadian;
-            txtTanggalLaporan.Text = param.tglLaporan;
-            txtLokasiLaporan.Text = param.alamatLaporan;
-            txtDescKejadian.Text = param.descLaporan;
-            imageIconKejadian.Source = new BitmapImage(new Uri(url + param.namaFileGambar));
         }
     }
 }

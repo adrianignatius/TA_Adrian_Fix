@@ -4,6 +4,8 @@ using Plugin.FilePicker;
 using Plugin.FilePicker.Abstractions;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 using System.Net.Http;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
@@ -22,7 +24,9 @@ namespace SahabatSurabaya
     {
         User userLogin;
         int imageCount = 0;
+        string lat, lng = "";
         List<UploadedImage> listImage;
+        ObservableCollection<AutocompleteAddress> listAutoCompleteAddress;
         List<SettingKategori> listSettingKategoriLostFound;
         Session session;
         public MakeLostFoundReportPage()
@@ -30,6 +34,7 @@ namespace SahabatSurabaya
             this.InitializeComponent();
             listImage = new List<UploadedImage>();
             listSettingKategoriLostFound = new List<SettingKategori>();
+            listAutoCompleteAddress = new ObservableCollection<AutocompleteAddress>();
             session = new Session();
         }
 
@@ -40,12 +45,26 @@ namespace SahabatSurabaya
             {
                 location = await Geolocation.GetLocationAsync(new GeolocationRequest
                 {
-                    DesiredAccuracy = GeolocationAccuracy.Best,
+                    DesiredAccuracy = GeolocationAccuracy.Medium,
                     Timeout = TimeSpan.FromSeconds(30)
                 }); ;
             }
-            string[] args = { location.Latitude.ToString(), location.Longitude.ToString() };
-            string lat = await webViewMap.InvokeScriptAsync("myFunction", args);
+            lat = location.Latitude.ToString().Replace(",", ".");
+            lng = location.Longitude.ToString().Replace(",", ".");
+            using (var client = new HttpClient())
+            {
+                string latlng = lat + "," + lng;
+                string reqUri = "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + latlng + "&key=AIzaSyA9rHJZEGWe6rX4nAHTGXFxCubmw-F0BBw";
+                HttpResponseMessage response = await client.GetAsync(reqUri);
+                if (response.IsSuccessStatusCode)
+                {
+                    var jsonString = response.Content.ReadAsStringAsync().Result;
+                    JObject json = JObject.Parse(jsonString);
+                    string address = json["results"][0]["formatted_address"].ToString();
+                    suggestBoxAddress.Text = address;
+                    webViewMap.Navigate(new Uri(session.getUrlWebView() + "location-map.php?lat=" + lat + "&lng=" + lng));
+                }
+            }
         }
 
         private async void LostFoundPageLoaded(object sender, RoutedEventArgs e)
@@ -68,25 +87,92 @@ namespace SahabatSurabaya
             }
         }
 
+        private async void autoSuggestBoxSuggestionChosen(AutoSuggestBox sender, AutoSuggestBoxSuggestionChosenEventArgs args)
+        {
+            if (args.SelectedItem.ToString() == "Tidak ada hasil ditemukan")
+            {
+                sender.Text = "";
+            }
+            else
+            {
+                using (var client = new HttpClient())
+                {
+                    string reqUri = "https://maps.googleapis.com/maps/api/geocode/json?address=" + args.SelectedItem.ToString() + "&key=AIzaSyA9rHJZEGWe6rX4nAHTGXFxCubmw-F0BBw";
+                    HttpResponseMessage response = await client.GetAsync(reqUri);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var jsonString = response.Content.ReadAsStringAsync().Result;
+                        JObject json = JObject.Parse(jsonString);
+                        lat = json["results"][0]["geometry"]["location"]["lat"].ToString().Replace(",", ".");
+                        lng = json["results"][0]["geometry"]["location"]["lng"].ToString().Replace(",", "."); ;
+                        webViewMap.Navigate(new Uri(session.getUrlWebView() + "location-map.php?lat=" + lat + "&lng=" + lng));
+                    }
+                }
+            }
+        }
+
+        private async void autoSuggestBoxTextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
+        {
+            // Only get results when it was a user typing,
+            // otherwise assume the value got filled in by TextMemberPath
+            // or the handler for SuggestionChosen.
+            if (args.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
+            {
+                txtJudulLaporan.Text += "a";
+                string input = sender.Text;
+                using (var client = new HttpClient())
+                {
+                    string reqUri = "https://maps.googleapis.com/maps/api/place/autocomplete/json?input=" + input + "&types=geocode&location=-7.252115,112.752849&radius=20000&language=id&components=country:id&strictbounds&key=AIzaSyA9rHJZEGWe6rX4nAHTGXFxCubmw-F0BBw";
+                    HttpResponseMessage response = await client.GetAsync(reqUri);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var jsonString = response.Content.ReadAsStringAsync().Result;
+                        JObject json = JObject.Parse(jsonString);
+                        if (json["status"].ToString() == "OK")
+                        {
+                            listAutoCompleteAddress.Clear();
+                            var token = JToken.Parse(jsonString)["predictions"].ToList().Count;
+                            for (int i = 0; i < token; i++)
+                            {
+                                string description = json["predictions"][i]["description"].ToString();
+                                string placeId = json["predictions"][i]["place_id"].ToString();
+                                listAutoCompleteAddress.Add(new AutocompleteAddress(description, placeId));
+                            }
+                            sender.ItemsSource = listAutoCompleteAddress;
+                            sender.DisplayMemberPath = "description";
+                            sender.TextMemberPath = "description";
+
+                        }
+                        else
+                        {
+                            listAutoCompleteAddress.Clear();
+                            listAutoCompleteAddress.Add(new AutocompleteAddress("Tidak ada hasil ditemukan", ""));
+                            sender.ItemsSource = listAutoCompleteAddress;
+                            if (sender.Text.Length == 0)
+                            {
+                                sender.IsSuggestionListOpen = false;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         private async void goToDetail(object sender, RoutedEventArgs e)
         {
             int jenisLaporan;
             jenisLaporan = (bool)rbLostItem.IsChecked ? 1 : 0;
             string judulLaporan = txtJudulLaporan.Text;
             string descLaporan = txtDescBarang.Text;
-            string[] getAddress = new string[] { @"document.getElementById('valueAddress').value" };
-            string alamatLaporan = await webViewMap.InvokeScriptAsync("eval", getAddress);
+            string alamatLaporan = suggestBoxAddress.Text;
             string displayJenisBarang = listSettingKategoriLostFound[cbJenisBarang.SelectedIndex].nama_kategori.ToString();
             string valueJenisBarang = cbJenisBarang.SelectedValue.ToString();
-            string[] getLat = new string[] { @"document.getElementById('valueLat').value" };
-            string lat = await webViewMap.InvokeScriptAsync("eval", getLat);
-            string[] getLng = new string[] { @"document.getElementById('valueLng').value" };
-            string lng = await webViewMap.InvokeScriptAsync("eval", getLng);
             string tglLaporan = DateTime.Now.ToString("dd/MM/yyyy");
             string waktuLaporan = DateTime.Now.ToString("HH:mm:ss");
             string namaFileGambar = listSettingKategoriLostFound[cbJenisBarang.SelectedIndex].file_gambar_kategori;
             LostFoundReportParams param = new LostFoundReportParams(userLogin,judulLaporan, jenisLaporan, lat, lng, descLaporan, tglLaporan, displayJenisBarang, valueJenisBarang, listImage, alamatLaporan, waktuLaporan, namaFileGambar);
-            this.Frame.Navigate(typeof(LostFoundReportDetailPage), param);
+            session.setLostFoundReportDetailPageParams(param);
+            this.Frame.Navigate(typeof(LostFoundReportDetailPage));
         }
         public void updateTxtImageCount()
         {

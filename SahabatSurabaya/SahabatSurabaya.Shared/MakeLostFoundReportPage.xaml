@@ -23,8 +23,8 @@
             </VisualState>
         </VisualStateGroup>
     </VisualStateManager.VisualStateGroups>
-    <Grid Margin="20">
-        <ScrollViewer Name="rootPanel">
+    <ScrollViewer Name="rootPanel">
+        <Grid Margin="20">
             <StackPanel Orientation="Vertical">
                 <TextBlock FontSize="24" Text="Buat Laporan Lost &amp; Found" FontWeight="ExtraBold" HorizontalAlignment="Stretch"></TextBlock>
                 <TextBlock Margin="0,40,0,0" FontSize="20" Text="Judul Laporan"></TextBlock>
@@ -36,7 +36,7 @@
                 </StackPanel>
                 <TextBlock Margin="0,40,0,0" FontSize="20" Text="Jenis Barang Yang Ditemukan"></TextBlock>
                 <ComboBox Name="cbJenisBarang" HorizontalAlignment="Stretch" Margin="0,10,20,0" FontSize="20">
-                    
+
                 </ComboBox>
                 <TextBlock Margin="0,30,0,0" Text="Deskripsi Barang" FontSize="20"></TextBlock>
                 <TextBox Name="txtDescBarang" Margin="0,10,20,0" HorizontalAlignment="Stretch" FontSize="20"  Height="150" TextWrapping="Wrap"></TextBox>
@@ -44,17 +44,17 @@
                     <TextBlock  Margin="0,30,0,10" Text="Lokasi Barang Ditemukan" FontSize="20"></TextBlock>
                     <Button Click="useLocation" Content="Gunakan Lokasi Sekarang" Margin="10,30,0,0"></Button>
                 </StackPanel>
-                <WebView Margin="0,10,0,0" Name="webViewMap"  Height="500" HorizontalAlignment="Stretch" Source="http://localhost/map.php"></WebView>
+                <AutoSuggestBox PlaceholderText="Cari Alamat.." TextChanged="autoSuggestBoxTextChanged" SuggestionChosen="autoSuggestBoxSuggestionChosen" Name="suggestBoxAddress" QueryIcon="Find" Margin="0,10,0,0"></AutoSuggestBox>
+                <WebView Margin="0,20,0,0" Name="webViewMap"  Height="500" HorizontalAlignment="Stretch" Source="http://adrian-webview.ta-istts.com/location-map.php"></WebView>
                 <StackPanel Orientation="Horizontal">
                     <TextBlock  Margin="0,30,0,10" Text="Upload Gambar" FontSize="20"></TextBlock>
-                    <Button Click="chooseImage" Content="Pilih File.." Margin="10,30,0,0"></Button>
+                    <Button CornerRadius="10" Foreground="White" Background="Green" Click="chooseImage" Content="Pilih File.." Margin="10,30,0,0"></Button>
                 </StackPanel>
                 <StackPanel Name="stackFile" Orientation="Vertical"></StackPanel>
-                <TextBlock Name="txtImageCount" Margin="0,15,0,15" Text="0 gambar terpilih(Max. 2 Gambar) " FontSize="15" Foreground="Gray" ></TextBlock>    
+                <TextBlock Name="txtImageCount" Margin="0,15,0,15" Text="0 gambar terpilih(Max. 2 Gambar) " FontSize="15" Foreground="Gray" ></TextBlock>
                 <Button Click="goToDetail" CornerRadius="5" Foreground="AntiqueWhite" Background="Green" FontSize="20" Width="150" Margin="0,30,0,0" Content="Selanjutnya" HorizontalAlignment="Center"></Button>
-                
             </StackPanel>
-        </ScrollViewer>
-    </Grid>
-    
+        </Grid>
+    </ScrollViewer>
+
 </Page>

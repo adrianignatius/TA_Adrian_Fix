@@ -7,6 +7,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     RequestedTheme="Light"
+    Loaded="pageLoaded"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Grid>
@@ -16,9 +17,9 @@
                 <Image Name="imageIconKejadian" Width="150" Height="150" Margin="15"></Image>
                 <Border Padding="15" Margin="0,30,0,0" HorizontalAlignment="Center" BorderThickness="2" BorderBrush="Green">
                     <StackPanel>
-                        <Grid Padding="2" ColumnSpacing="8" RowSpacing="5">
+                        <Grid Padding="2" RowSpacing="12">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="1*"></ColumnDefinition>
+                                <ColumnDefinition Width="*"></ColumnDefinition>
                                 <ColumnDefinition></ColumnDefinition>
                                 <ColumnDefinition Width="1*"></ColumnDefinition>
                             </Grid.ColumnDefinitions>
@@ -31,19 +32,19 @@
                             </Grid.RowDefinitions>
                             <TextBlock Grid.Row="0" Grid.Column="0" Text="Judul Laporan"></TextBlock>
                             <TextBlock Grid.Row="0" Grid.Column="1">:</TextBlock>
-                            <TextBlock Name="txtJudulLaporan" Grid.Row="0" Grid.Column="2" Text=" asdasd"></TextBlock>
+                            <TextBlock TextAlignment="Left" Name="txtJudulLaporan" Grid.Row="0" Grid.Column="2" Text=" asdasd"></TextBlock>
                             <TextBlock Grid.Row="1" Grid.Column="0" Text="Tanggal Laporan"></TextBlock>
                             <TextBlock Grid.Row="1" Grid.Column="1" Text=":"></TextBlock>
-                            <TextBlock Name="txtTanggalLaporan" TextWrapping="WrapWholeWords" Grid.Row="1" Grid.Column="2" Text=" asdasd"></TextBlock>
+                            <TextBlock TextAlignment="Left" Name="txtTanggalLaporan" TextWrapping="WrapWholeWords" Grid.Row="1" Grid.Column="2" Text=" asdasd"></TextBlock>
                             <TextBlock Grid.Row="2" Grid.Column="0" Text="Jenis Kejadian"></TextBlock>
                             <TextBlock Grid.Row="2" Grid.Column="1" Text=":"></TextBlock>
-                            <TextBlock Name="txtJenisKejadian" Grid.Row="2" Grid.Column="2" TextWrapping="Wrap" Text=" asdasd"></TextBlock>
+                            <TextBlock TextAlignment="Left" Name="txtJenisKejadian" Grid.Row="2" Grid.Column="2" TextWrapping="Wrap" Text=" asdasd"></TextBlock>
                             <TextBlock Name="txtHeaderLokasi" Grid.Row="3" Grid.Column="0" Text="Lokasi Kejadian"></TextBlock>
                             <TextBlock Grid.Row="3" Grid.Column="1" Text=":"></TextBlock>
-                            <TextBlock Name="txtLokasiLaporan" TextWrapping="Wrap" Grid.Row="3" Grid.Column="2" Text=" asdasd"></TextBlock>
+                            <TextBlock TextAlignment="Left" Name="txtLokasiLaporan" TextWrapping="WrapWholeWords" Grid.Row="3" Grid.Column="2" Text=" asdasd"></TextBlock>
                             <TextBlock Grid.Row="4" Grid.Column="0" Text="Deskripsi Kejadian"></TextBlock>
                             <TextBlock Grid.Row="4" Grid.Column="1" Text=":"></TextBlock>
-                            <TextBlock Name="txtDescKejadian" TextWrapping="Wrap" Grid.Row="4" Grid.Column="2" Text="asdasdasdsadasdsadsadsadsadsadasdsadsadsadsadsadsadaasdasdsadsadasdsadasdsadasdsadsadsadsadasdsadassadasdsadsadsa"></TextBlock>
+                            <TextBlock TextAlignment="Left" Name="txtDescKejadian" TextWrapping="WrapWholeWords" Grid.Row="4" Grid.Column="2" Text="asdasdasdsadasdsadsadsadsadsadasdsadsadsadsadsadsadaasdasdsadsadasdsadasdsadasdsadsadsadsadasdsadassadasdsadsadsa"></TextBlock>
                         </Grid>
                         <Button Name="btnConfirm" Click="konfirmasi_laporan" Foreground="AntiqueWhite" CornerRadius="5" Margin="0,20,0,0" HorizontalAlignment="Center" Content="Konfirmasi" Background="Green"></Button>
                     </StackPanel>

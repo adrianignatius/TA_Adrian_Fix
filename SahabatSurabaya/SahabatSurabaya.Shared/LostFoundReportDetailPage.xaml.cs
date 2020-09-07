@@ -34,6 +34,27 @@ namespace SahabatSurabaya
         }
         LostFoundReportParams param;
 
+        public void pageLoaded(object sender,RoutedEventArgs e)
+        {
+            param = session.getLostFoundReportParams();
+            if (param.jenisLaporan == 0)
+            {
+                txtHeaderDetailLaporan.Text = "Konfirmasi Laporan Penemuan Barang";
+                txtHeaderLokasi.Text = "Lokasi Penemuan";
+            }
+            else
+            {
+                txtHeaderDetailLaporan.Text = "Konfirmasi Laporan Kehilangan Barang";
+                txtHeaderLokasi.Text = "Lokasi Penemuan";
+            }
+            imageIconBarang.Source = new BitmapImage(new Uri(url + param.namaFileGambar));
+            txtJenisBarang.Text = param.displayJenisBarang;
+            txtTanggalLaporan.Text = param.tglLaporan;
+            txtJudulLaporan.Text = param.judulLaporan;
+            txtDescBarang.Text = param.descLaporan;
+            txtLokasiLaporan.Text = param.alamatLaporan;
+
+        }
         public async void konfirmasi_laporan(object sender, RoutedEventArgs e)
         {
             using (var client = new HttpClient())
@@ -62,27 +83,6 @@ namespace SahabatSurabaya
                     this.Frame.Navigate(typeof(HomePage),param.userLogin);
                 }
             }
-        }
-        protected override async void OnNavigatedTo(NavigationEventArgs e)
-        {
-            base.OnNavigatedTo(e);
-            param = e.Parameter as LostFoundReportParams;
-            if (param.jenisLaporan == 0)
-            {
-                txtHeaderDetailLaporan.Text = "Konfirmasi Laporan Penemuan Barang";
-                txtHeaderLokasi.Text = "Lokasi Penemuan";
-            }
-            else
-            {
-                txtHeaderDetailLaporan.Text = "Konfirmasi Laporan Kehilangan Barang";
-                txtHeaderLokasi.Text = "Lokasi Penemuan";
-            }
-            imageIconBarang.Source = new BitmapImage(new Uri(url + param.namaFileGambar));
-            txtJenisBarang.Text = param.displayJenisBarang;
-            txtTanggalLaporan.Text = param.tglLaporan;
-            txtJudulLaporan.Text = param.judulLaporan;
-            txtDescBarang.Text = param.descLaporan;
-            txtLokasiLaporan.Text = param.alamatLaporan;
         }
     }
 }

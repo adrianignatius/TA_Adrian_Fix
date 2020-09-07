@@ -28,17 +28,21 @@ namespace SahabatSurabaya
         ObservableCollection<Chat> listChat;
         HubConnection connection;
         ChatPageParams param;
+        Session session;
         public PersonalChatPage()
         {
             this.InitializeComponent();
             listChat = new ObservableCollection<Chat>();
             lvChat.ItemsSource = listChat;
+            session = new Session();
         }
 
         private async void pageLoaded(object sender, RoutedEventArgs e)
         {
+            param = e.Parameter as ChatPageParams;
+            txtNamaUserPenerima.Text = param.nama_user_penerima;
             connection = new HubConnectionBuilder()
-                 .WithUrl("http://localhost:61877/ChatHub")
+                 .WithUrl("https://serversignalr20200907155700.azurewebsites.net/chathub")
                  .WithAutomaticReconnect()
                  .Build();
 
@@ -51,13 +55,14 @@ namespace SahabatSurabaya
             await connection.StartAsync();
             loadChat();
             svChat.ChangeView(0.0f, double.MaxValue, 1.0f);
+
         }
         
         private async void loadChat()
         {
             using (var client = new HttpClient())
             {
-                client.BaseAddress = new Uri("http://localhost:8080/");
+                client.BaseAddress = new Uri(session.getApiURL());
                 client.DefaultRequestHeaders.Accept.Clear();
                 HttpResponseMessage response = await client.GetAsync("/getAllChat/"+param.id_chat);
                 if (response.IsSuccessStatusCode)
@@ -88,7 +93,7 @@ namespace SahabatSurabaya
             {
                 using (var client = new HttpClient())
                 {
-                    client.BaseAddress = new Uri("http://localhost:8080/");
+                    client.BaseAddress = new Uri(session.getApiURL());
                     MultipartFormDataContent form = new MultipartFormDataContent();
                     form.Add(new StringContent(param.id_chat.ToString()), "id_chat");
                     form.Add(new StringContent(param.id_user_pengirim.ToString()), "id_user_pengirim");
@@ -114,8 +119,7 @@ namespace SahabatSurabaya
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
-            param = e.Parameter as ChatPageParams;
-            txtNamaUserPenerima.Text = param.nama_user_penerima;
+            
         }
 
         private bool On_BackRequested()
