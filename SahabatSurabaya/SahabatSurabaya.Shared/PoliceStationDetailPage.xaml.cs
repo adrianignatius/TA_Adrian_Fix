@@ -1,46 +1,43 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.UI.Popups;
+﻿using SahabatSurabaya.Shared;
+using System;
+using System.Globalization;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
+using Windows.UI.Xaml.Media.Imaging;
 using Xamarin.Essentials;
-
-// The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
 namespace SahabatSurabaya
 {
-    /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
-    /// </summary>
+
     public sealed partial class PoliceStationDetailPage : Page
     {
         KantorPolisi selected;
+        Session session;
+        MapObject map;
         public PoliceStationDetailPage()
         {
             this.InitializeComponent();
+            session = new Session();
         }
-        protected override void OnNavigatedTo(NavigationEventArgs e)
+
+        public void pageLoaded(object sender, RoutedEventArgs e)
         {
-            base.OnNavigatedTo(e);
-            selected = e.Parameter as KantorPolisi;
+            selected = session.getKantorPolisi();
             txtNamaKantorPolisi.Text = selected.nama_kantor_polisi;
             txtAlamatKantorPolisi.Text = selected.alamat_kantor_polisi;
-            txtNoTelpKantorPolisi.Text = selected.notelp_kantor_polisi;       
+            txtNoTelpKantorPolisi.Text = selected.notelp_kantor_polisi;
+            imageKantorPolisi.Source = new BitmapImage(new Uri(session.getUrlAssets() + selected.nama_file_gambar));
+            loadMap();
         }
 
         private void Back_Click(object sender, RoutedEventArgs e)
         {
             On_BackRequested();     
+        }
+        private async void openMap(object sender,RoutedEventArgs e)
+        {
+            map = new MapObject();
+            await map.navigateToLocation(double.Parse(selected.lat_kantor_polisi, CultureInfo.InvariantCulture), double.Parse(selected.lng_kantor_polisi, CultureInfo.InvariantCulture));
         }
 
         private bool On_BackRequested()
@@ -53,7 +50,7 @@ namespace SahabatSurabaya
             return false;
         }
 
-        private async void mapLoadCompleted(object sender, WebViewNavigationCompletedEventArgs e)
+        private async void loadMap()
         {
             var location = await Geolocation.GetLastKnownLocationAsync();
             if (location == null)
@@ -64,8 +61,12 @@ namespace SahabatSurabaya
                     Timeout = TimeSpan.FromSeconds(30)
                 });
             }
-            string[] args = { location.Latitude.ToString().Replace(",", "."), location.Longitude.ToString().Replace(",", "."), selected.lat_kantor_polisi, selected.lng_kantor_polisi, selected.nama_kantor_polisi };
-            string lat = await webViewMap.InvokeScriptAsync("calculateRoute", args);
+            string latOrigin = location.Latitude.ToString().Replace(",", ".");
+            string lngOrigin = location.Longitude.ToString().Replace(",", ".");
+            string latDest = selected.lat_kantor_polisi;
+            string lngDest = selected.lng_kantor_polisi;
+            string name = selected.nama_kantor_polisi;
+            webViewMap.Navigate(new Uri(session.getUrlWebView() + "location-kantor-polisi.php?latOrigin=" + latOrigin + "&lngOrigin=" + lngOrigin + "&latDest=" + latDest + "&lngDest=" + lngDest + "&name=" + name));
         }
     }
 

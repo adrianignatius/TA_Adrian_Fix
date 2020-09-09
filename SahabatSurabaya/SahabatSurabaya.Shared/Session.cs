@@ -10,6 +10,8 @@ namespace SahabatSurabaya
     {
        
         public static User userLogin { get; set; }
+        
+        public static KantorPolisi kantorPolisiSelected { get; set; }
         public static ReportDetailPageParams reportDetailPageParam { get; set; }
         public static CrimeReportParams crimeReportParam { get; set; }
         public static LostFoundReportParams lostFoundReportParam { get; set; }
@@ -17,7 +19,17 @@ namespace SahabatSurabaya
         public static ChatPageParams chatPageParam { get; set; }
         public readonly static string API_URL = "http://adrian-webservice.ta-istts.com/";
         public readonly static string URL_WEBVIEW = "http://adrian-webview.ta-istts.com/";
+        public readonly static string URL_ASSETS = "http://adrian-assets.ta-istts.com/";
 
+
+        public KantorPolisi getKantorPolisi()
+        {
+            return kantorPolisiSelected;
+        }
+        public void setKantorPolisi(KantorPolisi kantorPolisi)
+        {
+            kantorPolisiSelected = kantorPolisi;
+        }
         public ChatPageParams getChatPageParams()
         {
             return chatPageParam;
@@ -76,6 +88,11 @@ namespace SahabatSurabaya
         public string getUrlWebView()
         {
             return URL_WEBVIEW;
+        }
+
+        public string getUrlAssets()
+        {
+            return URL_ASSETS;
         }
     }
 }

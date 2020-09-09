@@ -12,18 +12,18 @@ namespace SahabatSurabaya.Shared
         public async Task openMapWithMarker(double lat, double lng, string alamat)
         {
             var location = new Location(lat, lng);
-            try
+            await Map.OpenAsync(location, new MapLaunchOptions
             {
-                await Map.OpenAsync(location, new MapLaunchOptions
-                {
-                    Name = alamat,
-                    NavigationMode=NavigationMode.None
-                }) ;
-            }
-            catch (Exception ex)
-            {
-                // No map application available to open or placemark can not be located
-            }
+                Name = alamat,
+                NavigationMode = NavigationMode.None
+            });
+        }
+
+        public async Task navigateToLocation(double lat,double lng)
+        {
+            var location = new Location(lat, lng);
+            var options = new MapLaunchOptions { NavigationMode = NavigationMode.Driving };
+            await Map.OpenAsync(location, options);
         }
     }
 }

@@ -29,17 +29,24 @@ namespace SahabatSurabaya
         HubConnection connection;
         ChatPageParams param;
         Session session;
+        User userLogin;
+        double height;
         public PersonalChatPage()
         {
             this.InitializeComponent();
             listChat = new ObservableCollection<Chat>();
             lvChat.ItemsSource = listChat;
             session = new Session();
+            height = ((Frame)Window.Current.Content).ActualHeight;
+            
         }
 
         private async void pageLoaded(object sender, RoutedEventArgs e)
         {
-            param = e.Parameter as ChatPageParams;
+            double h = height * 0.8-50;
+            lvChat.Height = h;
+            userLogin = session.getUserLogin();
+            param = session.getChatPageParams();
             txtNamaUserPenerima.Text = param.nama_user_penerima;
             connection = new HubConnectionBuilder()
                  .WithUrl("https://serversignalr20200907155700.azurewebsites.net/chathub")
@@ -48,13 +55,22 @@ namespace SahabatSurabaya
 
             connection.On<int,int,int,string,string,bool>("SendMessage", async (id_chat,id_user_pengirim,id_user_penerima,isi_chat,waktu_chat,isSender) =>
             {
+                if (id_user_pengirim == userLogin.id_user)
+                {
+                    isSender = true;
+                }
+                else
+                {
+                    isSender = false;
+                }
                 listChat.Add(new Chat(id_chat,id_user_pengirim,id_user_penerima,isi_chat,waktu_chat,isSender));
-                svChat.ChangeView(0.0f, double.MaxValue, 1.0f);
+                lvChat.ScrollIntoView(listChat[listChat.Count - 1]);
+            
             });
 
             await connection.StartAsync();
             loadChat();
-            svChat.ChangeView(0.0f, double.MaxValue, 1.0f);
+            //svChat.ChangeView(0.0f, double.MaxValue, 1.0f);
 
         }
         
@@ -82,8 +98,8 @@ namespace SahabatSurabaya
                     }
                     lvChat.ItemsSource = listChat;
                 }
-                svChat.ChangeView(0.0f, double.MaxValue, 1.0f);
-                svChat.ChangeView(0.0f, double.MaxValue, 1.0f);
+                //svChat.ChangeView(0.0f, double.MaxValue, 1.0f);
+                //svChat.ChangeView(0.0f, double.MaxValue, 1.0f);
             }
         }
         private async void sendChat(object sender, RoutedEventArgs e)
@@ -114,12 +130,6 @@ namespace SahabatSurabaya
         private void Back_Click(object sender, RoutedEventArgs e)
         {
             On_BackRequested();     
-        }
-
-        protected override void OnNavigatedTo(NavigationEventArgs e)
-        {
-            base.OnNavigatedTo(e);
-            
         }
 
         private bool On_BackRequested()

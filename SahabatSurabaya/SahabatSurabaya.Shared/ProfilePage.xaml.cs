@@ -17,21 +17,13 @@ namespace SahabatSurabaya
             session = new Session();
         }
 
-        private async void pageLoaded(object sender, RoutedEventArgs e)
+        private void pageLoaded(object sender, RoutedEventArgs e)
         {
+
         }
         public void goToSubscriptionPage(object sender, RoutedEventArgs e)
         {
             this.Frame.Navigate(typeof(SubscriptionPage));
-        }
-
-        protected async override void OnNavigatedTo(NavigationEventArgs e)
-        {
-            base.OnNavigatedTo(e);
-            userLogin = e.Parameter as User;
-            var m = new MessageDialog(userLogin.nama_user);
-            await m.ShowAsync();
-
         }
     }
 }

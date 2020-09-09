@@ -1,15 +1,12 @@
 ﻿using Newtonsoft.Json;
 using SahabatSurabaya.Shared;
 using System;
-
 using System.Collections.ObjectModel;
-
 using System.Net.Http;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
-// The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
 namespace SahabatSurabaya
 {

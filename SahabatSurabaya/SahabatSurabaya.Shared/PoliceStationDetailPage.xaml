@@ -6,18 +6,18 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
+    Loaded="pageLoaded"
     RequestedTheme="Light"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    
+    <ScrollViewer>
     <Grid Margin="20">
-        <ScrollViewer>
             <StackPanel Orientation="Vertical">
                 <Button Margin="-5,-5,0,0" Name="btnBack" Click="Back_Click" HorizontalAlignment="Left" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
                     <SymbolIcon Symbol="Back"></SymbolIcon>
                 </Button>
                 <TextBlock FontWeight="Bold" HorizontalAlignment="Center" FontSize="24" Name="txtNamaKantorPolisi"></TextBlock>
-                <Image HorizontalAlignment="Center" Width="300" Height="200" Source="/Assets/bg.jpg"></Image>
+                <Image Name="imageKantorPolisi" HorizontalAlignment="Center" Width="300" Height="200"></Image>
                 <Border Margin="0,15,0,0" BorderBrush="LightBlue" Background="LightGray">
                     <StackPanel Padding="10" Orientation="Vertical">
                         <StackPanel Orientation="Horizontal">
@@ -30,9 +30,12 @@
                         </StackPanel>
                     </StackPanel>
                 </Border>
-                <TextBlock Margin="0,20,0,0" Text="Map" FontSize="24"></TextBlock>
-                <WebView NavigationCompleted="mapLoadCompleted" Name="webViewMap" Height="500" Source="http://localhost/coba.php"></WebView>
+                <StackPanel Margin="0,20,0,0" Orientation="Horizontal">
+                    <TextBlock  Text="Map" FontSize="24"></TextBlock>
+                    <Button Click="openMap" Margin="8,0,0,0" CornerRadius="10" Foreground="White" Background="Green" Content="Buka Map"></Button>
+                </StackPanel>
+                <WebView Margin="0,8,0,0" Name="webViewMap" Height="300" Source="http://adrian-webview.ta-istts.com/location-kantor-polisi.php"></WebView>
             </StackPanel>
-        </ScrollViewer>
-    </Grid>
+        </Grid>
+    </ScrollViewer>
 </Page>

@@ -38,6 +38,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)HomePage.xaml.cs">
       <DependentUpon>HomePage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)ImageSourceKantorPolisiConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)KantorPolisi.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)KomentarLaporanLostFound.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LaporanKriminalitas.cs" />
@@ -159,6 +160,7 @@
     <Content Include="$(MSBuildThisFileDirectory)Assets\icon\hitandrun-icon.png" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\icon\jewerly-icon.png" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\icon\kidnap-icon.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Assets\icon\location-icon.png" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\icon\pet-icon.png" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\icon\robbery-icon.png" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\icon\shoes-icon.png" />

@@ -158,7 +158,7 @@ namespace SahabatSurabaya
             }
         }
 
-        private async void goToDetail(object sender, RoutedEventArgs e)
+        private void goToDetail(object sender, RoutedEventArgs e)
         {
             int jenisLaporan;
             jenisLaporan = (bool)rbLostItem.IsChecked ? 1 : 0;
@@ -178,7 +178,7 @@ namespace SahabatSurabaya
         {
             txtImageCount.Text = imageCount + " gambar terpilih(Max. 2 Gambar)";
         }
-        async void deleteFile(object sender, RoutedEventArgs e)
+        public void deleteFile(object sender, RoutedEventArgs e)
         {
             Button selectedBtn = sender as Button;
             listImage.RemoveAt(Convert.ToInt32(selectedBtn.Tag));

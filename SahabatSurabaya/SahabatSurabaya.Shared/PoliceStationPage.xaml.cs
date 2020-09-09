@@ -45,8 +45,6 @@ namespace SahabatSurabaya
                 });
                 
             }
-            var m = new MessageDialog(location.Latitude.ToString() + "-" + location.Longitude.ToString());
-            await m.ShowAsync();
             string origins = location.Latitude.ToString().Replace(",",".") + "," + location.Longitude.ToString().Replace(",", ".");
             using (var client = new HttpClient())
             {
@@ -98,7 +96,8 @@ namespace SahabatSurabaya
         public void goToDetail(object sender, RoutedEventArgs e)
         {
             int index = gvListKantorPolisi.SelectedIndex;
-            this.Frame.Navigate(typeof(PoliceStationDetailPage),listKantorPolisi[index]);
+            session.setKantorPolisi(listKantorPolisi[index]);
+            this.Frame.Navigate(typeof(PoliceStationDetailPage));
         }
     }
 }

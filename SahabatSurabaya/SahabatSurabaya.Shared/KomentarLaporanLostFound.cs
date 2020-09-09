@@ -6,7 +6,6 @@ namespace SahabatSurabaya
 {
     class KomentarLaporanLostFound
     {
-
         public int id_komentar { get; set; }
 
         public string id_laporan { get; set; }

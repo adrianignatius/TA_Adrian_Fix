@@ -95,7 +95,8 @@ namespace SahabatSurabaya
         {
             DisplayHeaderChat selected = listDisplayHeaderChat[lvDaftarChat.SelectedIndex];
             ChatPageParams param = new ChatPageParams(selected.id_chat, userLogin.id_user, selected.id_target_chat, selected.nama_display);
-            this.Frame.Navigate(typeof(PersonalChatPage), param);
+            session.setChatPageParams(param);
+            this.Frame.Navigate(typeof(PersonalChatPage));
         }
 
     }
