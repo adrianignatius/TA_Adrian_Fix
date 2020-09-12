@@ -1,0 +1,25 @@
+﻿<Page
+    x:Class="SahabatSurabaya.VerifyOtpPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:SahabatSurabaya.Shared"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    RequestedTheme="Light"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Grid>
+        <Button VerticalAlignment="Top" HorizontalAlignment="Left" 
+Style="{StaticResource NavigationBackButtonNormalStyle}"/>
+        <Grid Margin="20">
+            <TextBlock FontSize="24" FontWeight="ExtraBold" TextWrapping="WrapWholeWords" HorizontalAlignment="Center" Text="Code Verification"></TextBlock>
+            <StackPanel Margin="0,56,0,0">
+                <Image Margin="0,40,0,0" Source="/Assets/icon/otp-icon.png" Width="200" Height="200"></Image>
+                <TextBlock TextAlignment="Center" MaxWidth="300" HorizontalAlignment="Center" TextWrapping="WrapWholeWords" Text="Kami telah mengirimkan kode OTP ke nomor hp anda, silahkan masukkan kode yang telah dikirim"></TextBlock>
+                <TextBox Name="txtOtp" BeforeTextChanging="txtOtpBeforeChangingEvent" TextAlignment="Center" MaxLength="4" Margin="0,20,0,0" Width="200" HorizontalAlignment="Center"></TextBox>
+                <Button Margin="0,20,0,0" Foreground="White" Background="Green" HorizontalAlignment="Stretch" Content="Konfirmasi"></Button>
+            </StackPanel>
+        </Grid>
+    </Grid>
+    
+</Page>

@@ -2,30 +2,20 @@
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Media.Imaging;
-using Windows.UI.Xaml.Navigation;
+#if __ANDROID__
+using Com.OneSignal;
+using Com.OneSignal.Abstractions;
+#endif
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
 namespace SahabatSurabaya
 {
-    /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
-    /// </summary>
     public sealed partial class LoginPage : Page
     {
         Session session;
@@ -35,11 +25,9 @@ namespace SahabatSurabaya
             session = new Session();          
         }
 
-        public object JsonCovert { get; private set; }
-
         public void goToRegister(object sender, RoutedEventArgs e)
         {
-            this.Frame.Navigate(typeof(RegisterPage));
+            this.Frame.Navigate(typeof(VerifyOtpPage));
         }
         
         public async void login(object sender, RoutedEventArgs e)
@@ -73,6 +61,11 @@ namespace SahabatSurabaya
                             User userLogin= JsonConvert.DeserializeObject<User>(data);
                             session.setUserLogin(userLogin);
                             this.Frame.Navigate(typeof(HomeNavigationPage));
+
+#if __ANDROID__
+                              OneSignal.Current.SendTags(new Dictionary<string, string>() { {"username", userLogin.email_user}, {"tipe_user", userLogin.status_user.ToString()} });
+                             
+#endif
                         }
                         else
                         {

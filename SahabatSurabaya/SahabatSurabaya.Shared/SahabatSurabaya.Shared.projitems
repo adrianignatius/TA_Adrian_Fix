@@ -83,6 +83,9 @@
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)UploadedImage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)User.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)VerifyOtpPage.xaml.cs">
+      <DependentUpon>VerifyOtpPage.xaml</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Page Include="$(MSBuildThisFileDirectory)ChatPage.xaml">
@@ -145,6 +148,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="$(MSBuildThisFileDirectory)VerifyOtpPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Content Include="$(MSBuildThisFileDirectory)Assets\app-icon.png" />
@@ -161,6 +168,7 @@
     <Content Include="$(MSBuildThisFileDirectory)Assets\icon\jewerly-icon.png" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\icon\kidnap-icon.png" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\icon\location-icon.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Assets\icon\otp-icon.png" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\icon\pet-icon.png" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\icon\robbery-icon.png" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\icon\shoes-icon.png" />

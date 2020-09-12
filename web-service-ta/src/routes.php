@@ -20,11 +20,6 @@ return function (App $app) {
         return $response->withJson($result, 200);
     });
 
-    $app->get('/coba', function ($request, $response) {
-        $g = new Geohash();
-        return $response->withJson($g->encode(17.583942, 112.585932, 8));
-    });
-
     $app->get('/getHeadlineLaporanLostFound', function ($request, $response) {
         $sql = "SELECT * FROM laporan_lostfound_barang order by tanggal_laporan desc, waktu_laporan asc LIMIT 5";
         $stmt = $this->db->prepare($sql);

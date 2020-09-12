@@ -18,10 +18,8 @@
     <ScrollViewer VerticalScrollBarVisibility="Hidden" Name="rootPanel">
         <Grid Margin="5">
             <StackPanel Orientation="Vertical">
-                <AppBar IsSticky="True">
-                    <TextBlock FontSize="24" FontWeight="ExtraBold">Data Kantor Polisi</TextBlock>
-                </AppBar>
-                <ListView SelectionMode="None" IsItemClickEnabled="True" Tapped="goToDetail" Margin="0,10,0,0" Name="gvListKantorPolisi">
+                <TextBlock FontSize="24" FontWeight="ExtraBold">Data Kantor Polisi</TextBlock>
+                <ListView SelectionMode="Single" IsItemClickEnabled="True" Tapped="goToDetail" Margin="0,10,0,0" Name="gvListKantorPolisi">
                     <ListView.ItemTemplate>
                         <DataTemplate x:Name="ImageOverlayDataTemplate">
                             <Border Margin="0,4,0,4" CornerRadius="10" BorderBrush="Gray" BorderThickness="1">
