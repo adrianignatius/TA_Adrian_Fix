@@ -70,8 +70,6 @@ namespace SahabatSurabaya
 
             await connection.StartAsync();
             loadChat();
-            //svChat.ChangeView(0.0f, double.MaxValue, 1.0f);
-
         }
         
         private async void loadChat()

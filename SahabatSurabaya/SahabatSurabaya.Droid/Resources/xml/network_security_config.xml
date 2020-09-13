@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">http://adrian-webview.ta-istts.com/</domain>
+        <domain includeSubdomains="true">http://adrian-webservice.ta-istts.com/</domain>
+        <domain includeSubdomains="true">http://adrian-assets.ta-istts.com/</domain>
+    </domain-config>
+</network-security-config>

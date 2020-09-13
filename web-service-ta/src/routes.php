@@ -62,6 +62,29 @@ return function (App $app) {
             return $response->withJson(["status" => "success", "users" => $result], 200);
         });
 
+        $app->post('/sendOTP', function($request,$response){
+            $body = $request->getParsedBody();
+            $url = "https://numberic1.tcastsms.net:20005/sendsms?account=def_robby3&password=12345";
+            $code=rand(1000,9999);
+            $message="Masukkan nomor".$body['number']." Mohon tidak menginformasikan nomor ini kepada siapa pun";
+            $api_url=$url."&numbers=".$body['number']."&content=".rawurlencode($message);
+            $ch= curl_init();
+            curl_setopt($ch, CURLOPT_URL, $api_url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+                'Content-Type:application/json',
+                'Accept:application/json'
+            ));
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+            curl_setopt($ch, CURLOPT_HEADER        , FALSE);
+    
+            $res = curl_exec($ch);
+            $httpCode= curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
+            return $response->withJson(["status_code"=>$httpCode,"response"=>$res]);
+        });
+
         $app->post('/checkLogin', function ($request, $response) {
             $user = $request->getParsedBody();
             $email=$user["email"];
@@ -432,6 +455,8 @@ return function (App $app) {
             $result = $stmt->fetchAll();
             return $response->withJson($result, 200);
         });
+
+        
 
         $app->get('/[{name}]', function (Request     $request, Response $response, array $args) use ($container) {
             // Sample log message
