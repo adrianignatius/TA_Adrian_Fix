@@ -27,7 +27,7 @@ namespace SahabatSurabaya
 
         public void goToRegister(object sender, RoutedEventArgs e)
         {
-            this.Frame.Navigate(typeof(VerifyOtpPage));
+            this.Frame.Navigate(typeof(RegisterPage));
         }
         
         public async void login(object sender, RoutedEventArgs e)

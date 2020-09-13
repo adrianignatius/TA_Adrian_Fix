@@ -64,25 +64,40 @@ return function (App $app) {
 
         $app->post('/sendOTP', function($request,$response){
             $body = $request->getParsedBody();
-            $url = "https://numberic1.tcastsms.net:20005/sendsms?account=def_robby3&password=12345";
+            $url = "https://numberic1.tcastsms.net:20005/sendsms?account=def_robby3&password=123456";
             $code=rand(1000,9999);
-            $message="Masukkan nomor".$body['number']." Mohon tidak menginformasikan nomor ini kepada siapa pun";
-            $api_url=$url."&numbers=".$body['number']."&content=".rawurlencode($message);
-            $ch= curl_init();
-            curl_setopt($ch, CURLOPT_URL, $api_url);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-                'Content-Type:application/json',
-                'Accept:application/json'
-            ));
-            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-            curl_setopt($ch, CURLOPT_HEADER        , FALSE);
+            $message="Masukkan nomor ".$code.". Mohon tidak menginformasikan nomor ini kepada siapa pun";
+            $api_url=$url."&numbers=".$body["number"]."&content=".rawurlencode($message);
+            // $ch= curl_init();
+            // curl_setopt($ch, CURLOPT_URL, $api_url);
+            // curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            // curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+            //     'Content-Type:application/json',
+            //     'Accept:application/json'
+            // ));
+            // curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
+            // curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+            // curl_setopt($ch, CURLOPT_HEADER        , FALSE);
     
-            $res = curl_exec($ch);
-            $httpCode= curl_getinfo($ch, CURLINFO_HTTP_CODE);
-            curl_close($ch);
-            return $response->withJson(["status_code"=>$httpCode,"response"=>$res]);
+            // $res = curl_exec($ch);
+            // $httpCode= curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            // curl_close($ch);
+
+            $new_date = (new DateTime())->modify('+5 minutes');
+            $expiredToken = $new_date->format('Y/m/d H:i:s'); // for example
+            $sql = "UPDATE user set otp_code=:otp_code,otp_code_available_until=:otp_code_available_until where telpon_user=:telpon_user";
+            $stmt = $this->db->prepare($sql);
+            $data = [
+                ":otp_code_available_until"=>$expiredToken,
+                ":otp_code" => $code,
+                ":telpon_user"=>$body["number"]
+            ];
+            //return $response->withJson($api_url);
+            if($stmt->execute($data)){
+                return $response->withJson(["status_code" => "200"]);
+            }else{
+                return $response->withJson(["status_code" => "400"]);
+            }
         });
 
         $app->post('/checkLogin', function ($request, $response) {
@@ -200,22 +215,66 @@ return function (App $app) {
             }
         });
 
-       $app->post('/insertUser', function ($request, $response) {
+       $app->post('/registerUser', function ($request, $response) {
             $new_user = $request->getParsedBody();
-            $sql = "INSERT INTO user (email_user,password_user, nama_user, telpon_user) VALUE (:email_user,:password_user, :nama_user, :telpon_user)";
+            $sql="SELECT COUNT(*) from user where email_user=".$new_user["email_user"];
             $stmt = $this->db->prepare($sql);
-            $data = [
-                ":email_user" => $new_user["email_user"],
-                ":password_user"=>$new_user["password_user"],
-                ":nama_user" => $new_user["nama_user"],
-                ":telpon_user" => $new_user["telpon_user"]
-            ];
-        
-            if($stmt->execute($data))
-            return $response->withJson(["status" => "success", "data" => "1"], 200);
-            
-            return $response->withJson(["status" => "failed", "data" => "0"], 200);
-            });
+            $stmt->execute();
+            $email_kembar = $stmt->fetchColumn();
+            $sql="SELECT COUNT(*) from user where telpon_user=".$new_user["telpon_user"];
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute();
+            $telpon_kembar = $stmt->fetchColumn();
+            if($email_kembar==1 || $telpon_kembar==1){
+                if($email_kembar==1){
+                    return $response->withJson(["status"=>"2","message"=>"Email yang dimasukkan telah terpakai"]);
+                }else if($telpon_kembar==1){
+                    return $response->withJson(["status"=>"3","message"=>"No. Handphone yang dimasukkan telah terpakai"]);
+                }
+            }else{
+                $geohash=new Geohash();
+                $lat_user="";
+                $lng_user="";
+                $alamat_user=""; 
+                $geohashAlamat=null;          
+                if($new_user["lat_user"]==""){
+                    $lat_user=null;
+                }else{
+                    $lat_user=$new_user["lat_user"];
+                }
+                if($new_user["lng_user"]==""){
+                    $lng_user=null;
+                }else{
+                    $lng_user=$new_user["lng_user"];
+                }
+                if($new_user["alamat_user"]==""){
+                    $alamat_user=null;
+                }else{
+                    $alamat_user=$new_user["alamat_user"];
+                }
+                if($lng_user!=null && $lat_user!=null){
+                    $geohashAlamat=$geohash->encode(floatval($lat_user), floatval($lng_user), 8);
+                }
+                $sql = "INSERT INTO user (email_user,password_user, nama_user, telpon_user, status_user, lat_user,lng_user,alamat_user,geohash_alamat_user) VALUE (:email_user,:password_user, :nama_user, :telpon_user, :status_user, :lat_user,:lng_user,:alamat_user,:geohash_alamat_user)";
+                $stmt = $this->db->prepare($sql);
+                $data = [
+                    ":email_user" => $new_user["email_user"],
+                    ":password_user"=>$new_user["password_user"],
+                    ":nama_user" => $new_user["nama_user"],
+                    ":telpon_user" => $new_user["telpon_user"],
+                    ":status_user"=>0,
+                    ":lat_user"=>$lat_user,
+                    ":lng_user"=>$lng_user,
+                    ":alamat_user"=>$alamat_user,
+                    ":geohash_alamat_user"=>$geohashAlamat
+                ];
+                if($stmt->execute($data)){
+                    return $response->withJson(["status" => "1","message"=>"Register akun berhasil!"]);
+                }else{
+                    return $response->withJson(["status" => "99","message"=>"Register gagal, silahkan coba beberapa saat lagi"]);
+                }
+            }
+        });
     });
         
         $app->post('/insertKomentarLaporanLostFound', function ($request, $response) {
