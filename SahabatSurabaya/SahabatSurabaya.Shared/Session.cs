@@ -10,7 +10,6 @@ namespace SahabatSurabaya
     {
        
         public static User userLogin { get; set; }
-        
         public static KantorPolisi kantorPolisiSelected { get; set; }
         public static ReportDetailPageParams reportDetailPageParam { get; set; }
         public static CrimeReportParams crimeReportParam { get; set; }

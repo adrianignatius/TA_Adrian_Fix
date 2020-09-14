@@ -43,7 +43,7 @@ namespace SahabatSurabaya
 
         private async void pageLoaded(object sender, RoutedEventArgs e)
         {
-            double h = height * 0.8-50;
+            double h = height * 0.8-80;
             lvChat.Height = h;
             userLogin = session.getUserLogin();
             param = session.getChatPageParams();

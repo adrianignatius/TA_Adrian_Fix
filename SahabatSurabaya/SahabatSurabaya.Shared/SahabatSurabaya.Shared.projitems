@@ -26,6 +26,9 @@
       <DependentUpon>ChatPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)ChatPageParams.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Coba.xaml.cs">
+      <DependentUpon>Coba.xaml</DependentUpon>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)CrimeReportDetailPage.xaml.cs">
       <DependentUpon>CrimeReportDetailPage.xaml</DependentUpon>
     </Compile>
@@ -89,6 +92,10 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="$(MSBuildThisFileDirectory)ChatPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Coba.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

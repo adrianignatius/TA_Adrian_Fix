@@ -84,7 +84,7 @@ return function (App $app) {
             // curl_close($ch);
 
             $new_date = (new DateTime())->modify('+5 minutes');
-            $expiredToken = $new_date->format('Y/m/d H:i:s'); // for example
+            $expiredToken = $new_date->format('Y/m/d H:i:s'); 
             $sql = "UPDATE user set otp_code=:otp_code,otp_code_available_until=:otp_code_available_until where telpon_user=:telpon_user";
             $stmt = $this->db->prepare($sql);
             $data = [
@@ -97,6 +97,27 @@ return function (App $app) {
                 return $response->withJson(["status_code" => "200"]);
             }else{
                 return $response->withJson(["status_code" => "400"]);
+            }
+        });
+        
+        $app->post('/verifyOTP', function($request,$response){
+            $body = $request->getParsedBody();
+            $date = new DateTime();
+            $sql="SELECT otp_code,otp_code_available_until from user where telpon_user='".$body["number"]."'";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute();
+            $result = $stmt->fetchAll();
+            if($result[0]["otp_code"]==$body["otp_code"]){
+                if($date<new DateTime($result[0]["otp_code_available_until"])){
+                    $sql="UPDATE user set status_user=0,otp_code=null,otp_code_available_until=null where telpon_user='".$body["number"]."'";
+                    $stmt = $this->db->prepare($sql);
+                    $stmt->execute();
+                    return $response->withJson(["status"=>"1","message"=>"Verify kode OTP berhasil"]);
+                }else{
+                    return $response->withJson(["status"=>"2","message"=>"Kode OTP telah Kadaluarsa, silahkan request kode OTP yang baru"]);
+                }
+            }else{
+                return $response->withJson(["status"=>"99","message"=>"Kode OTP yang anda masukkan tidak sesuai"]);
             }
         });
 
@@ -217,11 +238,11 @@ return function (App $app) {
 
        $app->post('/registerUser', function ($request, $response) {
             $new_user = $request->getParsedBody();
-            $sql="SELECT COUNT(*) from user where email_user=".$new_user["email_user"];
+            $sql="SELECT COUNT(*) from user where email_user='".$new_user["email_user"]."'";
             $stmt = $this->db->prepare($sql);
             $stmt->execute();
             $email_kembar = $stmt->fetchColumn();
-            $sql="SELECT COUNT(*) from user where telpon_user=".$new_user["telpon_user"];
+            $sql="SELECT COUNT(*) from user where telpon_user='".$new_user["telpon_user"]."'";
             $stmt = $this->db->prepare($sql);
             $stmt->execute();
             $telpon_kembar = $stmt->fetchColumn();
@@ -237,17 +258,17 @@ return function (App $app) {
                 $lng_user="";
                 $alamat_user=""; 
                 $geohashAlamat=null;          
-                if($new_user["lat_user"]==""){
+                if($new_user["lat_user"]=="default"){
                     $lat_user=null;
                 }else{
                     $lat_user=$new_user["lat_user"];
                 }
-                if($new_user["lng_user"]==""){
+                if($new_user["lng_user"]=="default"){
                     $lng_user=null;
                 }else{
                     $lng_user=$new_user["lng_user"];
                 }
-                if($new_user["alamat_user"]==""){
+                if($new_user["alamat_user"]=="default"){
                     $alamat_user=null;
                 }else{
                     $alamat_user=$new_user["alamat_user"];
@@ -262,14 +283,14 @@ return function (App $app) {
                     ":password_user"=>$new_user["password_user"],
                     ":nama_user" => $new_user["nama_user"],
                     ":telpon_user" => $new_user["telpon_user"],
-                    ":status_user"=>0,
+                    ":status_user"=>99,
                     ":lat_user"=>$lat_user,
                     ":lng_user"=>$lng_user,
                     ":alamat_user"=>$alamat_user,
                     ":geohash_alamat_user"=>$geohashAlamat
                 ];
                 if($stmt->execute($data)){
-                    return $response->withJson(["status" => "1","message"=>"Register akun berhasil!"]);
+                    return $response->withJson(["status" => "1","message"=>"Register akun berhasil!","insertID"=>$this->db->lastInsertId()]);
                 }else{
                     return $response->withJson(["status" => "99","message"=>"Register gagal, silahkan coba beberapa saat lagi"]);
                 }

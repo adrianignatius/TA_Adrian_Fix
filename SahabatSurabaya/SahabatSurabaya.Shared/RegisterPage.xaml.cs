@@ -8,6 +8,7 @@ using Windows.UI.Popups;
 using System.Collections.ObjectModel;
 using System.Timers;
 using System.Net.Http.Headers;
+using Newtonsoft.Json;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -17,7 +18,7 @@ namespace SahabatSurabaya
     {
         DispatcherTimer dispatcherTimer;
         int tick = 0;
-        string lat, lng = "";
+        string lat="default", lng = "default";
         bool isChosen = false;
         Session session = new Session();
         ObservableCollection<AutocompleteAddress> listAutoCompleteAddress = new ObservableCollection<AutocompleteAddress>();
@@ -109,7 +110,16 @@ namespace SahabatSurabaya
             }
             tick = 0;
         }
-        
+
+        private void txtPhoneBeforeTextChanging(TextBox sender, TextBoxBeforeTextChangingEventArgs args)
+        {
+            args.Cancel = args.NewText.Any(c => !char.IsDigit(c));
+        }
+
+        private void txtFullNameBeforeTextChanging(TextBox sender, TextBoxBeforeTextChangingEventArgs args)
+        {
+            args.Cancel = args.NewText.Any(c => char.IsDigit(c));
+        }
 
         private async void register(object sender, RoutedEventArgs e)
         {
@@ -119,7 +129,8 @@ namespace SahabatSurabaya
                 {
                     using (var client = new HttpClient())
                     {
-                        client.BaseAddress = new Uri(session.getApiURL());
+                        client.BaseAddress = new Uri("http://localhost:8080/");
+                        //client.BaseAddress = new Uri(session.getApiURL());
                         client.DefaultRequestHeaders.Accept.Clear();
                         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                         MultipartFormDataContent form = new MultipartFormDataContent();
@@ -129,11 +140,39 @@ namespace SahabatSurabaya
                         form.Add(new StringContent(txtPassword.Password), "password_user");
                         form.Add(new StringContent(lat), "lat_user");
                         form.Add(new StringContent(lng), "lng_user");
-                        form.Add(new StringContent(txtAutocompleteAddress.Text), "alamat_user");
+                        if (txtAutocompleteAddress.Text.Length == 0)
+                        {
+                            form.Add(new StringContent(txtAutocompleteAddress.Text), "alamat_user");
+                        }
+                        else
+                        {
+                            form.Add(new StringContent("default"), "alamat_user");
+                        }
+                        
                         HttpResponseMessage response = await client.PostAsync("user/registerUser", form);
                         if (response.IsSuccessStatusCode)
                         {
-                            this.Frame.Navigate(typeof(VerifyOtpPage));
+                            var responseData = response.Content.ReadAsStringAsync().Result;
+                            JObject json = JObject.Parse(responseData);
+                            if (json["status"].ToString() == "1")
+                            {
+                                response = await client.GetAsync("user/getUser/" + json["insertID"].ToString());
+                                if (response.IsSuccessStatusCode)
+                                {
+                                    responseData = response.Content.ReadAsStringAsync().Result;
+                                    User userRegister = JsonConvert.DeserializeObject<User>(responseData);
+                                    session.setUserLogin(userRegister);
+                                    var message = new MessageDialog(json["message"].ToString());
+                                    await message.ShowAsync();
+                                    this.Frame.Navigate(typeof(VerifyOtpPage));
+                                }
+                                
+                            }
+                            else
+                            {
+                                var message = new MessageDialog(json["message"].ToString());
+                                await message.ShowAsync();
+                            }
                         }
                     }
                 }

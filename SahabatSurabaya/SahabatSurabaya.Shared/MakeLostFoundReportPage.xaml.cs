@@ -233,7 +233,7 @@ namespace SahabatSurabaya
             else
             {
                 var message = new MessageDialog("Anda hanya dapat mengupload maksimal 3 gambar saja");
-                message.ShowAsync();
+                await message.ShowAsync();
             }
 
         }
