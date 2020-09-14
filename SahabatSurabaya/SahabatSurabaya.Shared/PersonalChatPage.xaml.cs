@@ -1,23 +1,10 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.IO;
-using System.Linq;
 using System.Net.Http;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
 
 
 namespace SahabatSurabaya
@@ -96,8 +83,6 @@ namespace SahabatSurabaya
                     }
                     lvChat.ItemsSource = listChat;
                 }
-                //svChat.ChangeView(0.0f, double.MaxValue, 1.0f);
-                //svChat.ChangeView(0.0f, double.MaxValue, 1.0f);
             }
         }
         private async void sendChat(object sender, RoutedEventArgs e)

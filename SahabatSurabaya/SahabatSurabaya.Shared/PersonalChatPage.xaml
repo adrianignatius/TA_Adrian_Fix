@@ -60,10 +60,10 @@
                     <ColumnDefinition Width="0.8*"></ColumnDefinition>
                     <ColumnDefinition Width="0.2*"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <Grid Padding="10" Grid.Column="0">
+                <Grid Padding="16" Grid.Column="0">
                     <TextBox FontSize="14" Name="txtChatMessage" PlaceholderText="Enter a message.." Grid.Column="0" ></TextBox>
                 </Grid>
-                <Grid Padding="10" Grid.Column="1">
+                <Grid Padding="16" Grid.Column="1">
                     <Button Click="sendChat" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Content="Kirim"></Button>
                 </Grid>
             </Grid>
