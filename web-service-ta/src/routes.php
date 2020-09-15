@@ -296,6 +296,81 @@ return function (App $app) {
                 }
             }
         });
+
+        $app->get('/getEmergencyContact/{id_user}', function($request, $response, $args){
+            $id_user=$args["id_user"];
+            $sql="SELECT * from user where id_user in (SELECT case when id_user_1=:id_user then id_user_2 else id_user_1 end from daftar_kontak_darurat where status_relasi=1 and (id_user_1=:id_user or id_user_2=:id_user));";
+            $data=[
+                ":id_user"=>$id_user
+            ];
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute($data);
+            $result = $stmt->fetchAll();
+            return $response->withJson($result);
+        }); 
+
+        $app->get('/getSentPendingContactRequest/{id_user}', function($request, $response, $args){
+            $id_user=$args["id_user"];
+            $sql="SELECT * from user where id_user in (SELECT id_user_2 FROM daftar_kontak_darurat where id_user_1=".$id_user." and status_relasi=0)";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute();
+            $result = $stmt->fetchAll();
+            return $response->withJson($result);
+        }); 
+        
+        $app->get('/getPendingContactRequest/{id_user}', function($request, $response, $args){
+            $id_user=$args["id_user"];
+            $sql="SELECT * from user where id_user in (SELECT id_user_1 FROM daftar_kontak_darurat where id_user_2=".$id_user." and status_relasi=0)";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute();
+            $result = $stmt->fetchAll();
+            return $response->withJson($result);
+        }); 
+        
+        $app->post('/addEmergencyContact', function($request, $response){
+            $body = $request->getParsedBody();
+            $id_user_pengirim=$body["id_user_pengirim"];
+            $sql  = "SELECT * from user where telpon_user='".$body["nomor_tujuan"]."'";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute();
+            $user_found = $stmt->fetchAll();
+            if($user_found!=null){
+                $sql="SELECT * from daftar_kontak_darurat where (id_user_1=:id_user_1 and id_user_2=:id_user_2) OR (id_user_1=:id_user_2 and id_user_2=:id_user_1)";
+                $stmt = $this->db->prepare($sql);
+                $data = [
+                    ":id_user_1" => $id_user_pengirim,
+                    ":id_user_2"=>$user_found[0]["id_user"]
+                ];
+                $stmt->execute($data);
+                $duplicateRecord = $stmt->fetchAll();
+                if($duplicateRecord==null){
+                    $sql="INSERT INTO daftar_kontak_darurat (id_user_1,id_user_2,status_relasi) VALUE (:id_user_1,:id_user_2,:status_relasi)";
+                    $data = [
+                        ":id_user_1" => $id_user_pengirim,
+                        ":id_user_2"=>$user_found[0]["id_user"],
+                        ":status_relasi"=>0
+                    ];
+                    $stmt = $this->db->prepare($sql);
+                    if($stmt->execute($data)){
+                        return $response->withJson(["status"=>"1","message"=>"Request kontak telah dikirimkan ke nomor ".$body["nomor_tujuan"]]);
+                    }else{
+                        return $response->withJson(["status"=>"400","message"=>"Tambah kontak gagal, silahkan coba beberapa saat lagi"]);
+                    }
+                }else{
+                    $message="";
+                    if($duplicateRecord[0]["status_relasi"]==0 && $duplicateRecord[0]["id_user_1"]==$id_user_pengirim){
+                        $message="Anda sudah mengirimkan request untuk menambahkan user tersebut sebelumnya, silahkan tunggu user tersebut untuk menerima.";
+                    }else if($duplicateRecord[0]["status_relasi"]==0 && $duplicateRecord[0]["id_user_2"]==$id_user_pengirim){
+                        $message="User tersebut telah mengirimkan request untuk menambahkan anda kedalam kontaknya.";
+                    }else{
+                        $message="User dengan nomor tersebut telah terdaftar pada kontak anda.";
+                    }
+                    return $response->withJson(["status"=>"99","message"=>$message]);
+                }       
+            }else{
+                return $response->withJson(["status"=>"99","message"=>"User dengan nomor tersebut tidak ditemukan"]);
+            }
+        });
     });
         
         $app->post('/insertKomentarLaporanLostFound', function ($request, $response) {

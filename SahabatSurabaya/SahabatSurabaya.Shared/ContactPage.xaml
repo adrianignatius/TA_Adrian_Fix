@@ -1,0 +1,108 @@
+﻿<Page
+    x:Class="SahabatSurabaya.ContactPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:SahabatSurabaya.Shared"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    RequestedTheme="Light"
+    Loaded="pageLoaded"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <ScrollViewer>
+        <Grid Margin="20">
+            <StackPanel>
+                <TextBlock FontSize="24" FontWeight="ExtraBold" Text="Kontak Saya"></TextBlock>
+                <Grid Margin="0,12,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="0.6*"></ColumnDefinition>
+                        <ColumnDefinition Width="0.3*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <TextBox Name="txtSearchNumber" FontSize="14" PlaceholderText="Cari user.." Grid.Column="0"></TextBox>
+                    <Button Click="addContact" Grid.Column="1" Margin="8,0,0,0" CornerRadius="10" Foreground="White" Background="Green" Content="Request Kontak"></Button>
+                </Grid>
+                <Border Background="LightGray" CornerRadius="4" Margin="0,12,0,0">
+                    <StackPanel Margin="10" Orientation="Vertical">
+                        <TextBlock FontWeight="Bold" FontSize="14" Text="Daftar kontak darurat"></TextBlock>
+                        <ListView SelectionMode="None" Name="lvEmergencyContact">
+                            <ListView.ItemTemplate>
+                                <DataTemplate x:Name="emergencyContactTemplate">
+                                    <StackPanel Orientation="Horizontal" Height="64">
+                                        <Ellipse Height="48" Width="48" VerticalAlignment="Center">
+                                            <Ellipse.Fill>
+                                                <ImageBrush ImageSource="/Assets/avatar-profile.png"/>
+                                            </Ellipse.Fill>
+                                        </Ellipse>
+                                        <StackPanel Orientation="Vertical" VerticalAlignment="Center" Margin="12,0,0,0">
+                                            <TextBlock Text="{Binding nama_user}" FontSize="14" FontWeight="Black"/>
+                                            <TextBlock Text="{Binding telpon_user}" FontSize="12" FontWeight="SemiLight" Foreground="Gray"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                    </StackPanel>
+                </Border>
+                <Border Margin="0,12,0,0" Background="LightGray" CornerRadius="4">
+                    <StackPanel Orientation="Vertical" Margin="10">
+                        <TextBlock  FontWeight="Bold" FontSize="14" Text="Daftar permintaan masuk"></TextBlock>
+                        <ListView SelectionMode="None" IsItemClickEnabled="True" Name="lvPendingContactRequest">
+                            <ListView.ItemTemplate>
+                                <DataTemplate x:Name="pendingContactTemplate">
+                                    <Grid Margin="0,12,0,0" HorizontalAlignment="Stretch">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="auto"></ColumnDefinition>
+                                            <ColumnDefinition Width="*"></ColumnDefinition>
+                                            <ColumnDefinition Width="auto"></ColumnDefinition>
+                                        </Grid.ColumnDefinitions>
+                                        <Ellipse Grid.Column="0" Height="48" Width="48" VerticalAlignment="Center">
+                                            <Ellipse.Fill>
+                                                <ImageBrush ImageSource="/Assets/avatar-profile.png"/>
+                                            </Ellipse.Fill>
+                                        </Ellipse>
+                                        <StackPanel Margin="12,0,0,0" Grid.Column="1" Orientation="Vertical">
+                                            <TextBlock Text="{Binding nama_user}" FontSize="14" FontWeight="Black"/>
+                                            <TextBlock Text="{Binding telpon_user}" FontSize="12" FontWeight="SemiLight" Foreground="Gray"/>
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="2" Orientation="Horizontal">
+                                            <Button Tag="{Binding id_user}" Click="acceptRequest" Foreground="White" Background="Green" CornerRadius="10" Content="Terima"></Button>
+                                            <Button Tag="{Binding id_user}" Click="declineRequest"  Margin="12,0,0,0" Foreground="White" Background="Green" CornerRadius="10" Content="Tolak"></Button>
+                                        </StackPanel>
+                                    </Grid>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                            <ListView.ItemContainerStyle>
+                                <Style TargetType="ListViewItem">
+                                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                </Style>
+                            </ListView.ItemContainerStyle>
+                        </ListView>
+                    </StackPanel>
+                </Border>
+                <Border Margin="0,12,0,0" Background="LightGray" CornerRadius="4">
+                    <StackPanel Orientation="Vertical" Margin="10">
+                        <TextBlock  FontWeight="Bold" FontSize="14" Text="Daftar permintaan terkirim"></TextBlock>
+                        <ListView SelectionMode="None" Name="lvSentPendingContact">
+                            <ListView.ItemTemplate>
+                                <DataTemplate x:Name="sentPendingContactTemplate">
+                                    <StackPanel Orientation="Horizontal" Height="64">
+                                        <Ellipse Height="48" Width="48" VerticalAlignment="Center">
+                                            <Ellipse.Fill>
+                                                <ImageBrush ImageSource="/Assets/avatar-profile.png"/>
+                                            </Ellipse.Fill>
+                                        </Ellipse>
+                                        <StackPanel Orientation="Vertical" VerticalAlignment="Center" Margin="12,0,0,0">
+                                            <TextBlock Text="{Binding nama_user}" FontSize="14" FontWeight="Black"/>
+                                            <TextBlock Text="{Binding telpon_user}" FontSize="12" FontWeight="SemiLight" Foreground="Gray"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </Grid>
+    </ScrollViewer>
+</Page>
