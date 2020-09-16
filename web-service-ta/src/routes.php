@@ -320,7 +320,8 @@ return function (App $app) {
         
         $app->get('/getPendingContactRequest/{id_user}', function($request, $response, $args){
             $id_user=$args["id_user"];
-            $sql="SELECT * from user where id_user in (SELECT id_user_1 FROM daftar_kontak_darurat where id_user_2=".$id_user." and status_relasi=0)";
+            $sql="SELECT dkd.id_daftar_kontak, u.id_user,u.nama_user,u.telpon_user from daftar_kontak_darurat dkd, user u where dkd.id_user_2=".$id_user." and dkd.status_relasi=0 and dkd.id_user_1=u.id_user";
+            //$sql="SELECT * from user where id_user in (SELECT id_user_1 FROM daftar_kontak_darurat where id_user_2=".$id_user." and status_relasi=0)";
             $stmt = $this->db->prepare($sql);
             $stmt->execute();
             $result = $stmt->fetchAll();
@@ -369,6 +370,28 @@ return function (App $app) {
                 }       
             }else{
                 return $response->withJson(["status"=>"99","message"=>"User dengan nomor tersebut tidak ditemukan"]);
+            }
+        });
+
+        $app->put('/acceptContactRequest/{id_daftar_kontak}', function ($request, $response,$args) {
+            $id_daftar_kontak=$args["id_daftar_kontak"];
+            $sql="UPDATE daftar_kontak_darurat set status_relasi=1 where id_daftar_kontak=".$id_daftar_kontak;
+            $stmt = $this->db->prepare($sql);
+            if($stmt->execute()){
+                return $response->withJson(["status"=>"1","message"=>"Kontak berhasil ditambahkan"]);
+            }else{
+                return $response->withJson(["status"=>"99","message"=>"Gagal menambahkan kontak, silahkan coba beberapa saat lagi"]);
+            }
+        });   
+
+        $app->delete('/declineContactRequest/{id_daftar_kontak}', function ($request, $response, $args) {
+            $id_daftar_kontak=$args["id_daftar_kontak"];
+            $sql="DELETE from daftar_kontak_darurat where id_daftar_kontak=".$id_daftar_kontak;
+            $stmt = $this->db->prepare($sql);
+            if($stmt->execute()){
+                return $response->withJson(["status"=>"1"]);
+            }else{
+                return $response->withJson(["status"=>"99"]);
             }
         });
     });

@@ -40,7 +40,7 @@
                     <TextBlock HorizontalAlignment="Right" Grid.Column="1" Margin="10,5,0,0" Foreground="Green" FontWeight="Medium" FontSize="12" Text="Lihat semua"></TextBlock>
                 </Grid>
                 <StackPanel Orientation="Horizontal">
-                    <ListView Margin="0,5,0,0" SelectionMode="None" IsItemClickEnabled="True" Name="lvLaporanKriminalitas" Tapped="goToDetailPage"  ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                    <ListView Margin="0,5,0,0" SelectionMode="None" IsItemClickEnabled="True" Name="lvLaporanKriminalitas" ItemClick="goToDetailPage"  ScrollViewer.HorizontalScrollBarVisibility="Auto"
     ScrollViewer.HorizontalScrollMode="Enabled"                  
     ScrollViewer.VerticalScrollMode="Disabled">
                         <ListView.ItemsPanel>
@@ -71,7 +71,6 @@
                             </DataTemplate>
                         </ListView.ItemTemplate>
                     </ListView>
-                    <Button Content=">"></Button>
                 </StackPanel>
                 
                 <Grid Margin="0,20,0,0">
@@ -82,7 +81,7 @@
                     <TextBlock Grid.Column="0" FontSize="15" FontWeight="ExtraBold">Laporan Lost &amp; Found Terkini</TextBlock>
                     <TextBlock HorizontalAlignment="Right" Grid.Column="1" Margin="10,5,0,0" Foreground="Green" FontWeight="Medium" FontSize="12" Text="Lihat semua"></TextBlock>
                 </Grid>
-                <ListView Margin="0,5,0,0" Name="lvLaporanLostFound" SelectionMode="None" IsItemClickEnabled="True" Tapped="goToDetailPage" ScrollViewer.HorizontalScrollBarVisibility="Visible"
+                <ListView Margin="0,5,0,0" Name="lvLaporanLostFound" SelectionMode="None" IsItemClickEnabled="True" ItemClick="goToDetailPage" ScrollViewer.HorizontalScrollBarVisibility="Visible"
     ScrollViewer.HorizontalScrollMode="Enabled"                  
     ScrollViewer.VerticalScrollMode="Disabled">
                     <ListView.ItemsPanel>

@@ -10,8 +10,7 @@
     Loaded="pageLoaded"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
     <Grid>
-        <Button VerticalAlignment="Top" HorizontalAlignment="Left" 
-Style="{StaticResource NavigationBackButtonNormalStyle}"/>
+        <Button VerticalAlignment="Top" HorizontalAlignment="Left" Style="{StaticResource NavigationBackButtonNormalStyle}"/>
         <Grid Margin="20">
             <TextBlock FontSize="24" FontWeight="ExtraBold" TextWrapping="WrapWholeWords" HorizontalAlignment="Center" Text="Verifikasi Kode OTP"></TextBlock>
             <StackPanel Margin="0,56,0,0">

@@ -14,13 +14,14 @@
         <Grid Margin="20">
             <StackPanel>
                 <TextBlock FontSize="24" FontWeight="ExtraBold" Text="Kontak Saya"></TextBlock>
-                <Grid Margin="0,12,0,0">
+                <TextBlock Name="txtStatusContact" Foreground="Gray" TextWrapping="WrapWholeWords" FontSize="14" Text="*Anda hanya dapat menerima permintaan masuk saja karena akun anda belum premium."></TextBlock>
+                <Grid Name="panelAddContact" Margin="0,12,0,0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="0.6*"></ColumnDefinition>
                         <ColumnDefinition Width="0.3*"></ColumnDefinition>
                     </Grid.ColumnDefinitions>
                     <TextBox Name="txtSearchNumber" FontSize="14" PlaceholderText="Cari user.." Grid.Column="0"></TextBox>
-                    <Button Click="addContact" Grid.Column="1" Margin="8,0,0,0" CornerRadius="10" Foreground="White" Background="Green" Content="Request Kontak"></Button>
+                    <Button  Click="addContact" Grid.Column="1" Margin="8,0,0,0" CornerRadius="10" Foreground="White" Background="Green" Content="Request Kontak"></Button>
                 </Grid>
                 <Border Background="LightGray" CornerRadius="4" Margin="0,12,0,0">
                     <StackPanel Margin="10" Orientation="Vertical">
@@ -36,7 +37,7 @@
                                         </Ellipse>
                                         <StackPanel Orientation="Vertical" VerticalAlignment="Center" Margin="12,0,0,0">
                                             <TextBlock Text="{Binding nama_user}" FontSize="14" FontWeight="Black"/>
-                                            <TextBlock Text="{Binding telpon_user}" FontSize="12" FontWeight="SemiLight" Foreground="Gray"/>
+                                            <TextBlock Text="{Binding telpon_user}" FontSize="12" FontWeight="Medium" Foreground="Gray"/>
                                         </StackPanel>
                                     </StackPanel>
                                 </DataTemplate>
@@ -47,7 +48,7 @@
                 <Border Margin="0,12,0,0" Background="LightGray" CornerRadius="4">
                     <StackPanel Orientation="Vertical" Margin="10">
                         <TextBlock  FontWeight="Bold" FontSize="14" Text="Daftar permintaan masuk"></TextBlock>
-                        <ListView SelectionMode="None" IsItemClickEnabled="True" Name="lvPendingContactRequest">
+                        <ListView SelectionMode="None" Name="lvPendingContactRequest">
                             <ListView.ItemTemplate>
                                 <DataTemplate x:Name="pendingContactTemplate">
                                     <Grid Margin="0,12,0,0" HorizontalAlignment="Stretch">
@@ -63,11 +64,11 @@
                                         </Ellipse>
                                         <StackPanel Margin="12,0,0,0" Grid.Column="1" Orientation="Vertical">
                                             <TextBlock Text="{Binding nama_user}" FontSize="14" FontWeight="Black"/>
-                                            <TextBlock Text="{Binding telpon_user}" FontSize="12" FontWeight="SemiLight" Foreground="Gray"/>
+                                            <TextBlock Text="{Binding telpon_user}" FontSize="12" FontWeight="Medium" Foreground="Gray"/>
                                         </StackPanel>
                                         <StackPanel Grid.Column="2" Orientation="Horizontal">
-                                            <Button Tag="{Binding id_user}" Click="acceptRequest" Foreground="White" Background="Green" CornerRadius="10" Content="Terima"></Button>
-                                            <Button Tag="{Binding id_user}" Click="declineRequest"  Margin="12,0,0,0" Foreground="White" Background="Green" CornerRadius="10" Content="Tolak"></Button>
+                                            <Button Tag="{Binding id_daftar_kontak}" Click="acceptRequest" Foreground="White" Background="Green" CornerRadius="10" Content="Terima"></Button>
+                                            <Button Tag="{Binding id_daftar_kontak}" Click="declineRequest"  Margin="12,0,0,0" Foreground="White" Background="Green" CornerRadius="10" Content="Tolak"></Button>
                                         </StackPanel>
                                     </Grid>
                                 </DataTemplate>
@@ -80,7 +81,7 @@
                         </ListView>
                     </StackPanel>
                 </Border>
-                <Border Margin="0,12,0,0" Background="LightGray" CornerRadius="4">
+                <Border Name="panelSentPendingRequest" Margin="0,12,0,0" Background="LightGray" CornerRadius="4">
                     <StackPanel Orientation="Vertical" Margin="10">
                         <TextBlock  FontWeight="Bold" FontSize="14" Text="Daftar permintaan terkirim"></TextBlock>
                         <ListView SelectionMode="None" Name="lvSentPendingContact">
@@ -94,7 +95,7 @@
                                         </Ellipse>
                                         <StackPanel Orientation="Vertical" VerticalAlignment="Center" Margin="12,0,0,0">
                                             <TextBlock Text="{Binding nama_user}" FontSize="14" FontWeight="Black"/>
-                                            <TextBlock Text="{Binding telpon_user}" FontSize="12" FontWeight="SemiLight" Foreground="Gray"/>
+                                            <TextBlock Text="{Binding telpon_user}" FontSize="12" FontWeight="Medium" Foreground="Gray"/>
                                         </StackPanel>
                                     </StackPanel>
                                 </DataTemplate>

@@ -60,6 +60,7 @@
       <DependentUpon>MakeLostFoundReportPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)MapObject.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PendingContact.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PersonalChatPage.xaml.cs">
       <DependentUpon>PersonalChatPage.xaml</DependentUpon>
     </Compile>
@@ -81,6 +82,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)ReportDetailPageParams.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Session.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SettingKategori.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Splashscreen.xaml.cs">
+      <DependentUpon>Splashscreen.xaml</DependentUpon>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)SubscriptionPage.xaml.cs">
       <DependentUpon>SubscriptionPage.xaml</DependentUpon>
     </Compile>
@@ -148,6 +152,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="$(MSBuildThisFileDirectory)ReportDetailPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Splashscreen.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -66,10 +66,10 @@ namespace SahabatSurabaya
 
         }
 
-        public void goToDetailPage(object sender, RoutedEventArgs e)
+        public async void goToDetailPage(object sender, ItemClickEventArgs e)
         {
-            int index = lvLaporanLostFound.SelectedIndex;
-            ReportDetailPageParams param = new ReportDetailPageParams(userLogin, listLaporanLostFound[index]);
+            LaporanLostFound selected = (LaporanLostFound)e.ClickedItem;
+            ReportDetailPageParams param = new ReportDetailPageParams(userLogin, selected);
             session.setReportDetailPageParams(param);
             this.Frame.Navigate(typeof(ReportDetailPage));     
         }

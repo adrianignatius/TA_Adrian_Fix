@@ -15,22 +15,25 @@
             <StackPanel Orientation="Vertical">
                 <TextBlock FontSize="24" Text="Buat Laporan Kriminalitas" FontWeight="ExtraBold" HorizontalAlignment="Stretch"></TextBlock>
                 <TextBlock Margin="0,40,0,0" FontSize="20" Text="Judul Laporan"></TextBlock>
-                <TextBox Name="txtJudulLaporan" FontSize="20" Margin="0,10,20,0"  HorizontalAlignment="Stretch"></TextBox>
+                <TextBox Name="txtJudulLaporan" FontSize="20" Margin="0,10,0,0"  HorizontalAlignment="Stretch"></TextBox>
                 <TextBlock Margin="0,40,0,0" FontSize="20" Text="Kategori kejadian yang dilaporkan"></TextBlock>
-                <ComboBox Name="cbJenisKejadian" HorizontalAlignment="Stretch" Margin="0,10,20,0" FontSize="20">
+                <ComboBox Name="cbJenisKejadian" HorizontalAlignment="Stretch" Margin="0,10,0,0" FontSize="20">
                 </ComboBox>
                 <TextBlock Margin="0,30,0,0" Text="Deskripsi Kejadian" FontSize="20"></TextBlock>
-                <TextBox Name="txtDescKejadian" Margin="0,10,20,0" HorizontalAlignment="Stretch" FontSize="20"  Height="150" TextWrapping="Wrap"></TextBox>
-                <TextBlock  Margin="0,30,0,10" Text="Lokasi Kejadian" FontSize="20"></TextBlock>
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="0.7*"></ColumnDefinition>
-                        <ColumnDefinition Width="0.3*"></ColumnDefinition>
-                    </Grid.ColumnDefinitions>
-                    <AutoSuggestBox PlaceholderText="Cari Alamat.." TextChanged="autoSuggestBoxTextChanged" SuggestionChosen="autoSuggestBoxSuggestionChosen" Name="suggestBoxAddress" QueryIcon="Find"></AutoSuggestBox>
-                    <Button CornerRadius="10" Foreground="White" Background="Green" Margin="12,0,0,0" Grid.Column="1" Click="useLocation" Content="Gunakan Lokasi Sekarang"></Button>
-                </Grid>
-                <WebView Margin="0,10,0,0" Name="webViewMap"  Height="500" HorizontalAlignment="Stretch" Source="http://adrian-webview.ta-istts.com/location-map.php"></WebView>
+                <TextBox Name="txtDescKejadian" Margin="0,10,0,0" HorizontalAlignment="Stretch" FontSize="20"  Height="150" TextWrapping="Wrap"></TextBox>
+                <StackPanel Margin="0,30,0,0" Orientation="Horizontal">
+                    <TextBlock Text="Lokasi Kejadian" FontSize="20"></TextBlock>
+                    <Button Click="useLocation" Margin="10,0,0,0" Foreground="White" Background="Green" CornerRadius="10" Content="Lokasi anda"></Button>
+                </StackPanel>
+                <TextBox TextChanged="txtAutocompleteAddressTextChanged" Name="txtAutocompleteAddress" FontSize="20" Margin="0,10,0,0"  HorizontalAlignment="Stretch"></TextBox>
+                <ListView IsItemClickEnabled="True" ItemClick="suggestionChosen" Name="lvSuggestion">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock FontSize="12" Text="{Binding description}"></TextBlock>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+                <WebView Margin="0,10,0,0" Name="webViewMap"  Height="400" HorizontalAlignment="Stretch" Source="http://adrian-webview.ta-istts.com/location-map.php"></WebView>
                 <StackPanel Orientation="Horizontal">
                     <TextBlock  Margin="0,30,0,10" Text="Upload Gambar" FontSize="20"></TextBlock>
                     <Button CornerRadius="10" Foreground="White" Background="Green" Click="chooseImage"  Content="Pilih File.." Margin="10,30,0,0"></Button>

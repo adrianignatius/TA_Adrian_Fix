@@ -18,8 +18,8 @@ namespace SahabatSurabaya
     {
         DispatcherTimer dispatcherTimer;
         int tick = 0;
-        string lat="default", lng = "default";
         bool isChosen = false;
+        string lat="default", lng = "default";
         Session session = new Session();
         ObservableCollection<AutocompleteAddress> listAutoCompleteAddress = new ObservableCollection<AutocompleteAddress>();
         public RegisterPage()

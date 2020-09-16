@@ -12,17 +12,15 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 using Xamarin.Essentials;
-// The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
 namespace SahabatSurabaya
 {
-    /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
-    /// </summary>
-    /// 
     public sealed partial class MakeLostFoundReportPage : Page
     {
         User userLogin;
+        DispatcherTimer dispatcherTimer;
+        int tick = 0;
+        bool isChosen = false;
         int imageCount = 0;
         string lat, lng = "";
         List<UploadedImage> listImage;
@@ -36,10 +34,90 @@ namespace SahabatSurabaya
             listSettingKategoriLostFound = new List<SettingKategori>();
             listAutoCompleteAddress = new ObservableCollection<AutocompleteAddress>();
             session = new Session();
+            dispatcherTimer = new DispatcherTimer();
+            dispatcherTimer.Interval = new TimeSpan(0, 0, 0, 0, 200);
+            dispatcherTimer.Tick += DispatcherTimer_Tick;
+        }
+
+        private void DispatcherTimer_Tick(object sender, object e)
+        {
+            tick++;
+            if (tick == 2 && txtAutocompleteAddress.Text.Length != 0 && !isChosen)
+            {
+                searchAutocomplete();
+            }
+            if (isChosen && tick == 2) isChosen = false;
+        }
+
+        private async void suggestionChosen(object sender, ItemClickEventArgs e)
+        {
+            isChosen = true;
+            AutocompleteAddress item = (AutocompleteAddress)e.ClickedItem;
+            txtAutocompleteAddress.Text = item.description;
+            using (var client = new HttpClient())
+            {
+                string reqUri = "https://maps.googleapis.com/maps/api/geocode/json?address=" + item.description + "&key=AIzaSyA9rHJZEGWe6rX4nAHTGXFxCubmw-F0BBw";
+                HttpResponseMessage response = await client.GetAsync(reqUri);
+                if (response.IsSuccessStatusCode)
+                {
+                    var jsonString = response.Content.ReadAsStringAsync().Result;
+                    JObject json = JObject.Parse(jsonString);
+                    lat = json["results"][0]["geometry"]["location"]["lat"].ToString().Replace(",", ".");
+                    lng = json["results"][0]["geometry"]["location"]["lng"].ToString().Replace(",", ".");
+                    webViewMap.Navigate(new Uri(session.getUrlWebView() + "location-map.php?lat=" + lat + "&lng=" + lng));
+                }
+            }
+            listAutoCompleteAddress.Clear();
+        }
+
+        private async void searchAutocomplete()
+        {
+            string input = txtAutocompleteAddress.Text;
+            using (var client = new HttpClient())
+            {
+                string reqUri = "https://maps.googleapis.com/maps/api/place/autocomplete/json?input=" + input + "&types=geocode&location=-7.252115,112.752849&radius=20000&language=id&components=country:id&strictbounds&key=AIzaSyA9rHJZEGWe6rX4nAHTGXFxCubmw-F0BBw";
+                HttpResponseMessage response = await client.GetAsync(reqUri);
+                if (response.IsSuccessStatusCode)
+                {
+                    var jsonString = response.Content.ReadAsStringAsync().Result;
+                    JObject json = JObject.Parse(jsonString);
+                    if (json["status"].ToString() == "OK")
+                    {
+                        listAutoCompleteAddress.Clear();
+                        var token = JToken.Parse(jsonString)["predictions"].ToList().Count;
+                        for (int i = 0; i < token; i++)
+                        {
+                            string description = json["predictions"][i]["description"].ToString();
+                            string placeId = json["predictions"][i]["place_id"].ToString();
+                            listAutoCompleteAddress.Add(new AutocompleteAddress(description, placeId));
+                        }
+                        lvSuggestion.ItemsSource = listAutoCompleteAddress;
+                    }
+                    else
+                    {
+                        if (txtAutocompleteAddress.Text.Length != 0)
+                        {
+                            listAutoCompleteAddress.Clear();
+                            listAutoCompleteAddress.Add(new AutocompleteAddress("Tidak ada hasil ditemukan", ""));
+                            lvSuggestion.ItemsSource = listAutoCompleteAddress;
+                        }
+                    }
+                }
+            }
+        }
+
+        private void txtAutocompleteAddressTextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (!dispatcherTimer.IsEnabled)
+            {
+                dispatcherTimer.Start();
+            }
+            tick = 0;
         }
 
         public async void useLocation(object sender, RoutedEventArgs e)
         {
+            isChosen = true;
             var location = await Geolocation.GetLastKnownLocationAsync();
             if (location == null)
             {
@@ -61,7 +139,7 @@ namespace SahabatSurabaya
                     var jsonString = response.Content.ReadAsStringAsync().Result;
                     JObject json = JObject.Parse(jsonString);
                     string address = json["results"][0]["formatted_address"].ToString();
-                    suggestBoxAddress.Text = address;
+                    txtAutocompleteAddress.Text = address;
                     webViewMap.Navigate(new Uri(session.getUrlWebView() + "location-map.php?lat=" + lat + "&lng=" + lng));
                 }
             }
@@ -87,84 +165,13 @@ namespace SahabatSurabaya
             }
         }
 
-        private async void autoSuggestBoxSuggestionChosen(AutoSuggestBox sender, AutoSuggestBoxSuggestionChosenEventArgs args)
-        {
-            if (args.SelectedItem.ToString() == "Tidak ada hasil ditemukan")
-            {
-                sender.Text = "";
-            }
-            else
-            {
-                using (var client = new HttpClient())
-                {
-                    string reqUri = "https://maps.googleapis.com/maps/api/geocode/json?address=" + args.SelectedItem.ToString() + "&key=AIzaSyA9rHJZEGWe6rX4nAHTGXFxCubmw-F0BBw";
-                    HttpResponseMessage response = await client.GetAsync(reqUri);
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var jsonString = response.Content.ReadAsStringAsync().Result;
-                        JObject json = JObject.Parse(jsonString);
-                        lat = json["results"][0]["geometry"]["location"]["lat"].ToString().Replace(",", ".");
-                        lng = json["results"][0]["geometry"]["location"]["lng"].ToString().Replace(",", "."); ;
-                        webViewMap.Navigate(new Uri(session.getUrlWebView() + "location-map.php?lat=" + lat + "&lng=" + lng));
-                    }
-                }
-            }
-        }
-
-        private async void autoSuggestBoxTextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
-        {
-            // Only get results when it was a user typing,
-            // otherwise assume the value got filled in by TextMemberPath
-            // or the handler for SuggestionChosen.
-            if (args.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
-            {
-                txtJudulLaporan.Text += "a";
-                string input = sender.Text;
-                using (var client = new HttpClient())
-                {
-                    string reqUri = "https://maps.googleapis.com/maps/api/place/autocomplete/json?input=" + input + "&types=geocode&location=-7.252115,112.752849&radius=20000&language=id&components=country:id&strictbounds&key=AIzaSyA9rHJZEGWe6rX4nAHTGXFxCubmw-F0BBw";
-                    HttpResponseMessage response = await client.GetAsync(reqUri);
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var jsonString = response.Content.ReadAsStringAsync().Result;
-                        JObject json = JObject.Parse(jsonString);
-                        if (json["status"].ToString() == "OK")
-                        {
-                            listAutoCompleteAddress.Clear();
-                            var token = JToken.Parse(jsonString)["predictions"].ToList().Count;
-                            for (int i = 0; i < token; i++)
-                            {
-                                string description = json["predictions"][i]["description"].ToString();
-                                string placeId = json["predictions"][i]["place_id"].ToString();
-                                listAutoCompleteAddress.Add(new AutocompleteAddress(description, placeId));
-                            }
-                            sender.ItemsSource = listAutoCompleteAddress;
-                            sender.DisplayMemberPath = "description";
-                            sender.TextMemberPath = "description";
-
-                        }
-                        else
-                        {
-                            listAutoCompleteAddress.Clear();
-                            listAutoCompleteAddress.Add(new AutocompleteAddress("Tidak ada hasil ditemukan", ""));
-                            sender.ItemsSource = listAutoCompleteAddress;
-                            if (sender.Text.Length == 0)
-                            {
-                                sender.IsSuggestionListOpen = false;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
         private void goToDetail(object sender, RoutedEventArgs e)
         {
             int jenisLaporan;
             jenisLaporan = (bool)rbLostItem.IsChecked ? 1 : 0;
             string judulLaporan = txtJudulLaporan.Text;
             string descLaporan = txtDescBarang.Text;
-            string alamatLaporan = suggestBoxAddress.Text;
+            string alamatLaporan = txtAutocompleteAddress.Text;
             string displayJenisBarang = listSettingKategoriLostFound[cbJenisBarang.SelectedIndex].nama_kategori.ToString();
             string valueJenisBarang = cbJenisBarang.SelectedValue.ToString();
             string tglLaporan = DateTime.Now.ToString("dd/MM/yyyy");

@@ -1,6 +1,8 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using SahabatSurabaya.Shared;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -8,31 +10,37 @@ using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
-// The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
 namespace SahabatSurabaya
 {
-    /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
-    /// </summary>
     public sealed partial class ContactPage : Page
     {
         Session session;
         User userLogin;
         ObservableCollection<User> listEmergencyContact = new ObservableCollection<User>();
-        ObservableCollection<User> listPendingContactRequest = new ObservableCollection<User>();
+        ObservableCollection<PendingContact> listPendingContactRequest = new ObservableCollection<PendingContact>();
         ObservableCollection<User> listSentPendingContactRequest = new ObservableCollection<User>();
 
         public ContactPage()
         {
             this.InitializeComponent();
             session = new Session();
-
+            
         }
 
         private void pageLoaded(object sender, RoutedEventArgs e)
         {
             userLogin = session.getUserLogin();
+            if (userLogin.status_user == 0)
+            {
+                panelSentPendingRequest.Visibility = Visibility.Collapsed;
+                panelAddContact.Visibility = Visibility.Collapsed;
+                txtStatusContact.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                txtStatusContact.Visibility = Visibility.Collapsed;
+            }
             updateListContact();
             updateListPendingContactRequest();
             updateListSentPendingContactRequest();
@@ -42,7 +50,7 @@ namespace SahabatSurabaya
         {
             using (var client = new HttpClient())
             {
-                client.BaseAddress = new Uri("http://localhost:8080/");
+                client.BaseAddress = new Uri(session.getApiURL());
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                 HttpResponseMessage response = await client.GetAsync("user/getEmergencyContact/" + userLogin.id_user);
@@ -59,7 +67,7 @@ namespace SahabatSurabaya
         {
             using (var client = new HttpClient())
             {
-                client.BaseAddress = new Uri("http://localhost:8080/");
+                client.BaseAddress = new Uri(session.getApiURL());
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                 HttpResponseMessage response = await client.GetAsync("user/getSentPendingContactRequest/" + userLogin.id_user);
@@ -83,7 +91,7 @@ namespace SahabatSurabaya
                 if (response.IsSuccessStatusCode)
                 {
                     var responseData = response.Content.ReadAsStringAsync().Result;
-                    listPendingContactRequest = JsonConvert.DeserializeObject<ObservableCollection<User>>(responseData);
+                    listPendingContactRequest = JsonConvert.DeserializeObject<ObservableCollection<PendingContact>>(responseData);
                     lvPendingContactRequest.ItemsSource = listPendingContactRequest;
                 }
             }
@@ -97,7 +105,7 @@ namespace SahabatSurabaya
                 {
                     using (var client = new HttpClient())
                     {
-                        client.BaseAddress = new Uri("http://localhost:8080/");
+                        client.BaseAddress = new Uri(session.getApiURL());
                         client.DefaultRequestHeaders.Accept.Clear();
                         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                         MultipartFormDataContent form = new MultipartFormDataContent();
@@ -111,6 +119,7 @@ namespace SahabatSurabaya
                             var message = new MessageDialog(json["message"].ToString());
                             await message.ShowAsync();
                             txtSearchNumber.Text = "";
+                            updateListSentPendingContactRequest();
                         }
                     }
                 }
@@ -129,14 +138,49 @@ namespace SahabatSurabaya
 
         private async void acceptRequest(object Sender, RoutedEventArgs e)
         {
-            var m = new MessageDialog((Sender as Button).Tag.ToString());
-            await m.ShowAsync();
+            string id_daftar_kontak = (Sender as Button).Tag.ToString();
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri("http://localhost:8080/");
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                HttpContent content = new StringContent("");
+                HttpResponseMessage response = await client.PutAsync("user/acceptContactRequest/" +id_daftar_kontak, content);
+                if (response.IsSuccessStatusCode)
+                {
+                    var responseData = response.Content.ReadAsStringAsync().Result;
+                    JObject json = JObject.Parse(responseData);
+                    var message = new MessageDialog(json["message"].ToString());
+                    await message.ShowAsync();
+                    if (json["status"].ToString() == "1")
+                    {
+                        updateListContact();
+                        updateListPendingContactRequest();
+                    } 
+                }
+            }
         }
 
         private async void declineRequest(object Sender, RoutedEventArgs e)
         {
-            var m = new MessageDialog((Sender as Button).Tag.ToString());
-            await m.ShowAsync();
+            string id_daftar_kontak = (Sender as Button).Tag.ToString();
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri("http://localhost:8080/");
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                HttpResponseMessage response = await client.DeleteAsync("user/declineContactRequest/" + id_daftar_kontak);
+                if (response.IsSuccessStatusCode)
+                {
+                    var responseData = response.Content.ReadAsStringAsync().Result;
+                    JObject json = JObject.Parse(responseData);
+                    if (json["status"].ToString() == "1")
+                    {
+                        updateListContact();
+                        updateListPendingContactRequest();
+                    }
+                }
+            }
         }
     }
 }
