@@ -42,7 +42,7 @@ return function (App $app) {
         $stmt->execute();
         $result = $stmt->fetchAll();
         return $response->withJson($result, 200);
-    });
+    }); 
     
 
     $app->get('/getAllKantorPolisi', function ($request, $response) {   
@@ -393,6 +393,37 @@ return function (App $app) {
             }else{
                 return $response->withJson(["status"=>"99"]);
             }
+        });
+
+        $app->post('/sendEmergencyNotification', function($request, $response){
+            $body=$request->getParsedBody();
+            $number=$body["number"];
+            $curl = curl_init();
+            $content = array(
+                "en" => 'English Message'
+            );
+            $heading = array(
+                "en" => 'Headings'  
+            );
+            $fields = array(
+                'app_id' => "6fd226ba-1d41-4c7b-9f8b-a973a8fd436b",
+                'filters' => array(array("field" => "tag", "key" => "no_handphone", "relation" => "=", "value" => $number)),
+                'contents' => $content,
+                'headings' => $heading
+            );
+            $fields = json_encode($fields);
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, "https://onesignal.com/api/v1/notifications");
+            curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json; charset=utf-8',
+                                                    'Authorization: Basic MDUyNjhlOGEtNDQ4NC00YTYwLWIxYmYtMDZjYTc2OGUwNDc4'));
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+            curl_setopt($ch, CURLOPT_HEADER, FALSE);
+            curl_setopt($ch, CURLOPT_POST, TRUE);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $fields);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+            $res = curl_exec($ch);
+            curl_close($ch);
+            return $response->withJson($res);
         });
     });
         

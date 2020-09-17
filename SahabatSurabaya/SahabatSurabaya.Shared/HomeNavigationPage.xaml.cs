@@ -20,12 +20,17 @@ namespace SahabatSurabaya
         private void pageLoaded(object sender, RoutedEventArgs e)
         {
           userLogin=session.getUserLogin();
+          if (userLogin.status_user == 1)
+          {
+            NavView.MenuItems.Add(new NavigationViewItem() { Content = "Tombol Darurat", Icon = new SymbolIcon(Symbol.People), Tag = "tombolDarurat" });
+          }
         }
 
         private void NavView_Loaded(object sender, RoutedEventArgs e)
         {
             // you can also add items in code behind
             //NavView.MenuItems.Add(new NavigationViewItemSeparator());
+            
             //NavView.MenuItems.Add(new NavigationViewItem()
             //{ Content = "My content", Icon = new SymbolIcon(Symbol.Folder), Tag = "content" });
 
@@ -49,7 +54,6 @@ namespace SahabatSurabaya
             }
             else
             {
-                // find NavigationViewItem with Content that equals InvokedItem
                 var item = sender.MenuItems.OfType<NavigationViewItem>().First(x => (string)x.Content == (string)args.InvokedItem);
                 NavView_Navigate(item as NavigationViewItem);
             }
