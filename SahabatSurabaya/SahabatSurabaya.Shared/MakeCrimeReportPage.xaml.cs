@@ -206,7 +206,6 @@ namespace SahabatSurabaya
         {
             if (imageCount < 3)
             {
-                string contents = "";
                 try
                 {
                     FileData fileData = await CrossFilePicker.Current.PickFile(new string[] { ".jpg" });

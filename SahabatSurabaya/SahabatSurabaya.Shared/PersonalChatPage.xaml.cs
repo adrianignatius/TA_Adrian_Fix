@@ -98,7 +98,6 @@ namespace SahabatSurabaya
                     form.Add(new StringContent(param.id_user_pengirim.ToString()), "id_user_pengirim");
                     form.Add(new StringContent(param.id_user_penerima.ToString()), "id_user_penerima");
                     form.Add(new StringContent(chatMessage), "isi_chat");
-                    form.Add(new StringContent(DateTime.Now.ToString("HH:mm")), "waktu_chat");
                     HttpResponseMessage response = await client.PostAsync("insertDetailChat", form);
                     if (response.IsSuccessStatusCode)
                     {

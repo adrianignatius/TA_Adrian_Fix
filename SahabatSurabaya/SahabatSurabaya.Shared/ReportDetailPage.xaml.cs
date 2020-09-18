@@ -138,6 +138,7 @@ namespace SahabatSurabaya
                         var message = new MessageDialog("Berhasil menambahkan komentar!");
                         await message.ShowAsync();
                         loadKomentarLaporan();
+                        txtKomentar.Text = "";
                     }
                 }
             }

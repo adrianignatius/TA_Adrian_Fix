@@ -19,11 +19,7 @@ namespace SahabatSurabaya
 
         private void pageLoaded(object sender, RoutedEventArgs e)
         {
-          userLogin=session.getUserLogin();
-          if (userLogin.status_user == 1)
-          {
-            NavView.MenuItems.Add(new NavigationViewItem() { Content = "Tombol Darurat", Icon = new SymbolIcon(Symbol.People), Tag = "tombolDarurat" });
-          }
+
         }
 
         private void NavView_Loaded(object sender, RoutedEventArgs e)

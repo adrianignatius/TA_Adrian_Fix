@@ -45,7 +45,7 @@
                         <Grid HorizontalAlignment="{Binding isSender,Converter={StaticResource chatConverter}}" x:Name="Text" Background="White" Margin="5, 5, 5, 5">
                             <Border BorderThickness="2" BorderBrush="deepskyblue" CornerRadius="7">
                                 <StackPanel>
-                                    <TextBlock Text="{Binding isi_chat}" TextWrapping="Wrap" Margin="5, 5, 5, 5" />
+                                    <TextBlock MaxWidth="350" Text="{Binding isi_chat}" TextWrapping="Wrap" Margin="5, 5, 5, 5" />
                                 </StackPanel>
                             </Border>
                         </Grid>

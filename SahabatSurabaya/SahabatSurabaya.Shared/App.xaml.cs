@@ -1,14 +1,18 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Com.OneSignal;
+using Com.OneSignal.Abstractions;
+using Microsoft.Extensions.Logging;
 using SahabatSurabaya.Shared;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.ServiceModel.Channels;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -19,9 +23,6 @@ using Windows.UI.Xaml.Navigation;
 
 namespace SahabatSurabaya
 {
-    /// <summary>
-    /// Provides application-specific behavior to supplement the default Application class.
-    /// </summary>
     sealed partial class App : Application
     {
         /// <summary>
@@ -32,6 +33,26 @@ namespace SahabatSurabaya
         {
             this.InitializeComponent();
             this.Suspending += OnSuspending;
+#if __ANDROID__
+            OneSignal.Current.StartInit("6fd226ba-1d41-4c7b-9f8b-a973a8fd436b").HandleNotificationOpened(HandleNotificationOpened)
+                             .Settings(new Dictionary<string, bool>() {
+                                            { IOSSettings.kOSSettingsKeyAutoPrompt, false },
+                                            { IOSSettings.kOSSettingsKeyInAppLaunchURL, false } })
+                             .InFocusDisplaying(OSInFocusDisplayOption.Notification)
+                             .EndInit();
+            OneSignal.Current.RegisterForPushNotifications();
+#endif
+        }
+
+        private static void HandleNotificationOpened(OSNotificationOpenedResult result)
+        {
+            Session session = new Session();
+            OSNotificationPayload payload = result.notification.payload;
+            Dictionary<string, object> additionalData = payload.additionalData;
+            string message = payload.body;
+            string actionID = result.action.actionID;
+            Frame rootFrame = Windows.UI.Xaml.Window.Current.Content as Frame;
+            rootFrame.Navigate(typeof(ProfilePage));
         }
 
         /// <summary>

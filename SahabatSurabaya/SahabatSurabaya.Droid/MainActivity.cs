@@ -21,13 +21,13 @@ namespace SahabatSurabaya.Droid
         {
             base.OnCreate(bundle);
             Xamarin.Essentials.Platform.Init(this, bundle);
-            OneSignal.Current.StartInit("6fd226ba-1d41-4c7b-9f8b-a973a8fd436b")
-                             .Settings(new Dictionary<string, bool>() {
-                                            { IOSSettings.kOSSettingsKeyAutoPrompt, false },
-                                            { IOSSettings.kOSSettingsKeyInAppLaunchURL, false } })
-                             .InFocusDisplaying(OSInFocusDisplayOption.Notification)
-                             .EndInit();
-            OneSignal.Current.RegisterForPushNotifications();
+            //OneSignal.Current.StartInit("6fd226ba-1d41-4c7b-9f8b-a973a8fd436b")
+            //                 .Settings(new Dictionary<string, bool>() {
+            //                                { IOSSettings.kOSSettingsKeyAutoPrompt, false },
+            //                                { IOSSettings.kOSSettingsKeyInAppLaunchURL, false } })
+            //                 .InFocusDisplaying(OSInFocusDisplayOption.Notification)
+            //                 .EndInit();
+            //OneSignal.Current.RegisterForPushNotifications();
         }
 
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, Permission[] grantResults)

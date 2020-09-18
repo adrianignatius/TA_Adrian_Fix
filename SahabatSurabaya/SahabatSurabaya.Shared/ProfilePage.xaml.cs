@@ -9,7 +9,6 @@ namespace SahabatSurabaya
 { 
     public sealed partial class ProfilePage : Page
     {
-        User userLogin;
         Session session;
         public ProfilePage()
         {
@@ -21,6 +20,7 @@ namespace SahabatSurabaya
         {
 
         }
+
         public void goToSubscriptionPage(object sender, RoutedEventArgs e)
         {
             this.Frame.Navigate(typeof(SubscriptionPage));

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Net.Http;
+using System.Threading.Tasks;
 using Windows.UI.Input;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
@@ -27,7 +28,6 @@ namespace SahabatSurabaya
         ObservableCollection<LaporanKriminalitas> listLaporanKriminalitas;
         ObservableCollection<User> listEmergencyContact;
         DispatcherTimer timer;
-        string lat="", lng = "", address = "";
         int time = 0;
         public HomePage()
         {
@@ -39,6 +39,10 @@ namespace SahabatSurabaya
             timer = new DispatcherTimer();
             timer.Interval = new TimeSpan(0, 0, 1);
             timer.Tick += Timer_Tick;
+
+#if NETFX_CORE
+            btnEmergency.Visibility=Visibility.Collapsed;
+#endif
         }
 
         private async void Timer_Tick(object sender, object e)
@@ -56,7 +60,7 @@ namespace SahabatSurabaya
             }
         }
 
-        private async void getUserAddress()
+        private async Task<string> getUserAddress()
         {
             var location = await Geolocation.GetLastKnownLocationAsync();
             if (location == null)
@@ -67,8 +71,8 @@ namespace SahabatSurabaya
                     Timeout = TimeSpan.FromSeconds(30)
                 });
             }
-            lat = location.Latitude.ToString().Replace(",", ".");
-            lng = location.Longitude.ToString().Replace(",", ".");
+            string lat = location.Latitude.ToString().Replace(",", ".");
+            string lng = location.Longitude.ToString().Replace(",", ".");
             using (var client = new HttpClient())
             {
                 string latlng = lat + "," + lng;
@@ -78,7 +82,12 @@ namespace SahabatSurabaya
                 {
                     var jsonString = response.Content.ReadAsStringAsync().Result;
                     JObject json = JObject.Parse(jsonString);
-                    address = json["results"][0]["formatted_address"].ToString();
+                    string address = json["results"][0]["formatted_address"].ToString();
+                    return address;
+                }
+                else
+                {
+                    return null;
                 }
             }
         }
@@ -134,7 +143,7 @@ namespace SahabatSurabaya
         }
 
 
-        private async void sendEmergencyChat(User u)
+        private async void sendEmergencyChat(User u, string address)
         {
             string content = "Saya sedang dalam keadaan darurat! Lokasi terakhir saya di " + address;
             using (var client=new HttpClient())
@@ -145,28 +154,31 @@ namespace SahabatSurabaya
                 if (response.IsSuccessStatusCode)
                 {
                     var responseData = response.Content.ReadAsStringAsync().Result;
-                    JObject json = JObject.Parse(responseData);
-                    var m = new MessageDialog(json["id_chat"].ToString());
-                    await m.ShowAsync();    
-                    //MultipartFormDataContent form = new MultipartFormDataContent();
-                    //form.Add(new StringContent(responseData), "id_chat");
-                    //form.Add(new StringContent(userLogin.id_user.ToString()), "id_user_pengirim");
-                    //form.Add(new StringContent(u.id_user.ToString()), "id_user_penerima");
-                    //form.Add(new StringContent(content), "isi_chat");
-                    //response = await client.PostAsync("insertDetailChat/", form);
+                    JObject json = JObject.Parse(responseData);  
+                    MultipartFormDataContent form = new MultipartFormDataContent();
+                    form.Add(new StringContent(json["id_chat"].ToString()), "id_chat");
+                    form.Add(new StringContent(userLogin.id_user.ToString()), "id_user_pengirim");
+                    form.Add(new StringContent(u.id_user.ToString()), "id_user_penerima");
+                    form.Add(new StringContent(content), "isi_chat");
+                    response = await client.PostAsync("insertDetailChat", form);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        
+                    }
                 }
             }
         }
 
+       
+
 #if __ANDROID__
         private async void sendNotification()
         {
-            var m = new MessageDialog(address);
-            await m.ShowAsync();
             using (var client = new HttpClient())
             {
                 client.BaseAddress = new Uri(session.getApiURL());
                 client.DefaultRequestHeaders.Accept.Clear();
+                string address = await getUserAddress();
                 HttpResponseMessage response = await client.GetAsync("user/getEmergencyContact/" + userLogin.id_user);
                 if (response.IsSuccessStatusCode)
                 {
@@ -178,8 +190,10 @@ namespace SahabatSurabaya
                             new KeyValuePair<string, string>("number", user.telpon_user),
                         });
                         response = await client.PostAsync("user/sendEmergencyNotification", content);
-                        sendEmergencyChat(user);
+                        sendEmergencyChat(user,address);
                     }
+                    var message = new MessageDialog("Pesan darurat telah dikirimkan ke semua kontak darurat anda");
+                    await message.ShowAsync();
                 }
             }
         }

@@ -61,7 +61,6 @@ namespace SahabatSurabaya
                             User userLogin= JsonConvert.DeserializeObject<User>(data);
                             session.setUserLogin(userLogin);
                             this.Frame.Navigate(typeof(HomeNavigationPage));
-
 #if __ANDROID__
                               OneSignal.Current.SendTags(new Dictionary<string, string>() { {"no_handphone", userLogin.telpon_user}, {"tipe_user", userLogin.status_user.ToString()} });
                              
@@ -69,7 +68,7 @@ namespace SahabatSurabaya
                         }
                         else
                         {
-                            var dialog = new MessageDialog("Username/Password salah!");
+                            var dialog = new MessageDialog(json["message"].ToString());
                             await dialog.ShowAsync();
                         }
                     }

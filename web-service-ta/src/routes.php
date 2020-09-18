@@ -122,17 +122,19 @@ return function (App $app) {
         });
 
         $app->post('/checkLogin', function ($request, $response) {
-            $user = $request->getParsedBody();
-            $email=$user["email"];
-            $password=$user["password"];
-            $sql = "SELECT * FROM user where email_user='$email' and password_user='$password'";
+            $body = $request->getParsedBody();
+            $sql = "SELECT * FROM user where email_user='".$body["email"]."'";
             $stmt = $this->db->prepare($sql);
             $stmt->execute();
             $result = $stmt->fetch();
-            if($result==null){
-                return $response->withJson(["status" => "400"]);
+            if($result!=null){
+                if(password_verify($body["password"],$result["password_user"])){
+                    return $response->withJson(["status" => "200", "data" => $result]);
+                }else{
+                    return $response->withJson(["status" => "400", "message" =>"Password yang dimasukkan salah"]);
+                }
             }else{
-                return $response->withJson(["status" => "200", "data" => $result], 200);
+                return $response->withJson(["status" => "404", "message" => "Username tidak ditemukan"]);  
             }
         });
 
@@ -280,7 +282,7 @@ return function (App $app) {
                 $stmt = $this->db->prepare($sql);
                 $data = [
                     ":email_user" => $new_user["email_user"],
-                    ":password_user"=>$new_user["password_user"],
+                    ":password_user"=>password_hash($new_user["password_user"], PASSWORD_BCRYPT),
                     ":nama_user" => $new_user["nama_user"],
                     ":telpon_user" => $new_user["telpon_user"],
                     ":status_user"=>99,
@@ -516,7 +518,8 @@ return function (App $app) {
             });
 
             $app->get('/coba',function ($request,$response){
-                return $response->withJson("asd");
+                $hash=password_hash("asd", PASSWORD_BCRYPT);
+                return $response->withJson($hash);
                 //return "asd";
             });
 
