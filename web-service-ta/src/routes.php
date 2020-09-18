@@ -398,6 +398,7 @@ return function (App $app) {
         $app->post('/sendEmergencyNotification', function($request, $response){
             $body=$request->getParsedBody();
             $number=$body["number"];
+            
             $curl = curl_init();
             $content = array(
                 "en" => 'English Message'
@@ -512,7 +513,6 @@ return function (App $app) {
                 }else{
                     return $response->withJson($result);
                 }
-                
             });
 
             $app->post('/insertHeaderChat', function ($request, $response) {

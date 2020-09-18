@@ -10,6 +10,7 @@ using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
+using Xamarin.Essentials;
 #if __ANDROID__
 using Com.OneSignal;
 using Com.OneSignal.Abstractions;
@@ -26,6 +27,7 @@ namespace SahabatSurabaya
         ObservableCollection<LaporanKriminalitas> listLaporanKriminalitas;
         ObservableCollection<User> listEmergencyContact;
         DispatcherTimer timer;
+        string lat, lng, address;
         int time = 0;
         public HomePage()
         {
@@ -52,7 +54,33 @@ namespace SahabatSurabaya
             {
                 time++;
             }
-            
+        }
+
+        private async void getUserAddress()
+        {
+            var location = await Geolocation.GetLastKnownLocationAsync();
+            if (location == null)
+            {
+                location = await Geolocation.GetLocationAsync(new GeolocationRequest
+                {
+                    DesiredAccuracy = GeolocationAccuracy.Medium,
+                    Timeout = TimeSpan.FromSeconds(30)
+                });
+            }
+            lat = location.Latitude.ToString().Replace(",", ".");
+            lng = location.Longitude.ToString().Replace(",", ".");
+            using (var client = new HttpClient())
+            {
+                string latlng = lat + "," + lng;
+                string reqUri = "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + latlng + "&key=AIzaSyA9rHJZEGWe6rX4nAHTGXFxCubmw-F0BBw";
+                HttpResponseMessage response = await client.GetAsync(reqUri);
+                if (response.IsSuccessStatusCode)
+                {
+                    var jsonString = response.Content.ReadAsStringAsync().Result;
+                    JObject json = JObject.Parse(jsonString);
+                    address = json["results"][0]["formatted_address"].ToString();
+                }
+            }
         }
 
         public async void HomePageLoaded(object sender, RoutedEventArgs e)
@@ -93,7 +121,6 @@ namespace SahabatSurabaya
                     lvLaporanLostFound.ItemsSource = listLaporanLostFound;
                 }
             }
-
         }
 
         private void emergencyAction(object sender, HoldingRoutedEventArgs e)
@@ -106,9 +133,31 @@ namespace SahabatSurabaya
         }
 
 
+        private async void sendEmergencyChat(User u)
+        {
+            string content = "Saya sedang dalam keadaan darurat! Lokasi terakhir saya di " + address;
+            using (var client=new HttpClient())
+            {
+                client.BaseAddress = new Uri(session.getApiURL());
+                client.DefaultRequestHeaders.Accept.Clear();
+                HttpResponseMessage response = await client.GetAsync("checkHeaderChat/" + userLogin.id_user+"/"+u.id_user);
+                if (response.IsSuccessStatusCode)
+                {
+                    var responseData = response.Content.ReadAsStringAsync().Result;
+                    MultipartFormDataContent form = new MultipartFormDataContent();
+                    form.Add(new StringContent(responseData), "id_chat");
+                    form.Add(new StringContent(userLogin.id_user.ToString()), "id_user_pengirim");
+                    form.Add(new StringContent(u.id_user.ToString()), "id_user_penerima");
+                    form.Add(new StringContent(content), "isi_chat");
+                    response = await client.PostAsync("insertDetailChat/", form);
+                }
+            }
+        }
+
 #if __ANDROID__
         private async void sendNotification()
         {
+            getUserAddress();
             using (var client = new HttpClient())
             {
                 client.BaseAddress = new Uri(session.getApiURL());
@@ -118,12 +167,18 @@ namespace SahabatSurabaya
                 {
                     var responseData = response.Content.ReadAsStringAsync().Result;
                     listEmergencyContact = JsonConvert.DeserializeObject<ObservableCollection<User>>(responseData);
-                    foreach(User u in listEmergencyContact){
+                    foreach(User user in listEmergencyContact){
                         var content = new FormUrlEncodedContent(new[]
                         {
-                            new KeyValuePair<string, string>("number", u.telpon_user),
+                            new KeyValuePair<string, string>("number", user.telpon_user),
                         });
                         response = await client.PostAsync("user/sendEmergencyNotification", content);
+                        responseData = response.Content.ReadAsStringAsync().Result;
+                        JObject json = JObject.Parse(responseData);
+                        if (Convert.ToInt32(json["recipients"]) > 0)
+                        {
+                            sendEmergencyChat(user);   
+                        }
                     }
                 }
             }
