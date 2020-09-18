@@ -27,7 +27,7 @@ namespace SahabatSurabaya
         ObservableCollection<LaporanKriminalitas> listLaporanKriminalitas;
         ObservableCollection<User> listEmergencyContact;
         DispatcherTimer timer;
-        string lat, lng, address;
+        string lat="", lng = "", address = "";
         int time = 0;
         public HomePage()
         {
@@ -63,7 +63,7 @@ namespace SahabatSurabaya
             {
                 location = await Geolocation.GetLocationAsync(new GeolocationRequest
                 {
-                    DesiredAccuracy = GeolocationAccuracy.Medium,
+                    DesiredAccuracy = GeolocationAccuracy.Best,
                     Timeout = TimeSpan.FromSeconds(30)
                 });
             }
@@ -127,6 +127,7 @@ namespace SahabatSurabaya
         {
 #if __ANDROID__
             if(e.HoldingState==HoldingState.Completed){
+                getUserAddress();
                 sendNotification();
             }
 #endif
@@ -144,12 +145,15 @@ namespace SahabatSurabaya
                 if (response.IsSuccessStatusCode)
                 {
                     var responseData = response.Content.ReadAsStringAsync().Result;
-                    MultipartFormDataContent form = new MultipartFormDataContent();
-                    form.Add(new StringContent(responseData), "id_chat");
-                    form.Add(new StringContent(userLogin.id_user.ToString()), "id_user_pengirim");
-                    form.Add(new StringContent(u.id_user.ToString()), "id_user_penerima");
-                    form.Add(new StringContent(content), "isi_chat");
-                    response = await client.PostAsync("insertDetailChat/", form);
+                    JObject json = JObject.Parse(responseData);
+                    var m = new MessageDialog(json["id_chat"].ToString());
+                    await m.ShowAsync();    
+                    //MultipartFormDataContent form = new MultipartFormDataContent();
+                    //form.Add(new StringContent(responseData), "id_chat");
+                    //form.Add(new StringContent(userLogin.id_user.ToString()), "id_user_pengirim");
+                    //form.Add(new StringContent(u.id_user.ToString()), "id_user_penerima");
+                    //form.Add(new StringContent(content), "isi_chat");
+                    //response = await client.PostAsync("insertDetailChat/", form);
                 }
             }
         }
@@ -157,7 +161,8 @@ namespace SahabatSurabaya
 #if __ANDROID__
         private async void sendNotification()
         {
-            getUserAddress();
+            var m = new MessageDialog(address);
+            await m.ShowAsync();
             using (var client = new HttpClient())
             {
                 client.BaseAddress = new Uri(session.getApiURL());
@@ -173,12 +178,7 @@ namespace SahabatSurabaya
                             new KeyValuePair<string, string>("number", user.telpon_user),
                         });
                         response = await client.PostAsync("user/sendEmergencyNotification", content);
-                        responseData = response.Content.ReadAsStringAsync().Result;
-                        JObject json = JObject.Parse(responseData);
-                        if (Convert.ToInt32(json["recipients"]) > 0)
-                        {
-                            sendEmergencyChat(user);   
-                        }
+                        sendEmergencyChat(user);
                     }
                 }
             }

@@ -506,13 +506,18 @@ return function (App $app) {
                         ":id_user_2"=>$id_user_2
                     ];
                     if($stmt->execute($data)){
-                        return $response->withJson($this->db->lastInsertId());
+                        return $response->withJson(["id_chat"=>$this->db->lastInsertId()]);
                     }else{
                         return $response->withJson(400);
                     }
                 }else{
-                    return $response->withJson($result);
+                    return $response->withJson(["id_chat"=>$result]);
                 }
+            });
+
+            $app->get('/coba',function ($request,$response){
+                return $response->withJson("asd");
+                //return "asd";
             });
 
             $app->post('/insertHeaderChat', function ($request, $response) {
