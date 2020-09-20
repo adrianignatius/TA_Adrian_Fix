@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.ConstrainedExecution;
 using System.Text;
 using System.Dynamic;
+using SahabatSurabaya.Shared;
 
 namespace SahabatSurabaya
 {
@@ -11,6 +12,10 @@ namespace SahabatSurabaya
        
         public static User userLogin { get; set; }
         public static KantorPolisi kantorPolisiSelected { get; set; }
+
+        public static LaporanLostFound laporanLostFoundSelected { get; set; }
+
+        public static LaporanKriminalitas laporanKriminalitasSelected { get; set; }
         public static ReportDetailPageParams reportDetailPageParam { get; set; }
         public static CrimeReportParams crimeReportParam { get; set; }
         public static LostFoundReportParams lostFoundReportParam { get; set; }
@@ -20,6 +25,26 @@ namespace SahabatSurabaya
         public readonly static string URL_WEBVIEW = "http://adrian-webview.ta-istts.com/";
         public readonly static string URL_ASSETS = "http://adrian-assets.ta-istts.com/";
 
+
+        public LaporanKriminalitas getLaporanKriminalitasSelected()
+        {
+            return laporanKriminalitasSelected;
+        }
+
+        public void setLaporanKriminalitasSelected(LaporanKriminalitas lk)
+        {
+            laporanKriminalitasSelected = lk;
+        }
+
+        public LaporanLostFound getLaporanLostFoundSelected()
+        {
+            return laporanLostFoundSelected;
+        }
+
+        public void setLaporanLostFoundSelected(LaporanLostFound lf)
+        {
+            laporanLostFoundSelected = lf;
+        }
 
         public KantorPolisi getKantorPolisi()
         {

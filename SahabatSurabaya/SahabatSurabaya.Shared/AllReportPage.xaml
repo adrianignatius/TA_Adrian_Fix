@@ -1,0 +1,54 @@
+﻿<Page
+    x:Class="SahabatSurabaya.Shared.AllReportPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:SahabatSurabaya.Shared"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    RequestedTheme="Light"
+    Loaded="pageLoaded"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid>
+        <StackPanel Orientation="Vertical">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Button Foreground="White" Background="Green" BorderBrush="White"  Grid.Column="0" Content="Laporan Kriminalitas" HorizontalAlignment="Stretch"></Button>
+                <Button Foreground="White" Background="Green" BorderBrush="White" Grid.Column="1" Content="Laporan Lost &amp; Found" HorizontalAlignment="Stretch"></Button>
+            </Grid>
+            <ScrollViewer ViewChanged="scroll_ViewChanged">
+                <StackPanel Orientation="Vertical">
+                    <ListView Name="lvKriminalitas" Margin="0,12,0,0">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <Border CornerRadius="10" BorderThickness="1" BorderBrush="LightGray">
+                                    <StackPanel Margin="0,10,0,0" Orientation="Vertical">
+                                        <Image Width="300" Height="200" HorizontalAlignment="Left"  Source="/Assets/appicon.jpg" ></Image>
+                                        <StackPanel Orientation="Vertical" Margin="10,10,0,0">
+                                            <TextBlock FontSize="12" FontWeight="SemiBold" Text="{Binding judul_laporan}"></TextBlock>
+                                            <StackPanel Margin="0,2,0,0" Orientation="Horizontal">
+                                                <TextBlock Text="{Binding tanggal_laporan}" FontSize="12"></TextBlock>
+                                                <TextBlock Text="Pukul" FontSize="12"></TextBlock>
+                                                <TextBlock Text="{Binding waktu_laporan}" FontSize="12"></TextBlock>
+                                            </StackPanel>
+                                            <Border BorderThickness="1" BorderBrush="Black"></Border>
+                                            <StackPanel Margin="0,5,0,5" Orientation="Horizontal">
+                                                <TextBlock Text="0" FontSize="12"></TextBlock>
+                                                <TextBlock Text="Komentar" FontSize="12"></TextBlock>
+                                            </StackPanel>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </StackPanel>
+            </ScrollViewer>
+            
+        </StackPanel>
+    </Grid>
+</Page>

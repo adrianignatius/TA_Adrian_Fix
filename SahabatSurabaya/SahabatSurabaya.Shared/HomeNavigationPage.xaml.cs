@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using SahabatSurabaya.Shared;
+using System.Linq;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
@@ -90,6 +91,12 @@ namespace SahabatSurabaya
                 case "contactPage":
                     ContentFrame.Navigate(typeof(ContactPage));
                     break;
+
+                case "historyPage":
+                    ContentFrame.Navigate(typeof(HistoryPage));
+                    break;
+
+
             }
         }
     }

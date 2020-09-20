@@ -32,9 +32,8 @@ namespace SahabatSurabaya
         
         public async void login(object sender, RoutedEventArgs e)
         {
-            TextBox email = (TextBox)this.FindName("txtEmail");
-            PasswordBox password = (PasswordBox)this.FindName("txtPassword");
-            if (email.Text.Length == 0 || password.Password.Length == 0)
+
+            if (txtEmail.Text.Length == 0 || txtPassword.Password.Length == 0)
             {
                 var dialog = new MessageDialog("Silahkan isi Email dan Password terlebih dahulu!");
                 await dialog.ShowAsync();
@@ -47,8 +46,8 @@ namespace SahabatSurabaya
                     client.DefaultRequestHeaders.Accept.Clear();
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                     MultipartFormDataContent form = new MultipartFormDataContent();
-                    form.Add(new StringContent(email.Text), "email");
-                    form.Add(new StringContent(password.Password), "password");
+                    form.Add(new StringContent(txtEmail.Text), "email");
+                    form.Add(new StringContent(txtPassword.Password), "password");
                     HttpResponseMessage response = await client.PostAsync("user/checkLogin", form);
                     if (response.IsSuccessStatusCode)
                     {
@@ -60,10 +59,17 @@ namespace SahabatSurabaya
                             string data = json["data"].ToString();
                             User userLogin= JsonConvert.DeserializeObject<User>(data);
                             session.setUserLogin(userLogin);
-                            this.Frame.Navigate(typeof(HomeNavigationPage));
+                            if (userLogin.status_user == 99)
+                            {
+                                this.Frame.Navigate(typeof(VerifyOtpPage));
+                            }
+                            else
+                            {
+                                this.Frame.Navigate(typeof(HomeNavigationPage));
+                            }                          
+                            
 #if __ANDROID__
-                              OneSignal.Current.SendTags(new Dictionary<string, string>() { {"no_handphone", userLogin.telpon_user}, {"tipe_user", userLogin.status_user.ToString()} });
-                             
+                              OneSignal.Current.SendTags(new Dictionary<string, string>() { {"no_handphone", userLogin.telpon_user}, {"tipe_user", userLogin.status_user.ToString()} });               
 #endif
                         }
                         else

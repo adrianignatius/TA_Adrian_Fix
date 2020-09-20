@@ -147,6 +147,24 @@ return function (App $app) {
             return $response->withJson($result);
         });
 
+        $app->get('/getHistoryLaporanLostFound/{id_user}', function ($request, $response,$args) {
+            $id_user=$args["id_user"];
+            $sql = "SELECT * FROM laporan_lostfound_barang where id_user_pelapor=:id_user";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([":id_user" => $id_user]);
+            $result = $stmt->fetchAll();
+            return $response->withJson($result);
+        });
+
+        $app->get('/getHistoryLaporanKriminalitas/{id_user}', function ($request, $response,$args) {
+            $id_user=$args["id_user"];
+            $sql = "SELECT * FROM laporan_kriminalitas where id_user_pelapor=:id_user";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([":id_user" => $id_user]);
+            $result = $stmt->fetchAll();
+            return $response->withJson($result);
+        });
+
         $app->put('/updateCreditCardToken', function ($request, $response) {
             $body = $request->getParsedBody();
             $sql = "UPDATE user set credit_card_token=:credit_card_token where id_user=:id_user";
@@ -464,6 +482,7 @@ return function (App $app) {
                 $result = $stmt->fetchAll();
                 return $response->withJson($result, 200);
             });
+            
 
             $app->get('/getAllChat/{id_chat}', function ($request, $response,$args) {   
                 $id_chat=$args["id_chat"];

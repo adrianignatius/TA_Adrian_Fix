@@ -39,6 +39,9 @@ namespace SahabatSurabaya
             timer = new DispatcherTimer();
             timer.Interval = new TimeSpan(0, 0, 1);
             timer.Tick += Timer_Tick;
+            
+            
+            
 
 #if NETFX_CORE
             btnEmergency.Visibility=Visibility.Collapsed;
@@ -94,6 +97,7 @@ namespace SahabatSurabaya
 
         public async void HomePageLoaded(object sender, RoutedEventArgs e)
         {
+            //btnNext.SetValue(Canvas.LeftProperty, canvasWidth);
             userLogin = session.getUserLogin();
             txtNamaUser.Text = "Selamat Datang, " + userLogin.nama_user + "!";
             if (userLogin.status_user == 1)
@@ -115,6 +119,7 @@ namespace SahabatSurabaya
                     var responseData = response.Content.ReadAsStringAsync().Result;
                     listLaporanKriminalitas = JsonConvert.DeserializeObject<ObservableCollection<LaporanKriminalitas>>(responseData);
                     lvLaporanKriminalitas.ItemsSource = listLaporanKriminalitas;
+                    
                 }
                 else
                 {
@@ -130,6 +135,11 @@ namespace SahabatSurabaya
                     lvLaporanLostFound.ItemsSource = listLaporanLostFound;
                 }
             }
+        }
+
+        private void nextContent(object sender, RoutedEventArgs e)
+        {
+            lvLaporanKriminalitas.ScrollIntoView(listLaporanKriminalitas[3]);
         }
 
         private void emergencyAction(object sender, HoldingRoutedEventArgs e)
@@ -169,8 +179,6 @@ namespace SahabatSurabaya
             }
         }
 
-       
-
 #if __ANDROID__
         private async void sendNotification()
         {
@@ -201,8 +209,18 @@ namespace SahabatSurabaya
 
         public void goToDetailPage(object sender, ItemClickEventArgs e)
         {
-            LaporanLostFound selected = (LaporanLostFound)e.ClickedItem;
-            ReportDetailPageParams param = new ReportDetailPageParams(userLogin, selected);
+            string tag = (sender as ListView).Tag.ToString();
+            ReportDetailPageParams param=new ReportDetailPageParams(null,null,null);
+            if (tag == "lvKriminalitas")
+            {
+                LaporanKriminalitas selected = (LaporanKriminalitas)e.ClickedItem;
+                param = new ReportDetailPageParams(null, selected, "kriminalitas");
+            }
+            else if (tag == "lvLostfound")
+            {
+                LaporanLostFound selected = (LaporanLostFound)e.ClickedItem;
+                param = new ReportDetailPageParams(selected, null, "lostfound");
+            }
             session.setReportDetailPageParams(param);
             this.Frame.Navigate(typeof(ReportDetailPage));     
         }
