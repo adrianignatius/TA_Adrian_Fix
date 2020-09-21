@@ -49,7 +49,7 @@
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)ImageSourceKantorPolisiConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)KantorPolisi.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)KomentarLaporanLostFound.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)KomentarLaporan.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LaporanKriminalitas.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LaporanLostFound.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LoginPage.xaml.cs">

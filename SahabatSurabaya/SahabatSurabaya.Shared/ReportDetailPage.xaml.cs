@@ -14,13 +14,13 @@ namespace SahabatSurabaya
     {
         ReportDetailPageParams param;
         User userLogin;
-        ObservableCollection<KomentarLaporanLostFound> listKomentar;
+        ObservableCollection<KomentarLaporan> listKomentar;
         Session session;
         public ReportDetailPage()
         {
             this.InitializeComponent();
             session = new Session();
-            listKomentar = new ObservableCollection<KomentarLaporanLostFound>();
+            listKomentar = new ObservableCollection<KomentarLaporan>();
         }
         
         private void pageLoaded(object sender,RoutedEventArgs e)
@@ -74,7 +74,7 @@ namespace SahabatSurabaya
                 {
                     var jsonString = await response.Content.ReadAsStringAsync();
                     var responseData = response.Content.ReadAsStringAsync().Result;
-                    listKomentar = JsonConvert.DeserializeObject<ObservableCollection<KomentarLaporanLostFound>>(responseData);
+                    listKomentar = JsonConvert.DeserializeObject<ObservableCollection<KomentarLaporan>>(responseData);
                     lvKomentarLaporan.ItemsSource = listKomentar;
                 }
             }
@@ -111,8 +111,8 @@ namespace SahabatSurabaya
                     form.Add(new StringContent(isi_komentar), "isi_komentar");
                     form.Add(new StringContent(tanggal_komentar), "tanggal_komentar");
                     form.Add(new StringContent(waktu_komentar), "waktu_komentar");
-                    form.Add(new StringContent("asd"), "email_user");
-                    HttpResponseMessage response = await client.PostAsync("insertKomentarLaporanLostFound", form);
+                    form.Add(new StringContent(userLogin.id_user.ToString()), "id_user_komentar");
+                    HttpResponseMessage response = await client.PostAsync("insertKomentarLaporan", form);
                     if (response.IsSuccessStatusCode)
                     {
                         var message = new MessageDialog("Berhasil menambahkan komentar!");

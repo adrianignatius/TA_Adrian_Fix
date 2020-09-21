@@ -25,7 +25,7 @@ return function (App $app) {
                 JOIN user u on lf.id_user_pelapor=u.id_user 
                 LEFT JOIN komentar_laporan kl on lf.id_laporan=kl.id_laporan 
                 GROUP BY lf.id_laporan 
-                ORDER BY lf.tanggal_laporan DESC, lf.waktu_laporan ASC LIMIT 5";
+                ORDER BY lf.tanggal_laporan DESC, lf.waktu_laporan DESC LIMIT 5";
         $stmt = $this->db->prepare($sql);
         $stmt->execute();
         $result = $stmt->fetchAll();
@@ -36,7 +36,7 @@ return function (App $app) {
         $sql = "SELECT lk.id_laporan,lk.judul_laporan,lk.jenis_kejadian,lk.deskripsi_kejadian,lk.tanggal_laporan,lk.waktu_laporan,lk.alamat_laporan,lk.lat_laporan,lk.lng_laporan,lk.id_user_pelapor,u.nama_user AS nama_user_pelapor, COUNT(kl.id_laporan) AS jumlah_komentar FROM user u 
                 JOIN laporan_kriminalitas lk on lk.id_user_pelapor=u.id_user 
                 LEFT JOIN komentar_laporan kl on lk.id_laporan=kl.id_laporan 
-                GROUP BY lk.id_laporan ORDER BY lk.tanggal_laporan DESC, lk.waktu_laporan ASC LIMIT 5";
+                GROUP BY lk.id_laporan ORDER BY lk.tanggal_laporan DESC, lk.waktu_laporan DESC LIMIT 5";
         $stmt = $this->db->prepare($sql);
         $stmt->execute();
         $result = $stmt->fetchAll();
@@ -462,14 +462,14 @@ return function (App $app) {
             $month=$datetime->format('m');
             $year=$datetime->format('Y');
             $formatDate=$year.$month.$day;
-            $sql = "INSERT INTO komentar_laporan(id_laporan,isi_komentar, tanggal_komentar, waktu_komentar,email_user) VALUE (:id_laporan,:isi_komentar, :tanggal_komentar, :waktu_komentar, :email_user)";
+            $sql = "INSERT INTO komentar_laporan(id_laporan,isi_komentar, tanggal_komentar, waktu_komentar,id_user_komentar) VALUE (:id_laporan,:isi_komentar, :tanggal_komentar, :waktu_komentar, :id_user_komentar)";
             $stmt = $this->db->prepare($sql);
             $data = [
                 ":id_laporan" => $new_komentar["id_laporan"],
                 ":isi_komentar"=>$new_komentar["isi_komentar"],
                 ":tanggal_komentar" => $formatDate,
                 ":waktu_komentar" => $new_komentar["waktu_komentar"],
-                ":email_user" => $new_komentar["email_user"]
+                ":id_user_komentar" => $new_komentar["id_user_komentar"]
             ];
         
             if($stmt->execute($data))
@@ -690,9 +690,12 @@ return function (App $app) {
             }
         });
 
-        $app->get('/getKomentarLaporanLostFound/{id_laporan}', function ($request, $response,$args) {
+        $app->get('/getKomentarLaporan/{id_laporan}', function ($request, $response,$args) {
             $id_laporan=$args["id_laporan"];
-            $sql = "SELECT * FROM komentar_laporan where id_laporan=:id_laporan order by tanggal_komentar DESC, waktu_komentar DESC ";
+            $sql = "SELECT kl.id_komentar,kl.id_laporan,kl.isi_komentar,kl.tanggal_komentar,kl.waktu_komentar,u.nama_user AS nama_user_komentar
+                    FROM komentar_laporan kl, user u 
+                    WHERE kl.id_user_komentar=u.id_user 
+                    ORDER BY kl.tanggal_komentar DESC, kl.waktu_komentar DESC";
             $stmt = $this->db->prepare($sql);
             $stmt->execute([":id_laporan" => $id_laporan]);
             $result = $stmt->fetchAll();

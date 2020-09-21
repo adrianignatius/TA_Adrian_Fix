@@ -4,7 +4,7 @@ using System.Text;
 
 namespace SahabatSurabaya
 {
-    class KomentarLaporanLostFound
+    class KomentarLaporan
     {
         public int id_komentar { get; set; }
 
@@ -16,16 +16,16 @@ namespace SahabatSurabaya
 
         public string waktu_komentar { get; set; }
 
-        public string email_user { get; set; }
+        public string nama_user_komentar { get; set; }
 
-        public KomentarLaporanLostFound(int id_komentar, string id_laporan, string isi_komentar, string tanggal_komentar, string waktu_komentar, string email_user)
+        public KomentarLaporan(int id_komentar, string id_laporan, string isi_komentar, string tanggal_komentar, string waktu_komentar, string nama_user_komentar)
         {
             this.id_komentar = id_komentar;
             this.id_laporan = id_laporan;
             this.isi_komentar = isi_komentar;
             this.tanggal_komentar = tanggal_komentar;
             this.waktu_komentar = waktu_komentar;
-            this.email_user = email_user;
+            this.nama_user_komentar = nama_user_komentar;
         }
     }
 }
