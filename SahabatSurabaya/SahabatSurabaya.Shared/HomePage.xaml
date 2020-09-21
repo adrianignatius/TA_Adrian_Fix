@@ -72,7 +72,7 @@
                                             </StackPanel>
                                             <Border BorderThickness="1" BorderBrush="Black"></Border>
                                             <StackPanel Margin="0,5,0,5" Orientation="Horizontal">
-                                                <TextBlock Text="0" FontSize="12"></TextBlock>
+                                                <TextBlock Text="{Binding jumlah_komentar}" FontSize="12"></TextBlock>
                                                 <TextBlock Text="Komentar" FontSize="12"></TextBlock>
                                             </StackPanel>
                                         </StackPanel>
@@ -82,17 +82,6 @@
                         </ListView.ItemTemplate>
                     </ListView>
                 </Grid>
-                <!--<Grid Margin="0,10,0,0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="auto"></ColumnDefinition>
-                        <ColumnDefinition Width="31*"></ColumnDefinition>
-                        <ColumnDefinition Width="135*"/>
-                        <ColumnDefinition Width="auto"></ColumnDefinition>
-                    </Grid.ColumnDefinitions>
-                    <Button Content="&lt;" CornerRadius="16" HorizontalAlignment="Center"/>
-                    <Button Click="nextContent" Grid.Column="3" Content="&gt;" CornerRadius="16" HorizontalAlignment="Center"></Button>
-                    
-                </Grid>-->
                 <Grid Margin="0,20,0,0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="3*"></ColumnDefinition>
@@ -127,7 +116,7 @@
                                         </StackPanel>
                                         <Border BorderThickness="1" BorderBrush="Black"></Border>
                                         <StackPanel Margin="0,5,0,5" Orientation="Horizontal">
-                                            <TextBlock Text="0" FontSize="12"></TextBlock>
+                                            <TextBlock Text="{Binding jumlah_komentar}" FontSize="12"></TextBlock>
                                             <TextBlock Text="Komentar" FontSize="12"></TextBlock>
                                         </StackPanel>
                                     </StackPanel>

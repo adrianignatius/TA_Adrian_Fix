@@ -21,19 +21,26 @@ return function (App $app) {
     });
 
     $app->get('/getHeadlineLaporanLostFound', function ($request, $response) {
-        $sql = "SELECT * FROM laporan_lostfound_barang order by tanggal_laporan desc, waktu_laporan asc LIMIT 5";
+        $sql = "SELECT lf.id_laporan,lf.judul_laporan,lf.jenis_laporan,lf.tanggal_laporan,lf.waktu_laporan,lf.alamat_laporan,lf.lat_laporan,lf.lng_laporan,lf.deskripsi_barang,lf.deskripsi_barang,lf.id_user_pelapor,u.nama_user as nama_user_pelapor,count(kl.id_laporan) as jumlah_komentar from laporan_lostfound_barang lf 
+                JOIN user u on lf.id_user_pelapor=u.id_user 
+                LEFT JOIN komentar_laporan kl on lf.id_laporan=kl.id_laporan 
+                GROUP BY lf.id_laporan 
+                ORDER BY lf.tanggal_laporan DESC, lf.waktu_laporan ASC LIMIT 5";
         $stmt = $this->db->prepare($sql);
         $stmt->execute();
         $result = $stmt->fetchAll();
-        return $response->withJson($result, 200);
+        return $response->withJson($result);
     });
 
     $app->get('/getHeadlineLaporanKriminalitas', function ($request, $response) {
-        $sql = "SELECT * FROM laporan_kriminalitas order by tanggal_laporan desc, waktu_laporan desc LIMIT 5";
+        $sql = "SELECT lk.id_laporan,lk.judul_laporan,lk.jenis_kejadian,lk.deskripsi_kejadian,lk.tanggal_laporan,lk.waktu_laporan,lk.alamat_laporan,lk.lat_laporan,lk.lng_laporan,lk.id_user_pelapor,u.nama_user AS nama_user_pelapor, COUNT(kl.id_laporan) AS jumlah_komentar FROM user u 
+                JOIN laporan_kriminalitas lk on lk.id_user_pelapor=u.id_user 
+                LEFT JOIN komentar_laporan kl on lk.id_laporan=kl.id_laporan 
+                GROUP BY lk.id_laporan ORDER BY lk.tanggal_laporan DESC, lk.waktu_laporan ASC LIMIT 5";
         $stmt = $this->db->prepare($sql);
         $stmt->execute();
         $result = $stmt->fetchAll();
-        return $response->withJson($result, 200);
+        return $response->withJson($result);
     });
     
     $app->get('/getAllKategoriCrime', function ($request, $response) {
@@ -448,14 +455,14 @@ return function (App $app) {
         });
     });
         
-        $app->post('/insertKomentarLaporanLostFound', function ($request, $response) {
+        $app->post('/insertKomentarLaporan', function ($request, $response) {
             $new_komentar = $request->getParsedBody();
             $datetime = DateTime::createFromFormat('d/m/Y', $new_komentar["tanggal_komentar"]);
             $day=$datetime->format('d');
             $month=$datetime->format('m');
             $year=$datetime->format('Y');
             $formatDate=$year.$month.$day;
-            $sql = "INSERT INTO komentar_laporan_lostfound (id_laporan,isi_komentar, tanggal_komentar, waktu_komentar,email_user) VALUE (:id_laporan,:isi_komentar, :tanggal_komentar, :waktu_komentar, :email_user)";
+            $sql = "INSERT INTO komentar_laporan(id_laporan,isi_komentar, tanggal_komentar, waktu_komentar,email_user) VALUE (:id_laporan,:isi_komentar, :tanggal_komentar, :waktu_komentar, :email_user)";
             $stmt = $this->db->prepare($sql);
             $data = [
                 ":id_laporan" => $new_komentar["id_laporan"],
@@ -685,7 +692,7 @@ return function (App $app) {
 
         $app->get('/getKomentarLaporanLostFound/{id_laporan}', function ($request, $response,$args) {
             $id_laporan=$args["id_laporan"];
-            $sql = "SELECT * FROM komentar_laporan_lostfound where id_laporan=:id_laporan order by tanggal_komentar DESC, waktu_komentar DESC ";
+            $sql = "SELECT * FROM komentar_laporan where id_laporan=:id_laporan order by tanggal_komentar DESC, waktu_komentar DESC ";
             $stmt = $this->db->prepare($sql);
             $stmt->execute([":id_laporan" => $id_laporan]);
             $result = $stmt->fetchAll();

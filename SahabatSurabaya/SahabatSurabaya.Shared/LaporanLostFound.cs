@@ -25,6 +25,8 @@ namespace SahabatSurabaya
 
         public int  id_user_pelapor { get; set; }
 
-        public int status_laporan { get; set; }
+        public string nama_user_pelapor { get; set; }
+
+        public int jumlah_komentar { get; set; }
     }
 }

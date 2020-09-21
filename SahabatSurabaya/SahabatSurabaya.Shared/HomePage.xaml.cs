@@ -97,7 +97,6 @@ namespace SahabatSurabaya
 
         public async void HomePageLoaded(object sender, RoutedEventArgs e)
         {
-            //btnNext.SetValue(Canvas.LeftProperty, canvasWidth);
             userLogin = session.getUserLogin();
             txtNamaUser.Text = "Selamat Datang, " + userLogin.nama_user + "!";
             if (userLogin.status_user == 1)
@@ -210,18 +209,27 @@ namespace SahabatSurabaya
         public void goToDetailPage(object sender, ItemClickEventArgs e)
         {
             string tag = (sender as ListView).Tag.ToString();
-            ReportDetailPageParams param=new ReportDetailPageParams(null,null,null);
             if (tag == "lvKriminalitas")
             {
                 LaporanKriminalitas selected = (LaporanKriminalitas)e.ClickedItem;
-                param = new ReportDetailPageParams(null, selected, "kriminalitas");
+                ReportDetailPageParams param = new ReportDetailPageParams(selected.id_user_pelapor, selected.nama_user_pelapor, selected.id_laporan,selected.alamat_laporan, selected.tanggal_laporan, selected.waktu_laporan, selected.judul_laporan,selected.jenis_kejadian, selected.deskripsi_kejadian, selected.lat_laporan, selected.lng_laporan, "kriminalitas");
+                session.setReportDetailPageParams(param);
             }
             else if (tag == "lvLostfound")
             {
                 LaporanLostFound selected = (LaporanLostFound)e.ClickedItem;
-                param = new ReportDetailPageParams(selected, null, "lostfound");
+                string jenis_laporan = "";
+                if (selected.jenis_laporan == 0)
+                {
+                    jenis_laporan = "Penemuan barang";
+                }
+                else
+                {
+                    jenis_laporan = "Kehilangan barang";
+                }
+                ReportDetailPageParams param = new ReportDetailPageParams(selected.id_user_pelapor, selected.nama_user_pelapor, selected.id_laporan, selected.alamat_laporan, selected.tanggal_laporan, selected.waktu_laporan, selected.judul_laporan,jenis_laporan, selected.deskripsi_barang, selected.lat_laporan, selected.lng_laporan, "lostfound");
+                session.setReportDetailPageParams(param);
             }
-            session.setReportDetailPageParams(param);
             this.Frame.Navigate(typeof(ReportDetailPage));     
         }
     }
