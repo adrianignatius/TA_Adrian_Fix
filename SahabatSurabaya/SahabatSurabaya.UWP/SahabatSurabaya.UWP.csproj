@@ -131,6 +131,9 @@
     <AppxManifest Include="Package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
+    <Content Include="..\..\..\..\..\Downloads\Sniglet\Sniglet-Regular.ttf">
+      <Link>Assets\Fonts\Sniglet-Regular.ttf</Link>
+    </Content>
     <None Include="SahabatSurabaya.UWP_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>

@@ -10,7 +10,6 @@ namespace SahabatSurabaya
 
     public sealed partial class HomeNavigationPage : Page
     {
-        User userLogin;
         Session session;
         public HomeNavigationPage()
         {
@@ -95,8 +94,6 @@ namespace SahabatSurabaya
                 case "historyPage":
                     ContentFrame.Navigate(typeof(HistoryPage));
                     break;
-
-
             }
         }
     }

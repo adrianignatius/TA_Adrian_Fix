@@ -11,7 +11,7 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Grid>
-        <NavigationView Background="Green" x:Name="NavView"
+        <NavigationView Background="White" x:Name="NavView"
 							ItemInvoked="NavView_ItemInvoked" IsSettingsVisible="False"
 		Loaded="NavView_Loaded"
                         IsBackButtonVisible="Collapsed">

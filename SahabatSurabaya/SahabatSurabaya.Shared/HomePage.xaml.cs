@@ -233,7 +233,7 @@ namespace SahabatSurabaya
         }
 #endif
 
-        public void goToDetailPage(object sender, ItemClickEventArgs e)
+        public async void goToDetailPage(object sender, ItemClickEventArgs e)
         {
             string tag = (sender as ListView).Tag.ToString();
             if (tag == "lvKriminalitas")
@@ -257,7 +257,15 @@ namespace SahabatSurabaya
                 ReportDetailPageParams param = new ReportDetailPageParams(selected.id_user_pelapor, selected.nama_user_pelapor, selected.id_laporan, selected.alamat_laporan, selected.tanggal_laporan, selected.waktu_laporan, selected.judul_laporan,jenis_laporan, selected.deskripsi_barang, selected.lat_laporan, selected.lng_laporan, "lostfound");
                 session.setReportDetailPageParams(param);
             }
-            this.Frame.Navigate(typeof(ReportDetailPage));     
+            //var contentPresenter = this.Frame.Parent as ContentPresenter;
+            //var a=this.Frame.pa
+            //var grid = contentPresenter.Parent as Grid;
+            //var parent = grid.Parent;
+            //var message = new MessageDialog(parent.ToString());
+            //await message.ShowAsync();
+            //var parent = (NavigationView.Parent as Grid).Parent as HomeNavigationPage;
+            //parent.Frame.Navigate(typeof(ReportDetailPage));  
+            this.Frame.Navigate(typeof(ReportDetailPage));
         }
     }
 }
