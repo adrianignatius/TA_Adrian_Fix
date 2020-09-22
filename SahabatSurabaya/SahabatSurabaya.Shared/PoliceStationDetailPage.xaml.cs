@@ -34,11 +34,6 @@ namespace SahabatSurabaya
         {
             On_BackRequested();     
         }
-        private async void openMap(object sender,RoutedEventArgs e)
-        {
-            map = new MapObject();
-            await map.navigateToLocation(double.Parse(selected.lat_kantor_polisi, CultureInfo.InvariantCulture), double.Parse(selected.lng_kantor_polisi, CultureInfo.InvariantCulture));
-        }
 
         private bool On_BackRequested()
         {
@@ -48,6 +43,12 @@ namespace SahabatSurabaya
                 return true;
             }
             return false;
+        }
+
+        private async void openMap(object sender,RoutedEventArgs e)
+        {
+            map = new MapObject();
+            await map.navigateToLocation(double.Parse(selected.lat_kantor_polisi, CultureInfo.InvariantCulture), double.Parse(selected.lng_kantor_polisi, CultureInfo.InvariantCulture));
         }
 
         private async void loadMap()

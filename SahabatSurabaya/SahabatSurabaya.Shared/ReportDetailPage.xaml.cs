@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using SahabatSurabaya.Shared;
 using System;
 using System.Collections.ObjectModel;
@@ -7,6 +8,8 @@ using System.Net.Http;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Xamarin.Essentials;
+
 namespace SahabatSurabaya
 {
 
@@ -80,6 +83,14 @@ namespace SahabatSurabaya
             }
         }
 
+        private async void shareLaporan(object sender, RoutedEventArgs e)
+        {
+            await Share.RequestAsync(new ShareTextRequest
+            {
+                Text = "asd",
+                Title = "Share Text"
+            });
+        }
         private async void goToChatPage(object sender, RoutedEventArgs e)
         {
             using (var client = new HttpClient())
@@ -89,9 +100,11 @@ namespace SahabatSurabaya
                 HttpResponseMessage response = await client.GetAsync("/checkHeaderChat/" + userLogin.id_user+"/"+param.id_user_pelapor);
                 if (response.IsSuccessStatusCode)
                 {
-                    string responseData = response.Content.ReadAsStringAsync().Result.ToString().Trim(new char[] { '"' });
-                    ChatPageParams chatParam = new ChatPageParams(Convert.ToInt32(responseData), userLogin.id_user, param.id_user_pelapor, param.nama_user_pelapor);
-                    this.Frame.Navigate(typeof(PersonalChatPage), chatParam);
+                    var responseData = response.Content.ReadAsStringAsync().Result;
+                    JObject json = JObject.Parse(responseData);
+                    ChatPageParams chatParam = new ChatPageParams(Convert.ToInt32(json["id_chat"].ToString()), userLogin.id_user, param.id_user_pelapor, param.nama_user_pelapor);
+                    session.setChatPageParams(chatParam);
+                    this.Frame.Navigate(typeof(PersonalChatPage));
                 }
             }
         }

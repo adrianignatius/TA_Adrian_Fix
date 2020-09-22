@@ -27,7 +27,7 @@
                         <Setter Target="column2.Width" Value="0"></Setter>
                         <Setter Target="rootPanel.Margin" Value="20"></Setter>
                         <Setter Target="textBlockEmail.FontSize" Value="20"></Setter>
-                        <Setter Target="txtEmail.FontSize" Value="20"></Setter>
+                        <Setter Target="txtNoHandphone.FontSize" Value="20"></Setter>
                         <Setter Target="txtPassword.FontSize" Value="20"></Setter>
                         <Setter Target="textBlockPassword.FontSize" Value="20"></Setter>
                     </VisualState.Setters>
@@ -45,7 +45,7 @@
                         <Setter Target="column1.Width" Value="3*"></Setter>
                         <Setter Target="column2.Width" Value="3*"></Setter>
                         <Setter Target="textBlockEmail.FontSize" Value="25"></Setter>
-                        <Setter Target="txtEmail.FontSize" Value="25"></Setter>
+                        <Setter Target="txtNoHandphone.FontSize" Value="25"></Setter>
                         <Setter Target="txtPassword.FontSize" Value="25"></Setter>
                         <Setter Target="textBlockPassword.FontSize" Value="25"></Setter>
                     </VisualState.Setters>
@@ -64,7 +64,7 @@
                         <Setter Target="imageAppIcon.Height" Value="500"></Setter>
                         <Setter Target="textBlockDescApp.Width" Value="700"></Setter>
                         <Setter Target="textBlockEmail.FontSize" Value="30"></Setter>
-                        <Setter Target="txtEmail.FontSize" Value="30"></Setter>
+                        <Setter Target="txtNoHandphone.FontSize" Value="30"></Setter>
                         <Setter Target="txtPassword.FontSize" Value="30"></Setter>
                         <Setter Target="textBlockPassword.FontSize" Value="30"></Setter>
                     </VisualState.Setters>
@@ -81,8 +81,8 @@
                 <Image Margin="0,-25,0,0" Name="appIconBg" Source="/Assets/appicon.png" Width="200" Height="200"></Image>
                 <TextBlock x:Name="textBlockSignIn" Foreground="Black" FontSize="40" Margin="30,20,0,0" FontWeight="ExtraBold">Sign In</TextBlock>
                 <TextBlock TextWrapping="Wrap" Margin="30,10,0,20" Foreground="Black" FontSize="15" >Don't have an account? <Hyperlink Click="goToRegister">Create your account here</Hyperlink></TextBlock>
-                <TextBlock Name="textBlockEmail" Foreground="Black" Margin="30,0,30,0" FontSize="30">Email</TextBlock>
-                <TextBox Name="txtEmail" Padding="8" Foreground="Black" Margin="30,10,30,0" FontSize="20" Height="50"></TextBox>
+                <TextBlock Name="textBlockEmail" Foreground="Black" Margin="30,0,30,0" FontSize="30">No Handphone</TextBlock>
+                <TextBox MaxLength="13" BeforeTextChanging="validateInput" Name="txtNoHandphone" Padding="8" Foreground="Black" Margin="30,10,30,0" FontSize="20" Height="50"></TextBox>
                 <TextBlock Name="textBlockPassword" Foreground="Black" Margin="30,20,30,0" FontSize="30">Password</TextBlock>
                 <PasswordBox Name="txtPassword" Padding="8" Foreground="Black" Margin="30,10,30,0" FontSize="20" Height="50"></PasswordBox>
                 <Button Click="login"  Foreground="AntiqueWhite" x:Name="btnLogin" Background="DarkGreen" FontWeight="SemiBold" Padding="15" Content="Login" HorizontalAlignment="Stretch" Margin="30,35,30,0" FontSize="30" />

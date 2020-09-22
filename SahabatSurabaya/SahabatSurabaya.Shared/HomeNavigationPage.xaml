@@ -12,7 +12,7 @@
 
     <Grid>
         <NavigationView Background="Green" x:Name="NavView"
-							ItemInvoked="NavView_ItemInvoked"
+							ItemInvoked="NavView_ItemInvoked" IsSettingsVisible="False"
 		Loaded="NavView_Loaded"
                         IsBackButtonVisible="Collapsed">
 

@@ -5,20 +5,12 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
+using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
 
-// The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
-
-namespace SahabatSurabaya.Shared
+namespace SahabatSurabaya
 { 
     public sealed partial class AllReportPage : Page
     {
@@ -27,18 +19,27 @@ namespace SahabatSurabaya.Shared
         public AllReportPage()
         {
             this.InitializeComponent();
+            session = new Session();
         }
 
-        private void scroll_ViewChanged(object sender, ScrollViewerViewChangedEventArgs e)
+        private void Back_Click(object sender, RoutedEventArgs e)
         {
-            var scrollViewer = (ScrollViewer)sender;
-            if (scrollViewer.VerticalOffset == scrollViewer.ScrollableHeight) { 
+            On_BackRequested();
+        }
+
+        private bool On_BackRequested()
+        {
+            if (this.Frame.CanGoBack)
+            {
+                this.Frame.GoBack();
+                return true;
             }
+            return false;
         }
 
-        private async void pageLoaded(object sender, RoutedEventArgs e)
+        private async void loadHeadlineLaporanKriminalitas()
         {
-            using (var client=new HttpClient())
+            using (var client = new HttpClient())
             {
                 client.BaseAddress = new Uri(session.getApiURL());
                 client.DefaultRequestHeaders.Accept.Clear();
@@ -48,9 +49,33 @@ namespace SahabatSurabaya.Shared
                     var jsonString = await response.Content.ReadAsStringAsync();
                     var responseData = response.Content.ReadAsStringAsync().Result;
                     listLaporanKriminalitas = JsonConvert.DeserializeObject<ObservableCollection<LaporanKriminalitas>>(responseData);
-                    lvKriminalitas.ItemsSource = listLaporanKriminalitas;
+                    lvLaporanKriminalitas.ItemsSource = listLaporanKriminalitas;
+                }
+                else
+                {
+                    var message = new MessageDialog("Tidak ada koneksi internet, silahkan coba beberapa saat lagi");
+                    await message.ShowAsync();
                 }
             }
+        }
+
+        private void pageLoaded(object sender, RoutedEventArgs e)
+        {
+            string param = session.getAllReportParam();
+            if (param == "kriminalitas")
+            {
+                rootPivotLaporan.SelectedItem = pvLaporanKriminalitas;
+            }
+            else
+            {
+                rootPivotLaporan.SelectedItem = pvLaporanLostFound;
+            }
+            loadHeadlineLaporanKriminalitas();
+        }
+
+        private async void loadMoreData(object sender,RoutedEventArgs e)
+        {
+
         }
     }
 }

@@ -6,13 +6,16 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Drawing;
 using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 using System.Threading;
+using Windows.UI;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using Xamarin.Essentials;
 
@@ -211,7 +214,7 @@ namespace SahabatSurabaya
                     FileData fileData = await CrossFilePicker.Current.PickFile(new string[] { ".jpg" });
                     if (fileData == null)
                     {
-                        return; // user canceled file picking
+                        return;
                     }
                     string fileName = fileData.FileName;
                     UploadedImage imageBaru = new UploadedImage(fileData.DataArray, fileData.DataArray.Length);
@@ -228,7 +231,7 @@ namespace SahabatSurabaya
                     newFile.TextWrapping = TextWrapping.Wrap;
                     sp.Children.Add(newFile);
                     Button btnClose = new Button();
-                    btnClose.Content = "X";
+                    btnClose.Content = "X";                 
                     btnClose.Click += deleteFile;
                     btnClose.Tag = imageCount.ToString();
                     btnClose.Name = "btn" + imageCount.ToString();

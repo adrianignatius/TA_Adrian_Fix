@@ -2,6 +2,7 @@
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using Windows.UI.Popups;
@@ -29,11 +30,16 @@ namespace SahabatSurabaya
         {
             this.Frame.Navigate(typeof(RegisterPage));
         }
-        
+
+        private void validateInput(TextBox sender, TextBoxBeforeTextChangingEventArgs args)
+        {
+            args.Cancel = args.NewText.Any(c => !char.IsDigit(c));
+        }
+
         public async void login(object sender, RoutedEventArgs e)
         {
 
-            if (txtEmail.Text.Length == 0 || txtPassword.Password.Length == 0)
+            if (txtNoHandphone.Text.Length == 0 || txtPassword.Password.Length == 0)
             {
                 var dialog = new MessageDialog("Silahkan isi Email dan Password terlebih dahulu!");
                 await dialog.ShowAsync();
@@ -41,12 +47,13 @@ namespace SahabatSurabaya
             else
             {
                 using (var client = new HttpClient())
-                {                  
-                    client.BaseAddress = new Uri(session.getApiURL());
+                {
+                    client.BaseAddress = new Uri("http://localhost:8080/");
+                    //client.BaseAddress = new Uri(session.getApiURL());
                     client.DefaultRequestHeaders.Accept.Clear();
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                     MultipartFormDataContent form = new MultipartFormDataContent();
-                    form.Add(new StringContent(txtEmail.Text), "email");
+                    form.Add(new StringContent(txtNoHandphone.Text), "email");
                     form.Add(new StringContent(txtPassword.Password), "password");
                     HttpResponseMessage response = await client.PostAsync("user/checkLogin", form);
                     if (response.IsSuccessStatusCode)

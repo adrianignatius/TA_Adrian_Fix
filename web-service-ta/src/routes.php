@@ -130,7 +130,7 @@ return function (App $app) {
 
         $app->post('/checkLogin', function ($request, $response) {
             $body = $request->getParsedBody();
-            $sql = "SELECT * FROM user where email_user='".$body["email"]."'";
+            $sql = "SELECT * FROM user where telpon_user='".$body["email"]."'";
             $stmt = $this->db->prepare($sql);
             $stmt->execute();
             $result = $stmt->fetch();
@@ -141,7 +141,7 @@ return function (App $app) {
                     return $response->withJson(["status" => "400", "message" =>"Password yang dimasukkan salah"]);
                 }
             }else{
-                return $response->withJson(["status" => "404", "message" => "Username tidak ditemukan"]);  
+                return $response->withJson(["status" => "404", "message" => "Nomor belum terdaftar"]);  
             }
         });
 

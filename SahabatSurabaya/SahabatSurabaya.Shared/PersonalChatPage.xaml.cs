@@ -25,7 +25,6 @@ namespace SahabatSurabaya
             lvChat.ItemsSource = listChat;
             session = new Session();
             height = ((Frame)Window.Current.Content).ActualHeight;
-            
         }
 
         private async void pageLoaded(object sender, RoutedEventArgs e)

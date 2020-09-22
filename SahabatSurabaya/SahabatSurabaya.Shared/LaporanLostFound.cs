@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Windows.Input;
 
 namespace SahabatSurabaya
 {
@@ -28,5 +29,21 @@ namespace SahabatSurabaya
         public string nama_user_pelapor { get; set; }
 
         public int jumlah_komentar { get; set; }
+
+        public LaporanLostFound(string id_laporan, string judul_laporan, int jenis_laporan, string tanggal_laporan, string waktu_laporan, string alamat_laporan, string lat_laporan, string lng_laporan, string deskripsi_barang, int id_user_pelapor, string nama_user_pelapor, int jumlah_komentar)
+        {
+            this.id_laporan = id_laporan;
+            this.judul_laporan = judul_laporan;
+            this.jenis_laporan = jenis_laporan;
+            this.tanggal_laporan = tanggal_laporan;
+            this.waktu_laporan = waktu_laporan;
+            this.alamat_laporan = alamat_laporan;
+            this.lat_laporan = lat_laporan;
+            this.lng_laporan = lng_laporan;
+            this.deskripsi_barang = deskripsi_barang;
+            this.id_user_pelapor = id_user_pelapor;
+            this.nama_user_pelapor = nama_user_pelapor;
+            this.jumlah_komentar = jumlah_komentar;
+        }
     }
 }

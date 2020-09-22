@@ -95,7 +95,59 @@ namespace SahabatSurabaya
             }
         }
 
-        public async void HomePageLoaded(object sender, RoutedEventArgs e)
+        private void goToAllReportPage(object sender,RoutedEventArgs e)
+        {
+            string tag = (sender as TextBlock).Tag.ToString();
+            session.setAllReportParam(tag);
+            this.Frame.Navigate(typeof(AllReportPage));
+        }
+
+        private async void loadHeadlineLaporanKriminalitas()
+        {
+            using (var client=new HttpClient())
+            {
+                client.BaseAddress = new Uri(session.getApiURL());
+                client.DefaultRequestHeaders.Accept.Clear();
+                HttpResponseMessage response = await client.GetAsync("/getHeadlineLaporanKriminalitas");
+                if (response.IsSuccessStatusCode)
+                {
+                    var jsonString = await response.Content.ReadAsStringAsync();
+                    var responseData = response.Content.ReadAsStringAsync().Result;
+                    listLaporanKriminalitas = JsonConvert.DeserializeObject<ObservableCollection<LaporanKriminalitas>>(responseData);
+                    lvLaporanKriminalitas.ItemsSource = listLaporanKriminalitas;
+                }
+                else
+                {
+                    var message = new MessageDialog("Tidak ada koneksi internet, silahkan coba beberapa saat lagi");
+                    await message.ShowAsync();
+                }
+            }
+        }
+
+        private async void loadHeadlineLaporanLostFound()
+        {
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(session.getApiURL());
+                client.DefaultRequestHeaders.Accept.Clear();
+                HttpResponseMessage response = await client.GetAsync("/getHeadlineLaporanLostFound");
+                if (response.IsSuccessStatusCode)
+                {
+                    var jsonString = await response.Content.ReadAsStringAsync();
+                    var responseData = response.Content.ReadAsStringAsync().Result;
+                    listLaporanLostFound = JsonConvert.DeserializeObject<ObservableCollection<LaporanLostFound>>(responseData);
+                    lvLaporanLostFound.ItemsSource = listLaporanLostFound;
+
+                }
+                else
+                {
+                    var message = new MessageDialog("Tidak ada koneksi internet, silahkan coba beberapa saat lagi");
+                    await message.ShowAsync();
+                }
+            }
+        }
+
+        public void HomePageLoaded(object sender, RoutedEventArgs e)
         {
             userLogin = session.getUserLogin();
             txtNamaUser.Text = "Selamat Datang, " + userLogin.nama_user + "!";
@@ -107,33 +159,8 @@ namespace SahabatSurabaya
             {
                 txtStatusUser.Text = "Free Account";
             }
-            using (var client = new HttpClient())
-            {
-                client.BaseAddress = new Uri(session.getApiURL());
-                client.DefaultRequestHeaders.Accept.Clear();
-                HttpResponseMessage response = await client.GetAsync("/getHeadlineLaporanKriminalitas");
-                if (response.IsSuccessStatusCode)
-                {
-                    var jsonString = await response.Content.ReadAsStringAsync();
-                    var responseData = response.Content.ReadAsStringAsync().Result;
-                    listLaporanKriminalitas = JsonConvert.DeserializeObject<ObservableCollection<LaporanKriminalitas>>(responseData);
-                    lvLaporanKriminalitas.ItemsSource = listLaporanKriminalitas;
-                    
-                }
-                else
-                {
-                    var message = new MessageDialog("asd");
-                    await message.ShowAsync();
-                }
-                response = await client.GetAsync("/getHeadlineLaporanLostFound");
-                if (response.IsSuccessStatusCode)
-                {
-                    var jsonString = await response.Content.ReadAsStringAsync();
-                    var responseData = response.Content.ReadAsStringAsync().Result;
-                    listLaporanLostFound = JsonConvert.DeserializeObject<ObservableCollection<LaporanLostFound>>(responseData);
-                    lvLaporanLostFound.ItemsSource = listLaporanLostFound;
-                }
-            }
+            loadHeadlineLaporanKriminalitas();
+            loadHeadlineLaporanLostFound();
         }
 
         private void nextContent(object sender, RoutedEventArgs e)

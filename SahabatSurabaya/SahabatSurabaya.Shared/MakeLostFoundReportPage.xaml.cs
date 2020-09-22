@@ -10,6 +10,7 @@ using System.Net.Http;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using Xamarin.Essentials;
 
@@ -165,23 +166,54 @@ namespace SahabatSurabaya
             }
         }
 
-        private void goToDetail(object sender, RoutedEventArgs e)
+        private async void goToDetail(object sender, RoutedEventArgs e)
         {
-            int jenisLaporan;
-            jenisLaporan = (bool)rbLostItem.IsChecked ? 1 : 0;
-            string judulLaporan = txtJudulLaporan.Text;
-            string descLaporan = txtDescBarang.Text;
-            string alamatLaporan = txtAutocompleteAddress.Text;
-            string displayJenisBarang = listSettingKategoriLostFound[cbJenisBarang.SelectedIndex].nama_kategori.ToString();
-            string valueJenisBarang = cbJenisBarang.SelectedValue.ToString();
-            string tglLaporan = DateTime.Now.ToString("dd/MM/yyyy");
-            string waktuLaporan = DateTime.Now.ToString("HH:mm:ss");
-            string namaFileGambar = listSettingKategoriLostFound[cbJenisBarang.SelectedIndex].file_gambar_kategori;
-            LostFoundReportParams param = new LostFoundReportParams(userLogin,judulLaporan, jenisLaporan, lat, lng, descLaporan, tglLaporan, displayJenisBarang, valueJenisBarang, listImage, alamatLaporan, waktuLaporan, namaFileGambar);
-            session.setLostFoundReportDetailPageParams(param);
-            this.Frame.Navigate(typeof(LostFoundReportDetailPage));
+            if (validateInput() == false)
+            {
+                var message = new MessageDialog("Ada field yang masih kosong, harap lengkapi data terlebih dahulu");
+                await message.ShowAsync();
+            }
+            else
+            {
+                if (listImage.Count > 0)
+                {
+                    int jenisLaporan;
+                    jenisLaporan = (bool)rbLostItem.IsChecked ? 1 : 0;
+                    string judulLaporan = txtJudulLaporan.Text;
+                    string descLaporan = txtDescBarang.Text;
+                    string alamatLaporan = txtAutocompleteAddress.Text;
+                    string displayJenisBarang = listSettingKategoriLostFound[cbJenisBarang.SelectedIndex].nama_kategori.ToString();
+                    string valueJenisBarang = cbJenisBarang.SelectedValue.ToString();
+                    string tglLaporan = DateTime.Now.ToString("dd/MM/yyyy");
+                    string waktuLaporan = DateTime.Now.ToString("HH:mm:ss");
+                    string namaFileGambar = listSettingKategoriLostFound[cbJenisBarang.SelectedIndex].file_gambar_kategori;
+                    LostFoundReportParams param = new LostFoundReportParams(userLogin, judulLaporan, jenisLaporan, lat, lng, descLaporan, tglLaporan, displayJenisBarang, valueJenisBarang, listImage, alamatLaporan, waktuLaporan, namaFileGambar);
+                    session.setLostFoundReportDetailPageParams(param);
+                    this.Frame.Navigate(typeof(LostFoundReportDetailPage));
+                }
+                else
+                {
+                    var message = new MessageDialog("Harus memilih gambar minimal 1 gambar");
+                    await message.ShowAsync();
+                }
+                
+            }
+            
         }
-        public void updateTxtImageCount()
+
+        private bool validateInput()
+        {
+            if(txtJudulLaporan.Text.Length==0 || txtDescBarang.Text.Length==0||cbJenisBarang.SelectedIndex==-1 || txtAutocompleteAddress.Text.Length == 0)
+            {
+                return false;  
+            }
+            else
+            {
+                return true;
+            }
+            
+        }
+        private void updateTxtImageCount()
         {
             txtImageCount.Text = imageCount + " gambar terpilih(Max. 2 Gambar)";
         }
@@ -224,6 +256,9 @@ namespace SahabatSurabaya
                     sp.Children.Add(newFile);
                     Button btnClose = new Button();
                     btnClose.Content = "X";
+                    btnClose.CornerRadius = new CornerRadius(8);
+                    btnClose.Foreground = new SolidColorBrush(Windows.UI.Colors.White);
+                    btnClose.Background = new SolidColorBrush(Windows.UI.Colors.Green);
                     btnClose.Click += deleteFile;
                     btnClose.Tag = imageCount.ToString();
                     btnClose.Name = "btn" + imageCount.ToString();
