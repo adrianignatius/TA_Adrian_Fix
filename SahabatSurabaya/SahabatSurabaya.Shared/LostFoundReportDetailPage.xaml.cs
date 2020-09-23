@@ -16,26 +16,24 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 
-// The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
-
 namespace SahabatSurabaya
 {
-    /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
-    /// </summary>
     public sealed partial class LostFoundReportDetailPage : Page
     {
         string url = "ms-appx:///Assets/icon/";
         Session session;
+        LostFoundReportParams param;
+        User userLogin;
         public LostFoundReportDetailPage()
         {
             this.InitializeComponent();
             session = new Session();
         }
-        LostFoundReportParams param;
+        
 
         public void pageLoaded(object sender,RoutedEventArgs e)
         {
+            userLogin = session.getUserLogin();
             param = session.getLostFoundReportParams();
             if (param.jenisLaporan == 0)
             {
@@ -70,7 +68,7 @@ namespace SahabatSurabaya
                 form.Add(new StringContent(param.lng.ToString()), "lng_laporan");
                 form.Add(new StringContent(param.descLaporan), "deskripsi_barang");
                 form.Add(new StringContent("0"), "status_laporan");
-                form.Add(new StringContent("asd@xyz.com"), "email_pelapor");
+                form.Add(new StringContent(userLogin.id_user.ToString()), "id_user_pelapor");
                 for (int i = 0; i < param.listImage.Count; i++)
                 {
                     form.Add(new StreamContent(new MemoryStream(param.listImage[i].image)), "image[]", "image.jpg"); ;

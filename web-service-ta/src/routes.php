@@ -598,7 +598,7 @@ return function (App $app) {
             $stmt->execute();
             $result = $stmt->fetchColumn();           
             $id_laporan=$id_laporan.str_pad($result,5,"0",STR_PAD_LEFT);
-            $sql = "INSERT INTO laporan_lostfound_barang VALUES(:id_laporan,:judul_laporan,:jenis_laporan,:tanggal_laporan,:waktu_laporan,:alamat_laporan,:lat_laporan,:lng_laporan,:deskripsi_barang,:email_pelapor,:status_laporan,:geohash_alamat_laporan) ";
+            $sql = "INSERT INTO laporan_lostfound_barang VALUES(:id_laporan,:judul_laporan,:jenis_laporan,:tanggal_laporan,:waktu_laporan,:alamat_laporan,:lat_laporan,:lng_laporan,:deskripsi_barang,:id_user_pelapor,:status_laporan,:geohash_alamat_laporan) ";
             $stmt = $this->db->prepare($sql);
             $data = [
                 ":id_laporan" => $id_laporan,
@@ -610,7 +610,7 @@ return function (App $app) {
                 ":lat_laporan"=>$new_laporan["lat_laporan"],
                 ":lng_laporan"=>$new_laporan["lng_laporan"],
                 ":deskripsi_barang"=>$new_laporan["deskripsi_barang"],
-                ":email_pelapor"=>$new_laporan["email_pelapor"],
+                ":id_user_pelapor"=>$new_laporan["id_user_pelapor"],
                 ":status_laporan"=>0,
                 ":geohash_alamat_laporan"=> $geohash->encode(floatval($new_laporan["lat_laporan"]), floatval($new_laporan["lng_laporan"]), 8)
             ];

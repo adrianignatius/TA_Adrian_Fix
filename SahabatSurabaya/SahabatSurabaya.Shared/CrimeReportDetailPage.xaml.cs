@@ -27,6 +27,7 @@ namespace SahabatSurabaya
     {
         Session session;
         CrimeReportParams param;
+        User userLogin;
         string url = "ms-appx:///Assets/icon/";
         public CrimeReportDetailPage()
         {
@@ -37,6 +38,7 @@ namespace SahabatSurabaya
         public void pageLoaded(object sender, RoutedEventArgs e)
         {
             param = session.getCrimeReportParams();
+            userLogin = session.getUserLogin();
             txtJudulLaporan.Text = param.judulLaporan;
             txtJenisKejadian.Text = param.displayKategoriKejadian;
             txtTanggalLaporan.Text = param.tglLaporan;
@@ -59,7 +61,7 @@ namespace SahabatSurabaya
                 form.Add(new StringContent(param.lat.ToString()), "lat_laporan");
                 form.Add(new StringContent(param.lng.ToString()), "lng_laporan");
                 form.Add(new StringContent("0"), "status_laporan");
-                form.Add(new StringContent(param.userLogin.id_user.ToString()), "id_user_pelapor");
+                form.Add(new StringContent(userLogin.id_user.ToString()), "id_user_pelapor");
                 for (int i = 0; i < param.listImage.Count; i++)
                 {
                     form.Add(new StreamContent(new MemoryStream(param.listImage[i].image)), "image[]", "image.jpg"); ;
@@ -69,7 +71,7 @@ namespace SahabatSurabaya
                 {
                     var message = new MessageDialog("Berhasil membuat laporan!");
                     await message.ShowAsync();
-                    this.Frame.Navigate(typeof(HomePage),param.userLogin);
+                    this.Frame.Navigate(typeof(HomePage));
                 }
                 else
                 {

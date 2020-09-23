@@ -10,7 +10,7 @@
   <permission android:name="SahabatSurabaya.SahabatSurabaya.permission.C2D_MESSAGE"
             android:protectionLevel="signature" />
   <uses-permission android:name="SahabatSurabaya.SahabatSurabaya.permission.C2D_MESSAGE" />
-	<application android:label="Suroboyo Maju" android:networkSecurityConfig="@xml/network_security_config">
+	<application android:label="Suroboyo Maju" android:usesCleartextTraffic="true">
     <receiver android:name="com.onesignal.GcmBroadcastReceiver"
             android:permission="com.google.android.c2dm.permission.SEND" >
       <intent-filter>
