@@ -49,6 +49,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)HomePage.xaml.cs">
       <DependentUpon>HomePage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)ImageLaporanConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ImageSourceKantorPolisiConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)KantorPolisi.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)KomentarLaporan.cs" />

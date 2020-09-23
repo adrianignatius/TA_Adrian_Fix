@@ -210,9 +210,9 @@ namespace SahabatSurabaya
             else
             {
                 return true;
-            }
-            
+            } 
         }
+
         private void updateTxtImageCount()
         {
             txtImageCount.Text = imageCount + " gambar terpilih(Max. 2 Gambar)";
@@ -224,12 +224,11 @@ namespace SahabatSurabaya
             stackFile.Children.Remove((UIElement)this.FindName("sp" + selectedBtn.Tag.ToString()));
             imageCount--;
             updateTxtImageCount();
-            
         }
 
         private async void chooseImage(object sender, RoutedEventArgs e)
         {
-            if (imageCount < 3)
+            if (imageCount < 2)
             {
                 string contents = "";
                 try
@@ -239,42 +238,46 @@ namespace SahabatSurabaya
                     {
                         return; // user canceled file picking
                     }
-                    string fileName = fileData.FileName;
-                    contents = System.Text.Encoding.UTF8.GetString(fileData.DataArray);
-                    UploadedImage imageBaru = new UploadedImage(fileData.DataArray, fileData.DataArray.Length);
-                    listImage.Add(imageBaru);
-                    StackPanel sp = new StackPanel();
-                    sp.Orientation = Orientation.Horizontal;
-                    sp.Name = "sp" + imageCount.ToString();
-                    sp.Margin = new Thickness(0, 5, 0, 0);
-                    TextBlock newFile = new TextBlock();
-                    newFile.Text = fileData.FileName;
-                    newFile.FontSize = 15;
-                    newFile.Width = 250;
-                    newFile.Margin = new Thickness(25, 0, 0, 0);
-                    newFile.TextWrapping = TextWrapping.Wrap;
-                    sp.Children.Add(newFile);
-                    Button btnClose = new Button();
-                    btnClose.Content = "X";
-                    btnClose.CornerRadius = new CornerRadius(8);
-                    btnClose.Foreground = new SolidColorBrush(Windows.UI.Colors.White);
-                    btnClose.Background = new SolidColorBrush(Windows.UI.Colors.Green);
-                    btnClose.Click += deleteFile;
-                    btnClose.Tag = imageCount.ToString();
-                    btnClose.Name = "btn" + imageCount.ToString();
-                    sp.Children.Add(btnClose);
-                    stackFile.Children.Add(sp);
-                    imageCount++;
-                    updateTxtImageCount();
+                    else
+                    {
+                        string fileName = fileData.FileName;
+                        contents = System.Text.Encoding.UTF8.GetString(fileData.DataArray);
+                        UploadedImage imageBaru = new UploadedImage(fileData.DataArray, fileData.DataArray.Length);
+                        listImage.Add(imageBaru);
+                        StackPanel sp = new StackPanel();
+                        sp.Orientation = Orientation.Horizontal;
+                        sp.Name = "sp" + imageCount.ToString();
+                        sp.Margin = new Thickness(0, 5, 0, 0);
+                        TextBlock newFile = new TextBlock();
+                        newFile.Text = fileData.FileName;
+                        newFile.FontSize = 15;
+                        newFile.Width = 250;
+                        newFile.Margin = new Thickness(25, 0, 0, 0);
+                        newFile.TextWrapping = TextWrapping.Wrap;
+                        sp.Children.Add(newFile);
+                        Button btnClose = new Button();
+                        btnClose.Content = "X";
+                        btnClose.CornerRadius = new CornerRadius(8);
+                        btnClose.Foreground = new SolidColorBrush(Windows.UI.Colors.White);
+                        btnClose.Background = new SolidColorBrush(Windows.UI.Colors.Green);
+                        btnClose.Click += deleteFile;
+                        btnClose.Tag = imageCount.ToString();
+                        btnClose.Name = "btn" + imageCount.ToString();
+                        sp.Children.Add(btnClose);
+                        stackFile.Children.Add(sp);
+                        imageCount++;
+                        updateTxtImageCount();
+                    }              
                 }
                 catch (Exception ex)
                 {
-                    System.Console.WriteLine("Exception choosing file: " + ex.ToString());
+                    var message = new MessageDialog(ex.ToString());
+                    await message.ShowAsync();
                 }
             }
             else
             {
-                var message = new MessageDialog("Anda hanya dapat mengupload maksimal 3 gambar saja");
+                var message = new MessageDialog("Anda hanya dapat mengupload maksimal 2 gambar saja");
                 await message.ShowAsync();
             }
 

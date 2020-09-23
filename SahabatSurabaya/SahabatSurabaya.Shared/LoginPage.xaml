@@ -22,7 +22,7 @@
                         <AdaptiveTrigger MinWindowWidth="0"></AdaptiveTrigger>
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
-                        <Setter Target="textBlockSignIn.Margin" Value="30,-0,0,0"></Setter>
+                        <Setter Target="textBlockSignIn.Margin" Value="30,0,0,0"></Setter>
                         <Setter Target="textBlockSignIn.FontSize" Value="35"></Setter>
                         <Setter Target="column2.Width" Value="0"></Setter>
                         <Setter Target="rootPanel.Margin" Value="20"></Setter>
@@ -33,42 +33,24 @@
                     </VisualState.Setters>
                 </VisualState>
                 <VisualState x:Name="Desktop">
-                <VisualState.StateTriggers>
-                    <AdaptiveTrigger MinWindowWidth="760"></AdaptiveTrigger>    
-                </VisualState.StateTriggers>
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="760"></AdaptiveTrigger>
+                    </VisualState.StateTriggers>
                     <VisualState.Setters>
                         <Setter Target="appIconBg.Height" Value="0"></Setter>
                         <Setter Target="textBlockSignIn.FontSize" Value="45"></Setter>
                         <Setter Target="imageAppIcon.Width" Value="350"></Setter>
                         <Setter Target="imageAppIcon.Height" Value="450"></Setter>
                         <Setter Target="rootPanel.Margin" Value="20"></Setter>
-                        <Setter Target="column1.Width" Value="3*"></Setter>
+                        <Setter Target="column1.Width" Value="2*"></Setter>
                         <Setter Target="column2.Width" Value="3*"></Setter>
                         <Setter Target="textBlockEmail.FontSize" Value="25"></Setter>
                         <Setter Target="txtNoHandphone.FontSize" Value="25"></Setter>
                         <Setter Target="txtPassword.FontSize" Value="25"></Setter>
                         <Setter Target="textBlockPassword.FontSize" Value="25"></Setter>
                     </VisualState.Setters>
-            </VisualState>
-            <VisualState x:Name="LargeDesktop">
-                    <VisualState.StateTriggers>
-                        <AdaptiveTrigger MinWindowWidth="1200"></AdaptiveTrigger>
-                    </VisualState.StateTriggers>
-                    <VisualState.Setters>
-                        <Setter Target="column1.Width" Value="2*"></Setter>
-                        <Setter Target="column2.Width" Value="3*"></Setter>
-                        <Setter Target="textBlockSignIn.FontSize" Value="45"></Setter>
-                        <Setter Target="appIconBg.Height" Value="0"></Setter>
-                        <Setter Target="rootPanel.Margin" Value="40"></Setter>
-                        <Setter Target="imageAppIcon.Width" Value="500"></Setter>
-                        <Setter Target="imageAppIcon.Height" Value="500"></Setter>
-                        <Setter Target="textBlockDescApp.Width" Value="700"></Setter>
-                        <Setter Target="textBlockEmail.FontSize" Value="30"></Setter>
-                        <Setter Target="txtNoHandphone.FontSize" Value="30"></Setter>
-                        <Setter Target="txtPassword.FontSize" Value="30"></Setter>
-                        <Setter Target="textBlockPassword.FontSize" Value="30"></Setter>
-                    </VisualState.Setters>
-            </VisualState>
+                </VisualState>
+                
         </VisualStateGroup>
     </VisualStateManager.VisualStateGroups>
         <Grid>
@@ -86,7 +68,6 @@
                 <TextBlock Name="textBlockPassword" Foreground="Black" Margin="30,20,30,0" FontSize="30">Password</TextBlock>
                 <PasswordBox Name="txtPassword" Padding="8" Foreground="Black" Margin="30,10,30,0" FontSize="20" Height="50"></PasswordBox>
                 <Button Click="login"  Foreground="AntiqueWhite" x:Name="btnLogin" Background="DarkGreen" FontWeight="SemiBold" Padding="15" Content="Login" HorizontalAlignment="Stretch" Margin="30,35,30,0" FontSize="30" />
-                <TextBlock Foreground="Black" FontSize="20" Margin="0,30,0,0" HorizontalAlignment="Center">Forgot Password?</TextBlock>
             </StackPanel>
             <Grid Name="gridGambar" Grid.Column="1">
                 <Grid.Background>

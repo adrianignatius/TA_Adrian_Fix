@@ -9,22 +9,48 @@
     RequestedTheme="Light"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <Grid>
+    <Grid Name="rootGrid">
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup>
+                <VisualState x:Name="Mobile">
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="0"></AdaptiveTrigger>
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="column1.Width" Value="0"></Setter>
+                        <Setter Target="rootPanel.Margin" Value="20"></Setter>
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="Desktop">
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="760"></AdaptiveTrigger>
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="rootPanel.Margin" Value="20"></Setter>
+                        <Setter Target="column1.Width" Value="3*"></Setter>
+                        <Setter Target="column2.Width" Value="2*"></Setter>
+                        <Setter Target="appIconBg.Height" Value="0"></Setter>
+                        <Setter Target="imgAppIcon.Width" Value="350"></Setter>
+                        <Setter Target="imgAppIcon.Height" Value="450"></Setter>
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition x:Name="column1" Width="3*"></ColumnDefinition>
                 <ColumnDefinition x:Name="column2" Width="2*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Hidden">
-                <StackPanel x:Name="rootPanel" Margin="60" Orientation="Vertical">
-                    <Image Margin="0,-25,0,0" Name="appIconBg" Source="/Assets/appicon.png" Width="200" Height="200"></Image>
+            <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto">
+                <StackPanel x:Name="rootPanel" Margin="20" Orientation="Vertical">
+                    <Image Name="appIconBg" Source="/Assets/appicon.png" Width="200" Height="200"></Image>
                     <TextBlock Name="textBlockRegister" Foreground="Black" FontSize="40" Margin="30,30,0,0" FontWeight="ExtraBold">Register</TextBlock>
                     <TextBlock TextWrapping="Wrap" Margin="30,10,0,20" Foreground="Black" FontSize="15" >Already have an account? <Hyperlink Click="goToLogin">Login with your account here</Hyperlink></TextBlock>
                     <TextBlock x:Name="textBlockFullName"  FontSize="20" Margin="30,0,0,0">Nama Lengkap *</TextBlock>
                     <TextBox Name="txtFullName" BeforeTextChanging="txtFullNameBeforeTextChanging" Padding="8" Foreground="Black" Margin="30,10,30,0" FontSize="20" Height="50"></TextBox>
                     <TextBlock Name="textBlockPhone" FontSize="20" Margin="30,15,0,0">Nomor Handphone *</TextBlock>
                     <TextBox Name="txtPhone" BeforeTextChanging="txtPhoneBeforeTextChanging" Padding="8" Foreground="Black" Margin="30,15,30,0" FontSize="20" Height="50" ></TextBox>
-                    <TextBlock x:Name="textBlockEmail" FontSize="20" Margin="30,15,0,0">Email</TextBlock>
+                    <TextBlock x:Name="textBlockEmail" FontSize="20" Margin="30,15,0,0">Email *</TextBlock>
                     <TextBox Name="txtEmail" Padding="8" Foreground="Black" Margin="30,15,30,0" FontSize="20" Height="50" ></TextBox>
                     <TextBlock Name="textBlockPassword" FontSize="20" Margin="30,15,0,0">Password *</TextBlock>
                     <PasswordBox Name="txtPassword" Padding="8" Foreground="Black" Margin="30,15,30,0" FontSize="20" Height="50" ></PasswordBox>

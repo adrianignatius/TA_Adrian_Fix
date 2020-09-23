@@ -65,7 +65,8 @@ namespace SahabatSurabaya
         {
             using (var client = new HttpClient())
             {
-               client.BaseAddress = new Uri("http://localhost:8080/");
+               client.BaseAddress = new Uri(session.getApiURL());
+                //client.BaseAddress = new Uri("http://localhost:8080/");
                client.DefaultRequestHeaders.Accept.Clear();
                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                MultipartFormDataContent form = new MultipartFormDataContent();
@@ -94,33 +95,40 @@ namespace SahabatSurabaya
 
         private async void confirmOTP(object sender,RoutedEventArgs e)
         {
-            string OTPcode = txtOtp.Text;
-            using (var client = new HttpClient())
+            if (txtOtp.Text.Length != 0)
             {
-                client.BaseAddress = new Uri("http://localhost:8080/");
-                client.DefaultRequestHeaders.Accept.Clear();
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                MultipartFormDataContent form = new MultipartFormDataContent();
-                form.Add(new StringContent(userRegister.telpon_user), "number");
-                form.Add(new StringContent(OTPcode), "otp_code");
-                HttpResponseMessage response = await client.PostAsync("user/verifyOTP", form);
-                if (response.IsSuccessStatusCode)
+                using (var client = new HttpClient())
                 {
-                    var responseData = response.Content.ReadAsStringAsync().Result;
-                    JObject json = JObject.Parse(responseData);
-                    if (json["status"].ToString()=="1")
+                    client.BaseAddress = new Uri(session.getApiURL());
+                    client.DefaultRequestHeaders.Accept.Clear();
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                    MultipartFormDataContent form = new MultipartFormDataContent();
+                    form.Add(new StringContent(userRegister.telpon_user), "number");
+                    form.Add(new StringContent(txtOtp.Text), "otp_code");
+                    HttpResponseMessage response = await client.PostAsync("user/verifyOTP", form);
+                    if (response.IsSuccessStatusCode)
                     {
-                        var message = new MessageDialog(json["message"].ToString());
-                        await message.ShowAsync();
-                        this.Frame.Navigate(typeof(HomeNavigationPage));
-                    }
-                    else
-                    {
-                        var message = new MessageDialog(json["message"].ToString());
-                        await message.ShowAsync();
-                          
+                        var responseData = response.Content.ReadAsStringAsync().Result;
+                        JObject json = JObject.Parse(responseData);
+                        if (json["status"].ToString() == "1")
+                        {
+                            var message = new MessageDialog(json["message"].ToString());
+                            await message.ShowAsync();
+                            this.Frame.Navigate(typeof(HomeNavigationPage));
+                        }
+                        else
+                        {
+                            var message = new MessageDialog(json["message"].ToString());
+                            await message.ShowAsync();
+
+                        }
                     }
                 }
+            }
+            else
+            {
+                var message = new MessageDialog("Anda belum memasukkan kode");
+                await message.ShowAsync();
             }
         }
 
