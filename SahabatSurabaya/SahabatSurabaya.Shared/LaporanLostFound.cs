@@ -30,7 +30,9 @@ namespace SahabatSurabaya
 
         public int jumlah_komentar { get; set; }
 
-        public LaporanLostFound(string id_laporan, string judul_laporan, int jenis_laporan, string tanggal_laporan, string waktu_laporan, string alamat_laporan, string lat_laporan, string lng_laporan, string deskripsi_barang, int id_user_pelapor, string nama_user_pelapor, int jumlah_komentar)
+        public string thumbnail_gambar { get; set; }
+
+        public LaporanLostFound(string id_laporan, string judul_laporan, int jenis_laporan, string tanggal_laporan, string waktu_laporan, string alamat_laporan, string lat_laporan, string lng_laporan, string deskripsi_barang, int id_user_pelapor, string nama_user_pelapor, int jumlah_komentar,string thumbnail_gambar)
         {
             this.id_laporan = id_laporan;
             this.judul_laporan = judul_laporan;
@@ -44,6 +46,7 @@ namespace SahabatSurabaya
             this.id_user_pelapor = id_user_pelapor;
             this.nama_user_pelapor = nama_user_pelapor;
             this.jumlah_komentar = jumlah_komentar;
+            this.thumbnail_gambar = thumbnail_gambar;
         }
     }
 }
