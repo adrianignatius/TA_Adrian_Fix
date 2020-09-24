@@ -14,8 +14,9 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Page.Resources>
-        <SolidColorBrush x:Key="brushTransparent" Color="Black" Opacity="0.2"></SolidColorBrush>
+        <SolidColorBrush x:Key="brushTransparent" Color="Black" Opacity="0.4"></SolidColorBrush>
         <local:DatetimeConverter x:Key="dateTimeConverter"/>
+        <local:ImageLaporanConverter x:Key="imageConverter"/>   
     </Page.Resources>
 
     <Grid>
@@ -43,7 +44,7 @@
                     <PivotItem Name="pvLaporanKriminalitas" HorizontalAlignment="Stretch" Header="Laporan Kriminalitas">
                         <ScrollViewer>
                             <StackPanel>
-                                <ListView Name="lvLaporanKriminalitas" SelectionMode="None" IsItemClickEnabled="True" >
+                                <ListView Tag="lvKriminalitas" ItemClick="goToDetailPage" Name="lvLaporanKriminalitas" SelectionMode="None" IsItemClickEnabled="True" >
                                     <ListView.ItemTemplate>
                                         <DataTemplate>
                                             <Grid>
@@ -53,7 +54,7 @@
                                                 </Grid.RowDefinitions>
                                                 <Border Grid.Row="0" Name="rootBorder" Margin="0,4,0,4" BorderBrush="Gray" BorderThickness="1" CornerRadius="10">
                                                     <Grid MaxHeight="240">
-                                                        <Image Stretch="Fill"  Source="/Assets/bg.jpg" ></Image>
+                                                        <Image Stretch="UniformToFill"  Source="{Binding thumbnail_gambar,Converter={StaticResource imageConverter}}" ></Image>
                                                         <StackPanel Orientation="Vertical" Height="80" VerticalAlignment="Bottom" Background="{StaticResource brushTransparent}" Padding="12">
                                                             <TextBlock Opacity="1" Foreground="White" FontSize="14" Text="{Binding judul_laporan }"/>
                                                             <StackPanel Orientation="Horizontal">
@@ -83,12 +84,12 @@
                         
                     </PivotItem>
                     <PivotItem Name="pvLaporanLostFound" HorizontalAlignment="Stretch" Header="Laporan LostFound">
-                        <ListView Name="lvLaporanLostFound" SelectionMode="None" IsItemClickEnabled="True" >
+                        <ListView Tag="lvLostFound" ItemClick="goToDetailPage" Name="lvLaporanLostFound" SelectionMode="None" IsItemClickEnabled="True" >
                             <ListView.ItemTemplate>
                                 <DataTemplate>
                                     <Border Margin="0,4,0,4" BorderBrush="Gray" BorderThickness="1" CornerRadius="10">
                                         <Grid MaxHeight="240">
-                                            <Image Stretch="Fill"  Source="/Assets/bg.jpg" ></Image>
+                                            <Image Stretch="UniformToFill"  Source="{Binding thumbnail_gambar,Converter={StaticResource imageConverter}}" ></Image>
                                             <StackPanel Orientation="Vertical" Height="80" VerticalAlignment="Bottom" Background="{StaticResource brushTransparent}" Padding="12">
                                                 <TextBlock Opacity="1" Foreground="White" FontSize="14" Text="{Binding judul_laporan }"/>
                                                 <StackPanel Orientation="Horizontal">

@@ -23,6 +23,9 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)AutocompleteAddress.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ChangePasswordPage.xaml.cs">
+      <DependentUpon>ChangePasswordPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Chat.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ChatAlignmentConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ChatBackgroundConverter.cs" />
@@ -107,6 +110,10 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="$(MSBuildThisFileDirectory)AllReportPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)ChangePasswordPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

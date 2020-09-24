@@ -34,12 +34,16 @@
                     <Grid Margin="0,20,0,0" HorizontalAlignment="Stretch" MaxHeight="300">
                         <Image Name="imageLaporan" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Source="/Assets/appicon.png"></Image>
                     </Grid>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock FontSize="20" FontWeight="SemiBold" Name="txtJudulLaporan" Text="Judul Laporan"></TextBlock>
-                        <Button Click="shareLaporan" Margin="12,0,0,0" Content="Share" CornerRadius="10" Foreground="White" Background="Green"></Button>
-                    </StackPanel>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                            <ColumnDefinition Width="auto"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" TextWrapping="WrapWholeWords" FontSize="20" FontWeight="SemiBold" Name="txtJudulLaporan" Text="Judul Laporan"></TextBlock>
+                        <Button Grid.Column="1" Click="shareLaporan" Margin="12,0,0,0" Content="Share" CornerRadius="10" Foreground="White" Background="Green"></Button>
+                    </Grid>
                     <TextBlock FontSize="14" Foreground="Gray" Name="txtJenisLaporan" FontWeight="Medium"></TextBlock>
-                    <TextBlock Margin="0,12,0,0" FontSize="16" Name="txtDeskripsiLaporan" Text="Deskripsi Laporan"></TextBlock>
+                    <TextBlock TextWrapping="WrapWholeWords" Margin="0,12,0,0" FontSize="16" Name="txtDeskripsiLaporan" Text="Deskripsi Laporan"></TextBlock>
                     <StackPanel Margin="0,20,0,0" Orientation="Horizontal">
                         <TextBlock  FontSize="20" FontWeight="SemiBold" Text="Lokasi Kejadian"></TextBlock>
                         <Button Click="openMap" FontSize="12" CornerRadius="10" Foreground="White" Background="Green" Margin="10,0,0,0" Content="Buka Map"></Button>

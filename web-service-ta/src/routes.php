@@ -149,7 +149,7 @@ return function (App $app) {
 
         $app->get('/getUser/{id}', function ($request, $response,$args) {
             $id=$args["id"];
-            $sql = "SELECT * FROM user where id_user=:id";
+            $sql = "SELECT id_user,email_user,nama_user,telpon_user,status_user,premium_available_until,lokasi_aktif_user FROM user where id_user=:id";
             $stmt = $this->db->prepare($sql);
             $stmt->execute([":id" => $id]);
             $result = $stmt->fetch();
@@ -285,7 +285,7 @@ return function (App $app) {
                 $geohash=new Geohash();
                 $lat_user="";
                 $lng_user="";
-                $alamat_user=""; 
+                $lokasiAktifUser=""; 
                 $geohashAlamat=null;          
                 if($new_user["lat_user"]=="default"){
                     $lat_user=null;
@@ -297,15 +297,15 @@ return function (App $app) {
                 }else{
                     $lng_user=$new_user["lng_user"];
                 }
-                if($new_user["alamat_user"]=="default"){
-                    $alamat_user=null;
+                if($new_user["lokasi_aktif_user"]=="default"){
+                    $lokasiAktifUser=null;
                 }else{
-                    $alamat_user=$new_user["alamat_user"];
+                    $lokasiAktifUser=$new_user["lokasi_aktif_user"];
                 }
                 if($lng_user!=null && $lat_user!=null){
-                    $geohashAlamat=$geohash->encode(floatval($lat_user), floatval($lng_user), 8);
+                    $geohashLokasiAktifUser=$geohash->encode(floatval($lat_user), floatval($lng_user), 8);
                 }
-                $sql = "INSERT INTO user (email_user,password_user, nama_user, telpon_user, status_user, lat_user,lng_user,alamat_user,geohash_alamat_user) VALUE (:email_user,:password_user, :nama_user, :telpon_user, :status_user, :lat_user,:lng_user,:alamat_user,:geohash_alamat_user)";
+                $sql = "INSERT INTO user (email_user,password_user, nama_user, telpon_user, status_user, lat_user,lng_user,lokasi_aktif_user,geohash_lokasi_aktif_user) VALUE (:email_user,:password_user, :nama_user, :telpon_user, :status_user, :lat_user,:lng_user,:lokasi_aktif_user,:geohash_lokasi_aktif_user)";
                 $stmt = $this->db->prepare($sql);
                 $data = [
                     ":email_user" => $new_user["email_user"],
@@ -315,8 +315,8 @@ return function (App $app) {
                     ":status_user"=>99,
                     ":lat_user"=>$lat_user,
                     ":lng_user"=>$lng_user,
-                    ":alamat_user"=>$alamat_user,
-                    ":geohash_alamat_user"=>$geohashAlamat
+                    ":lokasi_aktif_user"=>$lokasiAktifUser,
+                    ":geohash_lokasi_aktif_user"=>$geohashLokasiAktifUser
                 ];
                 if($stmt->execute($data)){
                     return $response->withJson(["status" => "1","message"=>"Register akun berhasil!","insertID"=>$this->db->lastInsertId()]);
@@ -427,7 +427,6 @@ return function (App $app) {
         $app->post('/sendEmergencyNotification', function($request, $response){
             $body=$request->getParsedBody();
             $number=$body["number"];
-            
             $curl = curl_init();
             $content = array(
                 "en" => 'English Message'

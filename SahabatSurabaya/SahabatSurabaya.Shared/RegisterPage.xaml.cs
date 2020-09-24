@@ -142,11 +142,11 @@ namespace SahabatSurabaya
                         form.Add(new StringContent(lng), "lng_user");
                         if (txtAutocompleteAddress.Text.Length == 0)
                         {
-                            form.Add(new StringContent(txtAutocompleteAddress.Text), "alamat_user");
+                            form.Add(new StringContent(txtAutocompleteAddress.Text), "lokasi_aktif_user");
                         }
                         else
                         {
-                            form.Add(new StringContent("default"), "alamat_user");
+                            form.Add(new StringContent("default"), "lokasi_aktif_user");
                         }
                         
                         HttpResponseMessage response = await client.PostAsync("user/registerUser", form);

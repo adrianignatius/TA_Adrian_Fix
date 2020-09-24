@@ -117,6 +117,7 @@
   <ItemGroup>
     <AndroidAsset Include="Assets\Fonts\uno-fluentui-assets.ttf" />
     <AndroidAsset Include="Assets\Fonts\Sniglet-Regular.ttf" />
+    <AndroidAsset Include="Assets\Fonts\Alata-Regular.ttf" />
     <None Include="Resources\AboutResources.txt" />
     <None Include="Assets\AboutAssets.txt" />
   </ItemGroup>

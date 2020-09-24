@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SahabatSurabaya.Shared;
+using System;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -10,6 +11,7 @@ namespace SahabatSurabaya
     public sealed partial class ProfilePage : Page
     {
         Session session;
+        User userLogin;
         public ProfilePage()
         {
             this.InitializeComponent();
@@ -18,12 +20,18 @@ namespace SahabatSurabaya
 
         private void pageLoaded(object sender, RoutedEventArgs e)
         {
-
+            userLogin = session.getUserLogin();
+            txtNotelpUser.Text = userLogin.telpon_user;
         }
 
-        public void goToSubscriptionPage(object sender, RoutedEventArgs e)
+        private void goToSubscriptionPage(object sender, RoutedEventArgs e)
         {
             this.Frame.Navigate(typeof(SubscriptionPage));
+        }
+        
+        private void changePassword(object sender,RoutedEventArgs e)
+        {
+            this.Frame.Navigate(typeof(ChangePasswordPage));
         }
     }
 }
