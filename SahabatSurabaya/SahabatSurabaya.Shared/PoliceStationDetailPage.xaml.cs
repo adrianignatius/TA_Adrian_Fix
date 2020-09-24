@@ -3,6 +3,7 @@ using System;
 using System.Globalization;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using Xamarin.Essentials;
 
@@ -26,7 +27,9 @@ namespace SahabatSurabaya
             txtNamaKantorPolisi.Text = selected.nama_kantor_polisi;
             txtAlamatKantorPolisi.Text = selected.alamat_kantor_polisi;
             txtNoTelpKantorPolisi.Text = selected.notelp_kantor_polisi;
-            imageKantorPolisi.Source = new BitmapImage(new Uri(session.getUrlAssets() + selected.nama_file_gambar));
+            ImageBrush ib = new ImageBrush();
+            ib.ImageSource= ib.ImageSource = new BitmapImage(new Uri(session.getUrlAssets() + selected.nama_file_gambar));
+            canvasImage.Background = ib;
             loadMap();
         }
 

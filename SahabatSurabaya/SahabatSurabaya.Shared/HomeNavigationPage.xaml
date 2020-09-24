@@ -11,19 +11,13 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Grid>
-        <NavigationView Background="White" x:Name="NavView"
-							ItemInvoked="NavView_ItemInvoked" IsSettingsVisible="False"
-		Loaded="NavView_Loaded"
-                        IsBackButtonVisible="Collapsed">
-
+        <NavigationView FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" Background="White" x:Name="NavView" ItemInvoked="NavView_ItemInvoked" IsSettingsVisible="False" Loaded="NavView_Loaded" IsBackButtonVisible="Collapsed">
             <NavigationView.MenuItems>
                 <NavigationViewItem x:Uid="HomeNavItem" Content="Home" Tag="home">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xE10F;"/>
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItemSeparator/>
-                <NavigationViewItemHeader Content="Main pages"/>
                 <NavigationViewItem x:Uid="PageBuatLaporanLostFound" Icon="PostUpdate" Content="Buat Laporan Lost &amp; Found" Tag="MakeLostFoundReportPage"/>
                 <NavigationViewItem x:Uid="PageBuatLaporanKriminalitas" Icon="PostUpdate" Content="Buat Laporan Kriminalitas" Tag="MakeCrimeReportPage"/>
                 <NavigationViewItem x:Uid="PageKantorPolisiTerdekat" Content="Informasi Kantor Polisi" Tag="PoliceStationPage">

@@ -108,6 +108,33 @@ return function (App $app) {
                 return $response->withJson(["status_code" => "400"]);
             }
         });
+
+        $app->put('/changePassword', function($request,$response){
+            $body = $request->getParsedBody();
+            $id_user=$body["id_user"];
+            $old_password=$body["old_password"];
+            $new_password=$body["new_password"];
+            $sql="SELECT password_user FROM user where id_user=:id_user";
+            $stmt=$this->db->prepare($sql);
+            $stmt->execute([":id_user" => $id_user]);
+            $result=$stmt->fetchColumn();
+            if(password_verify($old_password,$result)){
+                $sql="UPDATE user set password_user=:new_password where id_user=:id_user";
+                $stmt=$this->db->prepare($sql);
+                $data=[
+                    ":id_user"=>$id_user,
+                    ":new_password"=>password_hash($new_password, PASSWORD_BCRYPT)
+                ];
+                if($stmt->execute($data)){
+                    return $response->withJson(["status"=>"1","message"=>"Password berhasil diubah"]);
+                }else{
+                    return $response->withJson(["status"=>"400","message"=>"Password tidak berhasil diubah, silahkan coba beberapa saat lagi"]);
+                }
+                
+            }else{
+                return $response->withJson(["status"=>"99","message"=>"Password lama tidak sesuai"]);
+            }
+        });
         
         $app->post('/verifyOTP', function($request,$response){
             $body = $request->getParsedBody();
