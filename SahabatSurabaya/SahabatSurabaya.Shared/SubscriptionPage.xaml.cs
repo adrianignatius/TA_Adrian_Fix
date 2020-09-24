@@ -18,6 +18,8 @@ namespace SahabatSurabaya
     public sealed partial class SubscriptionPage : Page
     {
         List<string> listMonthExpired, listYearExpired;
+        Session session;
+        User userLogin;
         public SubscriptionPage()
         {
             this.InitializeComponent();
@@ -34,6 +36,8 @@ namespace SahabatSurabaya
             }
             cbExpiredMonth.ItemsSource = listMonthExpired;
             cbExpiredYear.ItemsSource = listYearExpired;
+            session = new Session();
+            userLogin = session.getUserLogin();
         }
 
         private async void confirmUpgrade(object sender, RoutedEventArgs e)
@@ -59,26 +63,26 @@ namespace SahabatSurabaya
                     HttpResponseMessage response = await client.GetAsync(reqUri);
                     if (response.IsSuccessStatusCode)
                     {
-                        string idUser = "1";
+                        string idUser = userLogin.id_user.ToString();
                         var hasil = response.Content.ReadAsStringAsync().Result;
                         JObject json = JObject.Parse(hasil);
                         string tokenId = json["saved_token_id"].ToString();
                         using (var client2 = new HttpClient())
                         {
-                            client2.BaseAddress = new Uri("http://localhost:8080/user/");
+                            client2.BaseAddress = new Uri(session.getApiURL());
                             var content = new FormUrlEncodedContent(new[]
                                 {
                                     new KeyValuePair<string, string>("id_user", idUser),
                                     new KeyValuePair<string, string>("credit_card_token", tokenId),
                                 });
-                            HttpResponseMessage response2 = await client2.PutAsync("updateCreditCardToken",content);
+                            HttpResponseMessage response2 = await client2.PutAsync("user/updateCreditCardToken", content);
                             if (response2.IsSuccessStatusCode)
                             {
                                 var content2 = new FormUrlEncodedContent(new[]
                                 {
                                     new KeyValuePair<string, string>("id_user", idUser)
                                 });
-                                response2 = await client2.PostAsync("chargeUser",content2);
+                                response2 = await client2.PostAsync("user/chargeUser", content2);
                                 if (response2.IsSuccessStatusCode)
                                 {
                                     var message = new MessageDialog("");
@@ -104,7 +108,7 @@ namespace SahabatSurabaya
                                 var message = new MessageDialog(response2.StatusCode.ToString());
                                 await message.ShowAsync();
                             }
-                        }   
+                        }
                     }
                     else
                     {

@@ -24,43 +24,21 @@ namespace SahabatSurabaya
     {
         Session session;
         User userLogin;
+        HttpObject httpObject;
         ObservableCollection<LaporanLostFound> listLaporanLostFound;
         ObservableCollection<LaporanKriminalitas> listLaporanKriminalitas;
         ObservableCollection<User> listEmergencyContact;
-        DispatcherTimer timer;
-        int time = 0;
         public HomePage()
         {
             this.InitializeComponent();
             listLaporanLostFound = new ObservableCollection<LaporanLostFound>();
             listLaporanKriminalitas = new ObservableCollection<LaporanKriminalitas>();
             listEmergencyContact = new ObservableCollection<User>();
+            httpObject = new HttpObject();
             session = new Session();
-            timer = new DispatcherTimer();
-            timer.Interval = new TimeSpan(0, 0, 1);
-            timer.Tick += Timer_Tick;
-            
-            
-            
-
 #if NETFX_CORE
             btnEmergency.Visibility=Visibility.Collapsed;
 #endif
-        }
-
-        private async void Timer_Tick(object sender, object e)
-        {
-            if (time == 2)
-            {
-                var asd = new MessageDialog("asd");
-                await asd.ShowAsync();
-                timer.Stop();
-                time = 0;
-            }
-            else
-            {
-                time++;
-            }
         }
 
         private async Task<string> getUserAddress()
@@ -76,23 +54,29 @@ namespace SahabatSurabaya
             }
             string lat = location.Latitude.ToString().Replace(",", ".");
             string lng = location.Longitude.ToString().Replace(",", ".");
-            using (var client = new HttpClient())
-            {
-                string latlng = lat + "," + lng;
-                string reqUri = "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + latlng + "&key=AIzaSyA9rHJZEGWe6rX4nAHTGXFxCubmw-F0BBw";
-                HttpResponseMessage response = await client.GetAsync(reqUri);
-                if (response.IsSuccessStatusCode)
-                {
-                    var jsonString = response.Content.ReadAsStringAsync().Result;
-                    JObject json = JObject.Parse(jsonString);
-                    string address = json["results"][0]["formatted_address"].ToString();
-                    return address;
-                }
-                else
-                {
-                    return null;
-                }
-            }
+            string latlng = lat + "," + lng;
+            string reqUri = "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + latlng + "&key=AIzaSyA9rHJZEGWe6rX4nAHTGXFxCubmw-F0BBw";
+            string responseData = await httpObject.GetRequest(reqUri);
+            JObject json = JObject.Parse(responseData);
+            string address = json["results"][0]["formatted_address"].ToString();
+            return address;
+            //using (var client = new HttpClient())
+            //{
+            //    string latlng = lat + "," + lng;
+            //    string reqUri = "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + latlng + "&key=AIzaSyA9rHJZEGWe6rX4nAHTGXFxCubmw-F0BBw";
+            //    HttpResponseMessage response = await client.GetAsync(reqUri);
+            //    if (response.IsSuccessStatusCode)
+            //    {
+            //        var jsonString = response.Content.ReadAsStringAsync().Result;
+            //        JObject json = JObject.Parse(jsonString);
+            //        string address = json["results"][0]["formatted_address"].ToString();
+            //        return address;
+            //    }
+            //    else
+            //    {
+            //        return null;
+            //    }
+            //}
         }
 
         private void goToAllReportPage(object sender,RoutedEventArgs e)
@@ -104,53 +88,33 @@ namespace SahabatSurabaya
 
         private async void loadHeadlineLaporanKriminalitas()
         {
-            using (var client=new HttpClient())
-            {
-                client.BaseAddress = new Uri(session.getApiURL());
-                client.DefaultRequestHeaders.Accept.Clear();
-                HttpResponseMessage response = await client.GetAsync("/getHeadlineLaporanKriminalitas");
-                if (response.IsSuccessStatusCode)
-                {
-                    var jsonString = await response.Content.ReadAsStringAsync();
-                    var responseData = response.Content.ReadAsStringAsync().Result;
-                    listLaporanKriminalitas = JsonConvert.DeserializeObject<ObservableCollection<LaporanKriminalitas>>(responseData);
-                    lvLaporanKriminalitas.ItemsSource = listLaporanKriminalitas;
-                }
-                else
-                {
-                    var message = new MessageDialog("Tidak ada koneksi internet, silahkan coba beberapa saat lagi");
-                    await message.ShowAsync();
-                }
-            }
+            string responseData = await httpObject.GetRequest("/getHeadlineLaporanKriminalitas");
+            listLaporanKriminalitas = JsonConvert.DeserializeObject<ObservableCollection<LaporanKriminalitas>>(responseData);
+            lvLaporanKriminalitas.ItemsSource = listLaporanKriminalitas;
         }
 
         private async void loadHeadlineLaporanLostFound()
         {
-            using (var client = new HttpClient())
-            {
-                client.BaseAddress = new Uri(session.getApiURL());
-                client.DefaultRequestHeaders.Accept.Clear();
-                HttpResponseMessage response = await client.GetAsync("/getHeadlineLaporanLostFound");
-                if (response.IsSuccessStatusCode)
-                {
-                    var jsonString = await response.Content.ReadAsStringAsync();
-                    var responseData = response.Content.ReadAsStringAsync().Result;
-                    listLaporanLostFound = JsonConvert.DeserializeObject<ObservableCollection<LaporanLostFound>>(responseData);
-                    lvLaporanLostFound.ItemsSource = listLaporanLostFound;
-
-                }
-                else
-                {
-                    var message = new MessageDialog("Tidak ada koneksi internet, silahkan coba beberapa saat lagi");
-                    await message.ShowAsync();
-                }
-            }
+            string responseData = await httpObject.GetRequest("/getHeadlineLaporanLostFound");
+            listLaporanLostFound = JsonConvert.DeserializeObject<ObservableCollection<LaporanLostFound>>(responseData);
+            lvLaporanLostFound.ItemsSource = listLaporanLostFound;
         }
 
         public void HomePageLoaded(object sender, RoutedEventArgs e)
         {
             userLogin = session.getUserLogin();
             txtNamaUser.Text = "Selamat Datang, " + userLogin.nama_user + "!";
+
+#if __ANDROID__
+             if (userLogin.status_user == 1)
+            {
+                btnEmergency.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                btnEmergency.Visibility = Visibility.Collapsed;
+            }
+#endif
             if (userLogin.status_user == 1)
             {
                 txtStatusUser.Text = "Premium Account";
@@ -163,16 +127,10 @@ namespace SahabatSurabaya
             loadHeadlineLaporanLostFound();
         }
 
-        private void nextContent(object sender, RoutedEventArgs e)
-        {
-            lvLaporanKriminalitas.ScrollIntoView(listLaporanKriminalitas[3]);
-        }
-
         private void emergencyAction(object sender, HoldingRoutedEventArgs e)
         {
 #if __ANDROID__
             if(e.HoldingState==HoldingState.Completed){
-                getUserAddress();
                 sendNotification();
             }
 #endif
@@ -182,58 +140,82 @@ namespace SahabatSurabaya
         private async void sendEmergencyChat(User u, string address)
         {
             string content = "Saya sedang dalam keadaan darurat! Lokasi terakhir saya di " + address;
-            using (var client=new HttpClient())
-            {
-                client.BaseAddress = new Uri(session.getApiURL());
-                client.DefaultRequestHeaders.Accept.Clear();
-                HttpResponseMessage response = await client.GetAsync("checkHeaderChat/" + userLogin.id_user+"/"+u.id_user);
-                if (response.IsSuccessStatusCode)
-                {
-                    var responseData = response.Content.ReadAsStringAsync().Result;
-                    JObject json = JObject.Parse(responseData);  
-                    MultipartFormDataContent form = new MultipartFormDataContent();
-                    form.Add(new StringContent(json["id_chat"].ToString()), "id_chat");
-                    form.Add(new StringContent(userLogin.id_user.ToString()), "id_user_pengirim");
-                    form.Add(new StringContent(u.id_user.ToString()), "id_user_penerima");
-                    form.Add(new StringContent(content), "isi_chat");
-                    response = await client.PostAsync("insertDetailChat", form);
-                    if (response.IsSuccessStatusCode)
-                    {
-                        
-                    }
-                }
-            }
+            string responseData=await httpObject.GetRequest("checkHeaderChat/" + userLogin.id_user + "/" + u.id_user);
+            JObject json = JObject.Parse(responseData);
+            MultipartFormDataContent form = new MultipartFormDataContent();
+            form.Add(new StringContent(json["id_chat"].ToString()), "id_chat");
+            form.Add(new StringContent(userLogin.id_user.ToString()), "id_user_pengirim");
+            form.Add(new StringContent(u.id_user.ToString()), "id_user_penerima");
+            form.Add(new StringContent(content), "isi_chat");
+            await httpObject.PostRequest("insertDetailChat", form);
+            //using (var client=new HttpClient())
+            //{
+            //    client.BaseAddress = new Uri(session.getApiURL());
+            //    client.DefaultRequestHeaders.Accept.Clear();
+            //    HttpResponseMessage response = await client.GetAsync("checkHeaderChat/" + userLogin.id_user+"/"+u.id_user);
+            //    if (response.IsSuccessStatusCode)
+            //    {
+            //        var responseData = response.Content.ReadAsStringAsync().Result;
+            //        JObject json = JObject.Parse(responseData);  
+            //        MultipartFormDataContent form = new MultipartFormDataContent();
+            //        form.Add(new StringContent(json["id_chat"].ToString()), "id_chat");
+            //        form.Add(new StringContent(userLogin.id_user.ToString()), "id_user_pengirim");
+            //        form.Add(new StringContent(u.id_user.ToString()), "id_user_penerima");
+            //        form.Add(new StringContent(content), "isi_chat");
+            //        await client.PostAsync("insertDetailChat", form);
+            //    }
+            //}
         }
 
 #if __ANDROID__
         private async void sendNotification()
         {
-            using (var client = new HttpClient())
+            string responseData=await httpObject.GetRequest("user/getEmergencyContact/"+userLogin.id_user);
+            listEmergencyContact = JsonConvert.DeserializeObject<ObservableCollection<User>>(responseData);
+            if(listEmergencyContact.Count<1){
+                var message = new MessageDialog("Tidak ada kontak darurat yang terdaftar");
+                await message.ShowAsync();
+            }
+            else
             {
-                client.BaseAddress = new Uri(session.getApiURL());
-                client.DefaultRequestHeaders.Accept.Clear();
                 string address = await getUserAddress();
-                HttpResponseMessage response = await client.GetAsync("user/getEmergencyContact/" + userLogin.id_user);
-                if (response.IsSuccessStatusCode)
+                foreach (User user in listEmergencyContact)
                 {
-                    var responseData = response.Content.ReadAsStringAsync().Result;
-                    listEmergencyContact = JsonConvert.DeserializeObject<ObservableCollection<User>>(responseData);
-                    foreach(User user in listEmergencyContact){
-                        var content = new FormUrlEncodedContent(new[]
-                        {
-                            new KeyValuePair<string, string>("number", user.telpon_user),
-                        });
-                        response = await client.PostAsync("user/sendEmergencyNotification", content);
-                        sendEmergencyChat(user,address);
-                    }
-                    var message = new MessageDialog("Pesan darurat telah dikirimkan ke semua kontak darurat anda");
-                    await message.ShowAsync();
+                    var content = new FormUrlEncodedContent(new[]
+                    {
+                        new KeyValuePair<string, string>("number", user.telpon_user),
+                    });
+                    await httpObject.PostRequestWithUrlEncoded("user/sendEmergencyNotification", content);
+                    //response = await client.PostAsync("user/sendEmergencyNotification", content);
+                    sendEmergencyChat(user, address);
                 }
             }
+            //using (var client = new HttpClient())
+            //{
+            //    client.BaseAddress = new Uri(session.getApiURL());
+            //    client.DefaultRequestHeaders.Accept.Clear();
+            //    string address = await getUserAddress();
+            //    HttpResponseMessage response = await client.GetAsync("user/getEmergencyContact/" + userLogin.id_user);
+            //    if (response.IsSuccessStatusCode)
+            //    {
+            //        var responseData = response.Content.ReadAsStringAsync().Result;
+            //        listEmergencyContact = JsonConvert.DeserializeObject<ObservableCollection<User>>(responseData);
+            //        foreach(User user in listEmergencyContact){
+            //            var content = new FormUrlEncodedContent(new[]
+            //            {
+            //                new KeyValuePair<string, string>("number", user.telpon_user),
+            //            });
+            //            response = await client.PostAsync("user/sendEmergencyNotification", content);
+            //            sendEmergencyChat(user,address);
+            //        }
+            //        var message = new MessageDialog("Pesan darurat telah dikirimkan ke semua kontak darurat anda");
+            //        await message.ShowAsync();
+            //    }
+            //}
         }
 #endif
 
-        public async void goToDetailPage(object sender, ItemClickEventArgs e)
+        public void goToDetailPage(object sender, ItemClickEventArgs e)
         {
             string tag = (sender as ListView).Tag.ToString();
             if (tag == "lvKriminalitas")

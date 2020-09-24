@@ -22,6 +22,10 @@ namespace SahabatSurabaya
         {
             userLogin = session.getUserLogin();
             txtNotelpUser.Text = userLogin.telpon_user;
+            if (userLogin.status_user == 0)
+            {
+                btnSubscribe.Visibility = Visibility.Collapsed;
+            }
         }
 
         private void goToSubscriptionPage(object sender, RoutedEventArgs e)
