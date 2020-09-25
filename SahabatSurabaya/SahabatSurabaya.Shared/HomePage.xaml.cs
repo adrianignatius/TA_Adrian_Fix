@@ -6,11 +6,13 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Windows.UI;
 using Windows.UI.Input;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Media;
 using Xamarin.Essentials;
 #if __ANDROID__
 using Com.OneSignal;
@@ -39,6 +41,25 @@ namespace SahabatSurabaya
 #if NETFX_CORE
             btnEmergency.Visibility=Visibility.Collapsed;
 #endif
+        }
+
+        private void changeSource(object sender,RoutedEventArgs e)
+        {
+            string tag = (sender as Button).Tag.ToString();
+            if (tag == "1")
+            {
+                lvHeadline.ItemsSource = listLaporanLostFound;
+                btnSelectionLaporanKriminalitas.IsEnabled = true;
+                btnSelectionLaporanLostFound.IsEnabled = false;
+                lvHeadline.Tag = "lvLostfound";
+            }
+            else
+            {
+                lvHeadline.ItemsSource = listLaporanKriminalitas;
+                btnSelectionLaporanKriminalitas.IsEnabled = false;
+                btnSelectionLaporanLostFound.IsEnabled = true;
+                lvHeadline.Tag = "lvKriminalitas";
+            }
         }
 
         private async Task<string> getUserAddress()
@@ -90,22 +111,29 @@ namespace SahabatSurabaya
         {
             string responseData = await httpObject.GetRequest("/getHeadlineLaporanKriminalitas");
             listLaporanKriminalitas = JsonConvert.DeserializeObject<ObservableCollection<LaporanKriminalitas>>(responseData);
-            lvLaporanKriminalitas.ItemsSource = listLaporanKriminalitas;
+            lvHeadline.ItemsSource = listLaporanKriminalitas;
         }
 
         private async void loadHeadlineLaporanLostFound()
         {
             string responseData = await httpObject.GetRequest("/getHeadlineLaporanLostFound");
             listLaporanLostFound = JsonConvert.DeserializeObject<ObservableCollection<LaporanLostFound>>(responseData);
-            lvLaporanLostFound.ItemsSource = listLaporanLostFound;
+            lvHeadline.ItemsSource = listLaporanLostFound;
         }
 
-        public void HomePageLoaded(object sender, RoutedEventArgs e)
+        public async void HomePageLoaded(object sender, RoutedEventArgs e)
         {
             this.Frame.BackStack.Clear();
             userLogin = session.getUserLogin();
             txtNamaUser.Text = "Selamat Datang, " + userLogin.nama_user + "!";
-
+            string responseData = await httpObject.GetRequest("/getHeadlineLaporanKriminalitas");
+            listLaporanKriminalitas = JsonConvert.DeserializeObject<ObservableCollection<LaporanKriminalitas>>(responseData);
+            responseData = await httpObject.GetRequest("/getHeadlineLaporanLostFound");
+            listLaporanLostFound = JsonConvert.DeserializeObject<ObservableCollection<LaporanLostFound>>(responseData);
+            lvHeadline.ItemsSource = listLaporanLostFound;
+            btnSelectionLaporanKriminalitas.IsEnabled = true;
+            btnSelectionLaporanLostFound.IsEnabled = false;
+            lvHeadline.Tag = "lvLostfound";
 #if __ANDROID__
              if (userLogin.status_user == 1)
             {
@@ -124,8 +152,6 @@ namespace SahabatSurabaya
             {
                 txtStatusUser.Text = "Free Account";
             }
-            loadHeadlineLaporanKriminalitas();
-            loadHeadlineLaporanLostFound();
         }
 
         private void emergencyAction(object sender, HoldingRoutedEventArgs e)
@@ -180,14 +206,17 @@ namespace SahabatSurabaya
                 
             else
             {
-                var message = new MessageDialog("Masuk");
-                await message.ShowAsync();
                 string address = await getUserAddress();
+                string heading=userLogin.nama_user+" sedang dalam keadaan darurat!";
+                string messageContent="Salah satu kontakmu, "+userLogin.nama_user+" sedang dalam keadaan darurat. Lokasi terakhirnya adalah "+address;
                 foreach (User user in listEmergencyContact)
                 {
+            
                     var content = new FormUrlEncodedContent(new[]
                     {
                         new KeyValuePair<string, string>("number", user.telpon_user),
+                        new KeyValuePair<string, string>("heading", heading),
+                        new KeyValuePair<string, string>("content", messageContent)
                     });
                     await httpObject.PostRequestWithUrlEncoded("user/sendEmergencyNotification", content);
                     //response = await client.PostAsync("user/sendEmergencyNotification", content);

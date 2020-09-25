@@ -93,10 +93,10 @@ namespace SahabatSurabaya
             }
         }
 
-        public void goToDetail(object sender, RoutedEventArgs e)
+        public void goToDetail(object sender, ItemClickEventArgs e)
         {
-            int index = gvListKantorPolisi.SelectedIndex;
-            session.setKantorPolisi(listKantorPolisi[index]);
+            KantorPolisi selected = (KantorPolisi)e.ClickedItem;
+            session.setKantorPolisi(selected);
             this.Frame.Navigate(typeof(PoliceStationDetailPage));
         }
     }

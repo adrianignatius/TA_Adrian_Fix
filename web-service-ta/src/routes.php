@@ -454,12 +454,14 @@ return function (App $app) {
         $app->post('/sendEmergencyNotification', function($request, $response){
             $body=$request->getParsedBody();
             $number=$body["number"];
+            $heading=$body["heading"];
+            $message=$body["content"];
             $curl = curl_init();
             $content = array(
-                "en" => 'English Message'
+                "en" => $content
             );
             $heading = array(
-                "en" => 'Headings'  
+                "en" => $heading 
             );
             $fields = array(
                 'app_id' => "6fd226ba-1d41-4c7b-9f8b-a973a8fd436b",
