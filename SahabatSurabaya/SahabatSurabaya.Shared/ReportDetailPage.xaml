@@ -34,7 +34,7 @@
                     <Grid Margin="0,20,0,0" HorizontalAlignment="Stretch" MaxHeight="300">
                         <Image Name="imageLaporan" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Source="/Assets/appicon.png"></Image>
                     </Grid>
-                    <Grid>
+                    <Grid Margin="0,10,0,0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"></ColumnDefinition>
                             <ColumnDefinition Width="auto"></ColumnDefinition>

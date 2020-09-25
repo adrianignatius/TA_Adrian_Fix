@@ -102,6 +102,7 @@ namespace SahabatSurabaya
 
         public void HomePageLoaded(object sender, RoutedEventArgs e)
         {
+            this.Frame.BackStack.Clear();
             userLogin = session.getUserLogin();
             txtNamaUser.Text = "Selamat Datang, " + userLogin.nama_user + "!";
 
@@ -176,8 +177,11 @@ namespace SahabatSurabaya
                 var message = new MessageDialog("Tidak ada kontak darurat yang terdaftar");
                 await message.ShowAsync();
             }
+                
             else
             {
+                var message = new MessageDialog("Masuk");
+                await message.ShowAsync();
                 string address = await getUserAddress();
                 foreach (User user in listEmergencyContact)
                 {
@@ -189,6 +193,8 @@ namespace SahabatSurabaya
                     //response = await client.PostAsync("user/sendEmergencyNotification", content);
                     sendEmergencyChat(user, address);
                 }
+                var message = new MessageDialog("Pesan darurat telah dikirimkan ke semua kontak darurat anda");
+                await message.ShowAsync();
             }
             //using (var client = new HttpClient())
             //{

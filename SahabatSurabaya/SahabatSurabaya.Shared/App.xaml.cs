@@ -33,6 +33,7 @@ namespace SahabatSurabaya
         {
             this.InitializeComponent();
             this.Suspending += OnSuspending;
+
 #if __ANDROID__
             OneSignal.Current.StartInit("6fd226ba-1d41-4c7b-9f8b-a973a8fd436b").HandleNotificationOpened(HandleNotificationOpened)
                              .Settings(new Dictionary<string, bool>() {
@@ -40,7 +41,6 @@ namespace SahabatSurabaya
                                             { IOSSettings.kOSSettingsKeyInAppLaunchURL, false } })
                              .InFocusDisplaying(OSInFocusDisplayOption.Notification)
                              .EndInit();
-            OneSignal.Current.RegisterForPushNotifications();
 #endif
         }
 

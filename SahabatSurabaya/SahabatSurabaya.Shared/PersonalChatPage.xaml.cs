@@ -29,7 +29,7 @@ namespace SahabatSurabaya
 
         private async void pageLoaded(object sender, RoutedEventArgs e)
         {
-            double h = height * 0.8-80;
+            double h = height * 0.8-60;
             lvChat.Height = h;
             userLogin = session.getUserLogin();
             param = session.getChatPageParams();
@@ -51,7 +51,6 @@ namespace SahabatSurabaya
                 }
                 listChat.Add(new Chat(id_chat,id_user_pengirim,id_user_penerima,isi_chat,waktu_chat,isSender));
                 lvChat.ScrollIntoView(listChat[listChat.Count - 1]);
-            
             });
 
             await connection.StartAsync();
@@ -81,6 +80,7 @@ namespace SahabatSurabaya
                         }
                     }
                     lvChat.ItemsSource = listChat;
+                    lvChat.ScrollIntoView(listChat[listChat.Count - 1]);
                 }
             }
         }
@@ -101,7 +101,7 @@ namespace SahabatSurabaya
                     if (response.IsSuccessStatusCode)
                     {
                         txtChatMessage.Text = "";
-                        Chat chatSend = new Chat(param.id_chat, param.id_user_pengirim, param.id_user_penerima, chatMessage, DateTime.Now.ToString("HH:mm"),true);
+                        Chat chatSend = new Chat(param.id_chat, param.id_user_pengirim, param.id_user_penerima, chatMessage, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),true);
                         await connection.SendAsync("SendMessage",chatSend.id_chat,chatSend.id_user_pengirim,chatSend.id_user_penerima,chatSend.isi_chat,chatSend.waktu_chat,chatSend.isSender);
                     }
                 }

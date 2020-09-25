@@ -16,6 +16,13 @@
         <Style x:Key="ListViewItemStretchStyle" TargetType="ListViewItem">
             <Setter Property="HorizontalContentAlignment" Value="Stretch" />
         </Style>
+        <Style TargetType="ListView">
+            <Setter Property="ItemContainerTransitions">
+                <Setter.Value>
+                    <TransitionCollection/>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Page.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -34,7 +41,7 @@
 
         <!--<ScrollViewer Name="svChat" Grid.Row="1">-->
         <StackPanel Grid.Row="1">
-            <ListView  ItemContainerStyle="{StaticResource ListViewItemStretchStyle}"  Margin="0,10,0,10" SelectionMode="None" Name="lvChat" ItemsSource="{Binding listChat}">
+            <ListView FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" ItemContainerStyle="{StaticResource ListViewItemStretchStyle}"  Margin="0,10,0,10" SelectionMode="None" Name="lvChat" ItemsSource="{Binding listChat}">
                 <ListView.ItemsPanel>
                     <ItemsPanelTemplate>
                         <ItemsStackPanel VerticalAlignment="Bottom"
@@ -46,8 +53,8 @@
                         <Grid HorizontalAlignment="{Binding isSender,Converter={StaticResource chatAlignmentConverter}}" x:Name="Text" Background="White" Margin="5, 5, 5, 5">
                             <Border BorderThickness="1" BorderBrush="Black" Background="{Binding isSender,Converter={StaticResource chatBackgroundConverter}}" CornerRadius="7">
                                 <StackPanel>
-                                    <TextBlock MaxWidth="350" FontSize="14" Text="{Binding isi_chat}" TextWrapping="Wrap" Margin="5, 5, 5, 5" />
-                                    <TextBlock MaxWidth="350" FontSize="10" Text="{Binding waktu_chat}" HorizontalAlignment="Right" Margin="5, 5, 5, 5" />
+                                    <TextBlock MaxWidth="350" FontSize="18" Text="{Binding isi_chat}" TextWrapping="Wrap" Margin="5, 5, 5, 5" />
+                                    <TextBlock MaxWidth="350" FontSize="14" Text="{Binding waktu_chat}" HorizontalAlignment="Right" Margin="5, 5, 5, 5" />
                                 </StackPanel>
                             </Border>
                         </Grid>
@@ -63,10 +70,10 @@
                     <ColumnDefinition Width="0.2*"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
                 <Grid Padding="16" Grid.Column="0">
-                    <TextBox FontSize="14" Name="txtChatMessage" PlaceholderText="Enter a message.." Grid.Column="0" ></TextBox>
+                    <TextBox FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" FontSize="14" Name="txtChatMessage" PlaceholderText="Enter a message.." Grid.Column="0" ></TextBox>
                 </Grid>
                 <Grid Padding="16" Grid.Column="1">
-                    <Button Click="sendChat" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Content="Kirim"></Button>
+                    <Button FontWeight="Bold" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" Click="sendChat" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Content="Kirim"></Button>
                 </Grid>
             </Grid>
         </Grid>

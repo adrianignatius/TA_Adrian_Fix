@@ -91,9 +91,9 @@ namespace SahabatSurabaya
             }
         }
 
-        private void goToChatPage(object sender,RoutedEventArgs e)
+        private void goToChatPage(object sender,ItemClickEventArgs e)
         {
-            DisplayHeaderChat selected = listDisplayHeaderChat[lvDaftarChat.SelectedIndex];
+            DisplayHeaderChat selected = (DisplayHeaderChat)e.ClickedItem;
             ChatPageParams param = new ChatPageParams(selected.id_chat, userLogin.id_user, selected.id_target_chat, selected.nama_display);
             session.setChatPageParams(param);
             this.Frame.Navigate(typeof(PersonalChatPage));

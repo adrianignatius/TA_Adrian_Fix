@@ -79,7 +79,7 @@ namespace SahabatSurabaya
                 {
                     var message = new MessageDialog("Tidak ada koneksi internet, silahkan coba beberapa saat lagi");
                     await message.ShowAsync();
-                }
+                } 
             }
         }
 

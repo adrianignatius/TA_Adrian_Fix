@@ -20,13 +20,13 @@
                         <ColumnDefinition Width="0.6*"></ColumnDefinition>
                         <ColumnDefinition Width="0.3*"></ColumnDefinition>
                     </Grid.ColumnDefinitions>
-                    <TextBox Name="txtSearchNumber" FontSize="14" PlaceholderText="Cari user.." Grid.Column="0"></TextBox>
-                    <Button  Click="addContact" Grid.Column="1" Margin="8,0,0,0" CornerRadius="10" Foreground="White" Background="Green" Content="Request Kontak"></Button>
+                    <TextBox BeforeTextChanging="validateInput" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" Name="txtSearchNumber" FontSize="14" PlaceholderText="Cari user.." Grid.Column="0"></TextBox>
+                    <Button FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata"  Click="addContact" Grid.Column="1" Margin="8,0,0,0" CornerRadius="10" Foreground="White" Background="Green" Content="Request Kontak"></Button>
                 </Grid>
                 <Border Background="LightGray" CornerRadius="4" Margin="0,12,0,0">
                     <StackPanel Margin="10" Orientation="Vertical">
                         <TextBlock FontWeight="Bold" FontSize="14" Text="Daftar kontak darurat"></TextBlock>
-                        <ListView SelectionMode="None" Name="lvEmergencyContact">
+                        <ListView FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" SelectionMode="None" Name="lvEmergencyContact">
                             <ListView.ItemTemplate>
                                 <DataTemplate x:Name="emergencyContactTemplate">
                                     <StackPanel Orientation="Horizontal" Height="64">
@@ -48,7 +48,7 @@
                 <Border Margin="0,12,0,0" Background="LightGray" CornerRadius="4">
                     <StackPanel Orientation="Vertical" Margin="10">
                         <TextBlock  FontWeight="Bold" FontSize="14" Text="Daftar permintaan masuk"></TextBlock>
-                        <ListView SelectionMode="None" Name="lvPendingContactRequest">
+                        <ListView FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" SelectionMode="None" Name="lvPendingContactRequest">
                             <ListView.ItemTemplate>
                                 <DataTemplate x:Name="pendingContactTemplate">
                                     <Grid Margin="0,12,0,0" HorizontalAlignment="Stretch">
@@ -84,7 +84,7 @@
                 <Border Name="panelSentPendingRequest" Margin="0,12,0,0" Background="LightGray" CornerRadius="4">
                     <StackPanel Orientation="Vertical" Margin="10">
                         <TextBlock  FontWeight="Bold" FontSize="14" Text="Daftar permintaan terkirim"></TextBlock>
-                        <ListView SelectionMode="None" Name="lvSentPendingContact">
+                        <ListView FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" SelectionMode="None" Name="lvSentPendingContact">
                             <ListView.ItemTemplate>
                                 <DataTemplate x:Name="sentPendingContactTemplate">
                                     <StackPanel Orientation="Horizontal" Height="64">

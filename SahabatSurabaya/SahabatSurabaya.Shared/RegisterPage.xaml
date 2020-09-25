@@ -50,8 +50,8 @@
             </Grid.ColumnDefinitions>
             <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto">
                 <StackPanel x:Name="rootPanel" Margin="20" Orientation="Vertical">
-                    <Image Name="appIconBg" Source="/Assets/appicon.png" Width="200" Height="200"></Image>
-                    <TextBlock Style="{StaticResource textBlockStyle}" Name="textBlockRegister" Foreground="Black" FontSize="40" Margin="30,0,0,0" FontWeight="ExtraBold">Register</TextBlock>
+                    <Image Name="appIconBg" Source="/Assets/app-logo.png" Width="200" Height="200"></Image>
+                    <TextBlock Style="{StaticResource textBlockStyle}" Name="textBlockRegister" Foreground="Black" FontSize="36" Margin="30,30,0,0" FontWeight="ExtraBold">Register</TextBlock>
                     <TextBlock Style="{StaticResource textBlockStyle}" TextWrapping="Wrap" Margin="30,10,0,20" Foreground="Black" FontSize="15" >Already have an account? <Hyperlink Click="goToLogin">Login with your account here</Hyperlink></TextBlock>
                     <TextBlock Style="{StaticResource textBlockStyle}" x:Name="textBlockFullName"  FontSize="20" Margin="30,0,0,0">Nama Lengkap *</TextBlock>
                     <TextBox Style="{StaticResource textBoxStyle}" Name="txtFullName" BeforeTextChanging="txtFullNameBeforeTextChanging" Padding="8" Foreground="Black" Margin="30,10,30,0" FontSize="20" Height="50"></TextBox>

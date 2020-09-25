@@ -22,8 +22,8 @@
                         <AdaptiveTrigger MinWindowWidth="0"></AdaptiveTrigger>
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
-                        <Setter Target="textBlockSignIn.Margin" Value="30,0,0,0"></Setter>
-                        <Setter Target="textBlockSignIn.FontSize" Value="35"></Setter>
+                        <Setter Target="textBlockSignIn.Margin" Value="30,30,0,0"></Setter>
+                        <Setter Target="textBlockSignIn.FontSize" Value="36"></Setter>
                         <Setter Target="column2.Width" Value="0"></Setter>
                         <Setter Target="rootPanel.Margin" Value="20"></Setter>
                         <Setter Target="textBlockEmail.FontSize" Value="20"></Setter>
@@ -60,8 +60,8 @@
             </Grid.ColumnDefinitions>
             
             <StackPanel x:Name="rootPanel" Grid.Column="0" Margin="60" Orientation="Vertical">
-                <Image Margin="0,0,0,0" Name="appIconBg" Source="/Assets/appicon.png" Width="200" Height="200"></Image>
-                <TextBlock FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" x:Name="textBlockSignIn" Foreground="Black" FontSize="40" Margin="30,20,0,0" FontWeight="ExtraBold">Sign In</TextBlock>
+                <Image Name="appIconBg" Source="/Assets/app-logo.png" Width="180" Height="180"></Image>
+                <TextBlock FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" x:Name="textBlockSignIn" Foreground="Black" FontSize="40" FontWeight="ExtraBold">Sign In</TextBlock>
                 <TextBlock FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" TextWrapping="Wrap" Margin="30,10,0,20" Foreground="Black" FontSize="15" >Don't have an account? <Hyperlink Click="goToRegister">Create your account here</Hyperlink></TextBlock>
                 <TextBlock FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" Name="textBlockEmail" Foreground="Black" Margin="30,0,30,0" FontSize="30">No Handphone</TextBlock>
                 <TextBox FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" MaxLength="13" BeforeTextChanging="validateInput" Name="txtNoHandphone" Padding="8" Foreground="Black" Margin="30,10,30,0" FontSize="20" Height="50"></TextBox>

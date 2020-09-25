@@ -12,23 +12,26 @@
 
     <ScrollViewer>
         <Grid Margin="20">
-            <ListView Tapped="goToChatPage" Name="lvDaftarChat">
-                <ListView.ItemTemplate>
-                    <DataTemplate x:Name="chatListTemplate">
-                        <StackPanel Margin="0,20,0,0" Orientation="Horizontal" Height="64">
-                            <Ellipse Height="48" Width="48" VerticalAlignment="Center">
-                                <Ellipse.Fill>
-                                    <ImageBrush ImageSource="/Assets/avatar-profile.png"></ImageBrush>
-                                </Ellipse.Fill>
-                            </Ellipse>
-                            <StackPanel Orientation="Vertical" VerticalAlignment="Center" Margin="12,0,0,0">
-                                <TextBlock FontSize="20" Text="{Binding nama_display}" Style="{ThemeResource BaseTextBlockStyle}" Foreground="{ThemeResource SystemControlPageTextBaseHighBrush}" />
-                                <TextBlock FontSize="16" Text="{Binding pesan_display}" Style="{ThemeResource BodyTextBlockStyle}" Foreground="{ThemeResource SystemControlPageTextBaseMediumBrush}"/>
+            <StackPanel>
+                <TextBlock FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" Text="Daftar Chat" FontSize="24" FontWeight="ExtraBold"></TextBlock>
+                <ListView SelectionMode="None" IsItemClickEnabled="True" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" ItemClick="goToChatPage" Name="lvDaftarChat">
+                    <ListView.ItemTemplate>
+                        <DataTemplate x:Name="chatListTemplate">
+                            <StackPanel Margin="0,20,0,0" Orientation="Horizontal" Height="64">
+                                <Ellipse Height="48" Width="48" VerticalAlignment="Center">
+                                    <Ellipse.Fill>
+                                        <ImageBrush ImageSource="/Assets/avatar-profile.png"></ImageBrush>
+                                    </Ellipse.Fill>
+                                </Ellipse>
+                                <StackPanel Orientation="Vertical" VerticalAlignment="Center" Margin="12,0,0,0">
+                                    <TextBlock FontSize="20" Text="{Binding nama_display}" Style="{ThemeResource BaseTextBlockStyle}" Foreground="{ThemeResource SystemControlPageTextBaseHighBrush}" />
+                                    <TextBlock FontSize="16" Text="{Binding pesan_display}" Style="{ThemeResource BodyTextBlockStyle}" Foreground="{ThemeResource SystemControlPageTextBaseMediumBrush}"/>
+                                </StackPanel>
                             </StackPanel>
-                        </StackPanel>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </StackPanel>
         </Grid>
     </ScrollViewer>
 </Page>

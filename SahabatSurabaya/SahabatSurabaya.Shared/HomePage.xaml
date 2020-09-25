@@ -51,7 +51,7 @@
                     <TextBlock Grid.Column="0" HorizontalAlignment="Left" Margin="0,5,0,0" FontSize="15" FontWeight="ExtraBold">Laporan Kriminalitas Terkini</TextBlock>
                     <TextBlock Tag="kriminalitas" Tapped="goToAllReportPage" HorizontalAlignment="Right" Grid.Column="1" Margin="10,5,0,0" Foreground="Green" FontWeight="Medium" FontSize="12" Text="Lihat semua"></TextBlock>
                 </Grid>
-                <ListView Tag="lvKriminalitas" Margin="10,0,0,0" SelectionMode="None" IsItemClickEnabled="True" Name="lvLaporanKriminalitas" ItemClick="goToDetailPage"  ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                <ListView Tag="lvKriminalitas" SelectionMode="None" IsItemClickEnabled="True" Name="lvLaporanKriminalitas" ItemClick="goToDetailPage"  ScrollViewer.HorizontalScrollBarVisibility="Auto"
     ScrollViewer.HorizontalScrollMode="Enabled"                  
     ScrollViewer.VerticalScrollMode="Disabled">
                     <ListView.ItemsPanel>

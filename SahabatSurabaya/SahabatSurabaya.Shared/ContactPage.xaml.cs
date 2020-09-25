@@ -4,6 +4,7 @@ using SahabatSurabaya.Shared;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using Windows.UI.Popups;
@@ -26,6 +27,11 @@ namespace SahabatSurabaya
             this.InitializeComponent();
             session = new Session();
             
+        }
+
+        private void validateInput(TextBox sender, TextBoxBeforeTextChangingEventArgs args)
+        {
+            args.Cancel = args.NewText.Any(c => !char.IsDigit(c));
         }
 
         private void pageLoaded(object sender, RoutedEventArgs e)
@@ -141,7 +147,7 @@ namespace SahabatSurabaya
             string id_daftar_kontak = (Sender as Button).Tag.ToString();
             using (var client = new HttpClient())
             {
-                client.BaseAddress = new Uri("http://localhost:8080/");
+                client.BaseAddress = new Uri(session.getApiURL());
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                 HttpContent content = new StringContent("");
@@ -166,7 +172,7 @@ namespace SahabatSurabaya
             string id_daftar_kontak = (Sender as Button).Tag.ToString();
             using (var client = new HttpClient())
             {
-                client.BaseAddress = new Uri("http://localhost:8080/");
+                client.BaseAddress = new Uri(session.getApiURL());
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                 HttpResponseMessage response = await client.DeleteAsync("user/declineContactRequest/" + id_daftar_kontak);
