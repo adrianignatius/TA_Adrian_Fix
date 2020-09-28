@@ -18,8 +18,8 @@
         <SolidColorBrush x:Key="brushTransparent" Color="Black" Opacity="0.4"></SolidColorBrush>
         <local:ImageLaporanConverter x:Key="imageConverter"/>
         <win:DataTemplate x:Name="laporanTemplate">
-            <Border Margin="0,4,0,4" CornerRadius="10" BorderBrush="Gray" BorderThickness="1">
-                <Grid MaxHeight="280" MaxWidth="360">
+            <Border CornerRadius="10" BorderBrush="Gray" BorderThickness="1">
+                <Grid MaxHeight="230" MaxWidth="360">
                     <Image Source="{Binding thumbnail_gambar,Converter={StaticResource imageConverter}}" Stretch="UniformToFill"/>
                     <StackPanel Orientation="Vertical" Height="80" VerticalAlignment="Bottom" Background="{StaticResource brushTransparent}" Padding="12">
                         <TextBlock FontWeight="ExtraBold" Opacity="1" Foreground="White" FontSize="14" Text="{Binding judul_laporan }"/>

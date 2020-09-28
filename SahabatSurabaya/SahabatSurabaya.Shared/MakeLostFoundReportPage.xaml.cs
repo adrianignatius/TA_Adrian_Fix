@@ -22,16 +22,14 @@ namespace SahabatSurabaya
         DispatcherTimer dispatcherTimer;
         int tick = 0;
         bool isChosen = false;
-        int imageCount = 0;
         string lat, lng = "";
-        List<UploadedImage> listImage;
+        UploadedImage imageLaporan;
         ObservableCollection<AutocompleteAddress> listAutoCompleteAddress;
         List<SettingKategori> listSettingKategoriLostFound;
         Session session;
         public MakeLostFoundReportPage()
         {
             this.InitializeComponent();
-            listImage = new List<UploadedImage>();
             listSettingKategoriLostFound = new List<SettingKategori>();
             listAutoCompleteAddress = new ObservableCollection<AutocompleteAddress>();
             session = new Session();
@@ -175,30 +173,21 @@ namespace SahabatSurabaya
             }
             else
             {
-                if (listImage.Count > 0)
-                {
-                    int jenisLaporan;
-                    jenisLaporan = (bool)rbLostItem.IsChecked ? 1 : 0;
-                    string judulLaporan = txtJudulLaporan.Text;
-                    string descLaporan = txtDescBarang.Text;
-                    string alamatLaporan = txtAutocompleteAddress.Text;
-                    string displayJenisBarang = listSettingKategoriLostFound[cbJenisBarang.SelectedIndex].nama_kategori.ToString();
-                    string valueJenisBarang = cbJenisBarang.SelectedValue.ToString();
-                    string tglLaporan = DateTime.Now.ToString("dd/MM/yyyy");
-                    string waktuLaporan = DateTime.Now.ToString("HH:mm:ss");
-                    string namaFileGambar = listSettingKategoriLostFound[cbJenisBarang.SelectedIndex].file_gambar_kategori;
-                    LostFoundReportParams param = new LostFoundReportParams(userLogin, judulLaporan, jenisLaporan, lat, lng, descLaporan, tglLaporan, displayJenisBarang, valueJenisBarang, listImage, alamatLaporan, waktuLaporan, namaFileGambar);
-                    session.setLostFoundReportDetailPageParams(param);
-                    this.Frame.Navigate(typeof(LostFoundReportDetailPage));
-                }
-                else
-                {
-                    var message = new MessageDialog("Harus memilih gambar minimal 1 gambar");
-                    await message.ShowAsync();
-                }
-                
+                int jenisLaporan;
+                jenisLaporan = (bool)rbLostItem.IsChecked ? 1 : 0;
+                string judulLaporan = txtJudulLaporan.Text;
+                string descLaporan = txtDescBarang.Text;
+                string alamatLaporan = txtAutocompleteAddress.Text;
+                string displayJenisBarang = listSettingKategoriLostFound[cbJenisBarang.SelectedIndex].nama_kategori.ToString();
+                string valueJenisBarang = cbJenisBarang.SelectedValue.ToString();
+                string tglLaporan = DateTime.Now.ToString("dd/MM/yyyy");
+                string waktuLaporan = DateTime.Now.ToString("HH:mm:ss");
+                string namaFileGambar = listSettingKategoriLostFound[cbJenisBarang.SelectedIndex].file_gambar_kategori;
+                LostFoundReportParams param = new LostFoundReportParams(userLogin, judulLaporan, jenisLaporan, lat, lng, descLaporan, tglLaporan, displayJenisBarang, valueJenisBarang, imageLaporan, alamatLaporan, waktuLaporan, namaFileGambar);
+                session.setLostFoundReportDetailPageParams(param);
+                this.Frame.Navigate(typeof(LostFoundReportDetailPage));
             }
-            
+
         }
 
         private bool validateInput()
@@ -213,74 +202,55 @@ namespace SahabatSurabaya
             } 
         }
 
-        private void updateTxtImageCount()
-        {
-            txtImageCount.Text = imageCount + " gambar terpilih(Max. 2 Gambar)";
-        }
         public void deleteFile(object sender, RoutedEventArgs e)
         {
             Button selectedBtn = sender as Button;
-            listImage.RemoveAt(Convert.ToInt32(selectedBtn.Tag));
-            stackFile.Children.Remove((UIElement)this.FindName("sp" + selectedBtn.Tag.ToString()));
-            imageCount--;
-            updateTxtImageCount();
+            imageLaporan = null;
+            stackFile.Children.Remove((UIElement)this.FindName("spFile"));
+            txtStatusFile.Visibility = Visibility.Visible;
         }
 
         private async void chooseImage(object sender, RoutedEventArgs e)
         {
-            if (imageCount < 2)
+            string contents = "";
+            try
             {
-                string contents = "";
-                try
+                FileData fileData = await CrossFilePicker.Current.PickFile(new string[] { ".jpg" });
+                if (fileData == null)
                 {
-                    FileData fileData = await CrossFilePicker.Current.PickFile(new string[] { ".jpg" });
-                    if (fileData == null)
-                    {
-                        return; // user canceled file picking
-                    }
-                    else
-                    {
-                        string fileName = fileData.FileName;
-                        contents = System.Text.Encoding.UTF8.GetString(fileData.DataArray);
-                        UploadedImage imageBaru = new UploadedImage(fileData.DataArray, fileData.DataArray.Length);
-                        listImage.Add(imageBaru);
-                        StackPanel sp = new StackPanel();
-                        sp.Orientation = Orientation.Horizontal;
-                        sp.Name = "sp" + imageCount.ToString();
-                        sp.Margin = new Thickness(0, 5, 0, 0);
-                        TextBlock newFile = new TextBlock();
-                        newFile.Text = fileData.FileName;
-                        newFile.FontSize = 15;
-                        newFile.Width = 250;
-                        newFile.Margin = new Thickness(25, 0, 0, 0);
-                        newFile.TextWrapping = TextWrapping.Wrap;
-                        sp.Children.Add(newFile);
-                        Button btnClose = new Button();
-                        btnClose.Content = "X";
-                        btnClose.CornerRadius = new CornerRadius(8);
-                        btnClose.Foreground = new SolidColorBrush(Windows.UI.Colors.White);
-                        btnClose.Background = new SolidColorBrush(Windows.UI.Colors.Green);
-                        btnClose.Click += deleteFile;
-                        btnClose.Tag = imageCount.ToString();
-                        btnClose.Name = "btn" + imageCount.ToString();
-                        sp.Children.Add(btnClose);
-                        stackFile.Children.Add(sp);
-                        imageCount++;
-                        updateTxtImageCount();
-                    }              
+                    return; // user canceled file picking
                 }
-                catch (Exception ex)
+                else
                 {
-                    var message = new MessageDialog(ex.ToString());
-                    await message.ShowAsync();
-                }
+                    string fileName = fileData.FileName;
+                    contents = System.Text.Encoding.UTF8.GetString(fileData.DataArray);
+                    imageLaporan = new UploadedImage(fileData.DataArray, fileData.DataArray.Length);
+                    StackPanel sp = new StackPanel();
+                    sp.Orientation = Orientation.Horizontal;
+                    sp.Name = "spFile";
+                    sp.Margin = new Thickness(0, 5, 0, 0);
+                    TextBlock newFile = new TextBlock();
+                    newFile.Text = fileData.FileName;
+                    newFile.FontSize = 15;
+                    newFile.Margin = new Thickness(25, 0, 0, 0);
+                    newFile.TextWrapping = TextWrapping.WrapWholeWords;
+                    sp.Children.Add(newFile);
+                    Button btnDelete = new Button();
+                    btnDelete.Content = "X";
+                    btnDelete.CornerRadius = new CornerRadius(8);
+                    btnDelete.Foreground = new SolidColorBrush(Windows.UI.Colors.White);
+                    btnDelete.Background = new SolidColorBrush(Windows.UI.Colors.Green);
+                    btnDelete.Click += deleteFile;
+                    sp.Children.Add(btnDelete);
+                    stackFile.Children.Add(sp);
+                    txtStatusFile.Visibility = Visibility.Collapsed;
+                }              
             }
-            else
+            catch (Exception ex)
             {
-                var message = new MessageDialog("Anda hanya dapat mengupload maksimal 2 gambar saja");
+                var message = new MessageDialog(ex.ToString());
                 await message.ShowAsync();
             }
-
         }
     }
 }

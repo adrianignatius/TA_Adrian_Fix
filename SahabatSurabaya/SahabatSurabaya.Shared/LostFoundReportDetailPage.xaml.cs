@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using SahabatSurabaya.Shared;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -23,11 +25,13 @@ namespace SahabatSurabaya
         string url = "ms-appx:///Assets/icon/";
         Session session;
         LostFoundReportParams param;
+        HttpObject httpObject;
         User userLogin;
         public LostFoundReportDetailPage()
         {
             this.InitializeComponent();
             session = new Session();
+            httpObject = new HttpObject();
         }
         
 
@@ -51,13 +55,13 @@ namespace SahabatSurabaya
             txtJudulLaporan.Text = param.judulLaporan;
             txtDescBarang.Text = param.descLaporan;
             txtLokasiLaporan.Text = param.alamatLaporan;
-
         }
         public async void konfirmasi_laporan(object sender, RoutedEventArgs e)
         {
             using (var client = new HttpClient())
             {
-                client.BaseAddress = new Uri(session.getApiURL());
+                client.BaseAddress = new Uri("http://localhost:8080/");
+                //client.BaseAddress = new Uri(session.getApiURL());
                 MultipartFormDataContent form = new MultipartFormDataContent();
                 form.Add(new StringContent(param.judulLaporan), "judul_laporan");
                 form.Add(new StringContent(param.jenisLaporan.ToString()), "jenis_laporan");
@@ -69,16 +73,26 @@ namespace SahabatSurabaya
                 form.Add(new StringContent(param.descLaporan), "deskripsi_barang");
                 form.Add(new StringContent("0"), "status_laporan");
                 form.Add(new StringContent(userLogin.id_user.ToString()), "id_user_pelapor");
-                for (int i = 0; i < param.listImage.Count; i++)
+                if (param.imageLaporan != null)
                 {
-                    form.Add(new StreamContent(new MemoryStream(param.listImage[i].image)), "image[]", "image.jpg"); ;
+                    form.Add(new StreamContent(new MemoryStream(param.imageLaporan.image)), "image", "image.jpg");
                 }
+                //for (int i = 0; i < param.listImage.Count; i++)
+                //{
+                //    form.Add(new StreamContent(new MemoryStream(param.listImage[i].image)), "image[]", "image.jpg"); ;
+                //}
                 HttpResponseMessage response = await client.PostAsync("insertLaporanLostFound", form);
                 if (response.IsSuccessStatusCode)
                 {
-                    var message = new MessageDialog("Berhasil membuat laporan!");
+                    string responseData = response.Content.ReadAsStringAsync().Result;
+                    JObject json = JObject.Parse(responseData);
+                    var message = new MessageDialog(json["message"].ToString());
                     await message.ShowAsync();
-                    this.Frame.Navigate(typeof(HomePage),param.userLogin);
+                    if (json["status"].ToString() == "1")
+                    {
+                        this.Frame.Navigate(typeof(HomePage));
+                    }
+
                 }
             }
         }

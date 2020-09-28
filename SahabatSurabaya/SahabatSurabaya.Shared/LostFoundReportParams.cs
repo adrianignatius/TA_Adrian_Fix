@@ -7,7 +7,7 @@ namespace SahabatSurabaya
     class LostFoundReportParams
     {
         public User userLogin { get; set; }
-        public List<UploadedImage> listImage { get; set; }
+        public UploadedImage imageLaporan { get; set; }
 
         public int jenisLaporan { get; set; }
         public string descLaporan { get; set; }
@@ -30,7 +30,7 @@ namespace SahabatSurabaya
 
         public string namaFileGambar { get; set; }
 
-        public LostFoundReportParams(User userLogin, string judulLaporan, int jenisLaporan, string lat, string lng, string descLaporan, string tglLaporan, string displayJenisBarang, string valueJenisBarang, List<UploadedImage> listImage, string alamatLaporan, string waktuLaporan, string namaFileGambar)
+        public LostFoundReportParams(User userLogin, string judulLaporan, int jenisLaporan, string lat, string lng, string descLaporan, string tglLaporan, string displayJenisBarang, string valueJenisBarang, UploadedImage imageLaporan, string alamatLaporan, string waktuLaporan, string namaFileGambar)
         {
             this.userLogin =userLogin;
             this.judulLaporan = judulLaporan;
@@ -38,7 +38,7 @@ namespace SahabatSurabaya
             this.descLaporan = descLaporan;
             this.lat = lat;
             this.lng = lng;
-            this.listImage = listImage;
+            this.imageLaporan = imageLaporan;
             this.tglLaporan = tglLaporan;
             this.displayJenisBarang = displayJenisBarang;
             this.valueJenisBarang = valueJenisBarang;

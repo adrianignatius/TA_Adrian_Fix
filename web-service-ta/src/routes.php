@@ -627,8 +627,15 @@ return function (App $app) {
             $stmt = $this->db->prepare($sql);
             $stmt->execute();
             $result = $stmt->fetchColumn();           
-            $id_laporan=$id_laporan.str_pad($result,5,"0",STR_PAD_LEFT);
-            $sql = "INSERT INTO laporan_lostfound_barang VALUES(:id_laporan,:judul_laporan,:jenis_laporan,:tanggal_laporan,:waktu_laporan,:alamat_laporan,:lat_laporan,:lng_laporan,:deskripsi_barang,:id_user_pelapor,:status_laporan,:geohash_alamat_laporan) ";
+            $uploadedFiles = $request->getUploadedFiles();
+            $id_laporan=$id_laporan.str_pad($result,5,"0",STR_PAD_LEFT);    
+            $filename="default.png";
+            if($uploadedFiles!=null){
+                $uploadedFile = $uploadedFiles['image'];
+                $extension = pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION);
+                $filename=$id_laporan.".".$extension;
+            }
+            $sql = "INSERT INTO laporan_lostfound_barang VALUES(:id_laporan,:judul_laporan,:jenis_laporan,:tanggal_laporan,:waktu_laporan,:alamat_laporan,:lat_laporan,:lng_laporan,:deskripsi_barang,:id_user_pelapor,:status_laporan,:geohash_alamat_laporan,:nama_file_gambar) ";
             $stmt = $this->db->prepare($sql);
             $data = [
                 ":id_laporan" => $id_laporan,
@@ -642,28 +649,17 @@ return function (App $app) {
                 ":deskripsi_barang"=>$new_laporan["deskripsi_barang"],
                 ":id_user_pelapor"=>$new_laporan["id_user_pelapor"],
                 ":status_laporan"=>0,
-                ":geohash_alamat_laporan"=> $geohash->encode(floatval($new_laporan["lat_laporan"]), floatval($new_laporan["lng_laporan"]), 8)
+                ":geohash_alamat_laporan"=> $geohash->encode(floatval($new_laporan["lat_laporan"]), floatval($new_laporan["lng_laporan"]), 8),
+                ":nama_file_gambar"=>$filename
             ];
-            $stmt->execute($data);
-            $increment=1;
-            $uploadedFiles = $request->getUploadedFiles();
-            foreach($uploadedFiles['image'] as $uploadedFile){
-                if ($uploadedFile->getError() === UPLOAD_ERR_OK) {
-                    $id_gambar=$id_laporan.$increment;
-                    $extension = pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION);
-                    $filename=$id_gambar.".".$extension;
-                    $sql = "INSERT INTO gambar_lostfound_barang VALUES(:id_gambar,:nama_file,:id_laporan) ";
-                    $stmt = $this->db->prepare($sql);
-                    $data = [
-                        ":id_gambar" => $id_gambar,
-                        ":nama_file"=>$filename,
-                        ":id_laporan" => $id_laporan
-                    ];
-                    $stmt->execute($data);
+            if($stmt->execute($data)){
+                if($uploadedFiles!=null){
                     $directory = $this->get('settings')['upload_directory'];
-                    $uploadedFile->moveTo($directory . DIRECTORY_SEPARATOR . $filename); 
-                    $increment=$increment+1;
+                    $uploadedFile->moveTo($directory . DIRECTORY_SEPARATOR . $filename);
                 }
+                return $response->withJson(["status"=>"1","message"=>"Tambah laporan berhasil"]);
+            }else{
+                return $response->withJson(["status"=>"99","message"=>"Tambah laporan gagal, silahkan coba beberapa saat lagi"]);
             }
         });
 
@@ -679,9 +675,16 @@ return function (App $app) {
             $sql="SELECT COUNT(*)+1 from laporan_kriminalitas where id_laporan like'%$id_laporan%'";
             $stmt = $this->db->prepare($sql);
             $stmt->execute();
-            $result = $stmt->fetchColumn();           
-            $id_laporan=$id_laporan.str_pad($result,5,"0",STR_PAD_LEFT);
-            $sql = "INSERT INTO laporan_kriminalitas VALUES(:id_laporan,:judul_laporan,:jenis_kejadian,:deskripsi_kejadian,:tanggal_laporan,:waktu_laporan,:alamat_laporan,:lat_laporan,:lng_laporan,:id_user_pelapor,:status_laporan,:geohash_alamat_laporan) ";
+            $result = $stmt->fetchColumn();     
+            $uploadedFiles = $request->getUploadedFiles();
+            $id_laporan=$id_laporan.str_pad($result,5,"0",STR_PAD_LEFT);    
+            $filename="default.png";
+            if($uploadedFiles!=null){
+                $uploadedFile = $uploadedFiles['image'];
+                $extension = pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION);
+                $filename=$id_laporan.".".$extension;
+            }      
+            $sql = "INSERT INTO laporan_kriminalitas VALUES(:id_laporan,:judul_laporan,:jenis_kejadian,:deskripsi_kejadian,:tanggal_laporan,:waktu_laporan,:alamat_laporan,:lat_laporan,:lng_laporan,:id_user_pelapor,:status_laporan,:geohash_alamat_laporan,:nama_file_gambar) ";
             $stmt = $this->db->prepare($sql);
             $data = [
                 ":id_laporan" => $id_laporan,
@@ -695,28 +698,17 @@ return function (App $app) {
                 ":lng_laporan"=>$new_laporan["lng_laporan"],
                 ":id_user_pelapor"=>$new_laporan["id_user_pelapor"],
                 ":status_laporan"=>0,
-                ":geohash_alamat_laporan"=> $geohash->encode(floatval($new_laporan["lat_laporan"]), floatval($new_laporan["lng_laporan"]), 8)
+                ":geohash_alamat_laporan"=> $geohash->encode(floatval($new_laporan["lat_laporan"]), floatval($new_laporan["lng_laporan"]), 8),
+                ":nama_file_gambar"=>$filename
             ];
-            $stmt->execute($data);
-            $increment=1;
-            $uploadedFiles = $request->getUploadedFiles();
-            foreach($uploadedFiles['image'] as $uploadedFile){
-                if ($uploadedFile->getError() === UPLOAD_ERR_OK) {
-                    $id_gambar=$id_laporan.$increment;
-                    $extension = pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION);
-                    $filename=$id_gambar.".".$extension;
-                    $sql = "INSERT INTO gambar_kriminalitas VALUES(:id_gambar,:nama_file,:id_laporan) ";
-                    $stmt = $this->db->prepare($sql);
-                    $data = [
-                        ":id_gambar" => $id_gambar,
-                        ":nama_file"=>$filename,
-                        ":id_laporan" => $id_laporan
-                    ];
-                    $stmt->execute($data);
+            if($stmt->execute($data)){
+                if($uploadedFiles!=null){
                     $directory = $this->get('settings')['upload_directory'];
-                    $uploadedFile->moveTo($directory . DIRECTORY_SEPARATOR . $filename); 
-                    $increment=$increment+1;
+                    $uploadedFile->moveTo($directory . DIRECTORY_SEPARATOR . $filename);
                 }
+                return $response->withJson(["status"=>"1","message"=>"Tambah laporan berhasil"]);
+            }else{
+                return $response->withJson(["status"=>"99","message"=>"Tambah laporan gagal, silahkan coba beberapa saat lagi"]);
             }
         });
 

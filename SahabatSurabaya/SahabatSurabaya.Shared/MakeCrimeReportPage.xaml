@@ -39,7 +39,7 @@
                     <Button CornerRadius="10" Foreground="White" Background="Green" Click="chooseImage"  Content="Pilih File.." Margin="10,30,0,0"></Button>
                 </StackPanel>
                 <StackPanel Name="stackFile" Orientation="Vertical"></StackPanel>
-                <TextBlock Name="txtImageCount" Margin="0,5,0,15" Text="0 gambar terpilih(Max. 2 Gambar) " FontSize="15" Foreground="Gray" ></TextBlock>
+                <TextBlock Name="txtStatusFile" FontSize="16" Foreground="Gray" Text="Tidak ada gambar terpilih"></TextBlock>
                 <Button Click="goToDetail" CornerRadius="5" Foreground="AntiqueWhite" Background="Green" FontSize="20" Width="150" Margin="0,30,0,0" Content="Selanjutnya" HorizontalAlignment="Center"></Button>
             </StackPanel>
         </Grid>

@@ -54,11 +54,11 @@
                 </ListView>
                 <WebView Margin="0,10,0,0" Name="webViewMap"  Height="400" HorizontalAlignment="Stretch" Source="http://adrian-webview.ta-istts.com/location-map.php"></WebView>
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock  Margin="0,30,0,10" Text="Upload Gambar" FontSize="20"></TextBlock>
+                    <TextBlock Margin="0,30,0,10" Text="Upload Gambar (Opsional)" FontSize="20"></TextBlock>
                     <Button CornerRadius="10" Foreground="White" Background="Green" Click="chooseImage" Content="Pilih File.." Margin="10,30,0,0"></Button>
                 </StackPanel>
                 <StackPanel Name="stackFile" Orientation="Vertical"></StackPanel>
-                <TextBlock Name="txtImageCount" Margin="0,15,0,15" Text="0 gambar terpilih(Max. 2 Gambar) " FontSize="15" Foreground="Gray" ></TextBlock>
+                <TextBlock Name="txtStatusFile" FontSize="16" Foreground="Gray" Text="Tidak ada gambar terpilih"></TextBlock>
                 <Button Click="goToDetail" CornerRadius="5" Foreground="AntiqueWhite" Background="Green" FontSize="20" Width="150" Margin="0,30,0,0" Content="Selanjutnya" HorizontalAlignment="Center"></Button>
             </StackPanel>
         </Grid>

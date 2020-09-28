@@ -62,10 +62,10 @@ namespace SahabatSurabaya
                 form.Add(new StringContent(param.lng.ToString()), "lng_laporan");
                 form.Add(new StringContent("0"), "status_laporan");
                 form.Add(new StringContent(userLogin.id_user.ToString()), "id_user_pelapor");
-                for (int i = 0; i < param.listImage.Count; i++)
-                {
-                    form.Add(new StreamContent(new MemoryStream(param.listImage[i].image)), "image[]", "image.jpg"); ;
-                }
+                //for (int i = 0; i < param.listImage.Count; i++)
+                //{
+                //    form.Add(new StreamContent(new MemoryStream(param.listImage[i].image)), "image[]", "image.jpg"); ;
+                //}
                 HttpResponseMessage response = await client.PostAsync("insertLaporanKriminalitas", form);
                 if (response.IsSuccessStatusCode)
                 {

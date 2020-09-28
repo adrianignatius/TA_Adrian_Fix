@@ -6,7 +6,7 @@ namespace SahabatSurabaya
 {
     class CrimeReportParams
     {
-        public List<UploadedImage> listImage { get; set; }
+        public UploadedImage imageLaporan { get; set; }
 
         public string descLaporan { get; set; }
 
@@ -28,7 +28,7 @@ namespace SahabatSurabaya
 
         public string namaFileGambar { get; set; }
 
-        public CrimeReportParams(string judulLaporan, string lat, string lng, string descLaporan, string tglLaporan, string waktuLaporan, string alamatLaporan, string displayKategoriKejadian, string valueKategoriKejadian, List<UploadedImage>listImage,string namaFileGambar)
+        public CrimeReportParams(string judulLaporan, string lat, string lng, string descLaporan, string tglLaporan, string waktuLaporan, string alamatLaporan, string displayKategoriKejadian, string valueKategoriKejadian, UploadedImage imageLaporan,string namaFileGambar)
         {
             this.judulLaporan = judulLaporan;
             this.lat = lat;
@@ -39,7 +39,7 @@ namespace SahabatSurabaya
             this.alamatLaporan = alamatLaporan;
             this.displayKategoriKejadian = displayKategoriKejadian;
             this.valueKategoriKejadian = valueKategoriKejadian;
-            this.listImage = listImage;
+            this.imageLaporan = imageLaporan;
             this.namaFileGambar = namaFileGambar;
         }
     }

@@ -32,14 +32,13 @@ namespace SahabatSurabaya
         string lat, lng = "";
         int imageCount = 0;
         Session session;
-        List<UploadedImage> listImage;
+        UploadedImage imageLaporan;
         List<SettingKategori> listSetingKategoriKriminalitas;
         ObservableCollection<AutocompleteAddress> listAutoCompleteAddress;
         User userLogin;
         public MakeCrimeReportPage()
         {
             this.InitializeComponent();
-            listImage = new List<UploadedImage>();
             listSetingKategoriKriminalitas = new List<SettingKategori>();
             listAutoCompleteAddress = new ObservableCollection<AutocompleteAddress>();
             session = new Session();
@@ -160,15 +159,9 @@ namespace SahabatSurabaya
         private void deleteFile(object sender, RoutedEventArgs e)
         {
             Button selectedBtn = sender as Button;
-            listImage.RemoveAt(Convert.ToInt32(selectedBtn.Tag));
-            stackFile.Children.Remove((UIElement)this.FindName("sp" + selectedBtn.Tag.ToString()));
-            imageCount--;
-            updateTxtImageCount();
-        }
-
-        public void updateTxtImageCount()
-        {
-            txtImageCount.Text = imageCount + " gambar terpilih(Max. 2 Gambar)";
+            imageLaporan = null;
+            stackFile.Children.Remove((UIElement)this.FindName("spFile"));
+            txtStatusFile.Visibility = Visibility.Visible;
         }
 
         public async void useLocation(object sender, RoutedEventArgs e)
@@ -219,7 +212,7 @@ namespace SahabatSurabaya
                 string tglLaporan = DateTime.Now.ToString("dd/MM/yyyy");
                 string waktuLaporan = DateTime.Now.ToString("HH:mm:ss");
                 string namaFileGambar = listSetingKategoriKriminalitas[cbJenisKejadian.SelectedIndex].file_gambar_kategori;
-                CrimeReportParams param = new CrimeReportParams(judulLaporan, lat, lng, descKejadian, tglLaporan, waktuLaporan, alamatLaporan, displayJeniskejadian, valueJenisKejadian, listImage, namaFileGambar);
+                CrimeReportParams param = new CrimeReportParams(judulLaporan, lat, lng, descKejadian, tglLaporan, waktuLaporan, alamatLaporan, displayJeniskejadian, valueJenisKejadian, imageLaporan, namaFileGambar);
                 session.setCrimeReportDetailPageParams(param);
                 this.Frame.Navigate(typeof(CrimeReportDetailPage));
             }     
@@ -227,51 +220,41 @@ namespace SahabatSurabaya
 
         public async void chooseImage(object sender, RoutedEventArgs e)
         {    
-            if (imageCount < 2)
+            try
             {
-                try
+                FileData fileData = await CrossFilePicker.Current.PickFile(new string[] { ".jpg" });
+                if (fileData == null)
                 {
-                    FileData fileData = await CrossFilePicker.Current.PickFile(new string[] { ".jpg" });
-                    if (fileData == null)
-                    {
-                        return;
-                    }
-                    else
-                    {
-                        string fileName = fileData.FileName;
-                        UploadedImage imageBaru = new UploadedImage(fileData.DataArray, fileData.DataArray.Length);
-                        listImage.Add(imageBaru);
-                        StackPanel sp = new StackPanel();
-                        sp.Orientation = Orientation.Horizontal;
-                        sp.Name = "sp" + imageCount.ToString();
-                        sp.Margin = new Thickness(0, 5, 0, 0);
-                        TextBlock newFile = new TextBlock();
-                        newFile.Text = fileData.FileName;
-                        newFile.FontSize = 15;
-                        newFile.Width = 250;
-                        newFile.Margin = new Thickness(25, 0, 0, 0);
-                        newFile.TextWrapping = TextWrapping.Wrap;
-                        sp.Children.Add(newFile);
-                        Button btnClose = new Button();
-                        btnClose.Content = "X";
-                        btnClose.Click += deleteFile;
-                        btnClose.Tag = imageCount.ToString();
-                        btnClose.Name = "btn" + imageCount.ToString();
-                        sp.Children.Add(btnClose);
-                        stackFile.Children.Add(sp);
-                        imageCount++;
-                        updateTxtImageCount();
-                    }      
+                    return;
                 }
-                catch (Exception ex)
+                else
                 {
-                    var message = new MessageDialog(ex.ToString());
-                    await message.ShowAsync();
-                }
+                    string fileName = fileData.FileName;
+                    imageLaporan = new UploadedImage(fileData.DataArray, fileData.DataArray.Length);
+                    StackPanel sp = new StackPanel();
+                    sp.Orientation = Orientation.Horizontal;
+                    sp.Name = "spFile";
+                    sp.Margin = new Thickness(0, 5, 0, 0);
+                    TextBlock newFile = new TextBlock();
+                    newFile.Text = fileData.FileName;
+                    newFile.FontSize = 15;
+                    newFile.Margin = new Thickness(25, 0, 0, 0);
+                    newFile.TextWrapping = TextWrapping.WrapWholeWords;
+                    sp.Children.Add(newFile);
+                    Button btnDelete = new Button();
+                    btnDelete.Content = "X";
+                    btnDelete.CornerRadius = new CornerRadius(8);
+                    btnDelete.Foreground = new SolidColorBrush(Windows.UI.Colors.White);
+                    btnDelete.Background = new SolidColorBrush(Windows.UI.Colors.Green);
+                    btnDelete.Click += deleteFile;
+                    sp.Children.Add(btnDelete);
+                    stackFile.Children.Add(sp);
+                    txtStatusFile.Visibility = Visibility.Collapsed;
+                }      
             }
-            else
+            catch (Exception ex)
             {
-                var message = new MessageDialog("Anda hanya dapat mengupload maksimal 2 gambar saja");
+                var message = new MessageDialog(ex.ToString());
                 await message.ShowAsync();
             }
         }
