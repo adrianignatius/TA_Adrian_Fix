@@ -131,9 +131,6 @@
     <AppxManifest Include="Package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
-    <Content Include="..\..\..\..\..\Downloads\Sniglet\Sniglet-Regular.ttf">
-      <Link>Assets\Fonts\Sniglet-Regular.ttf</Link>
-    </Content>
     <Content Include="..\..\Fonts\Alata-Regular.ttf">
       <Link>Assets\Fonts\Alata-Regular.ttf</Link>
     </Content>

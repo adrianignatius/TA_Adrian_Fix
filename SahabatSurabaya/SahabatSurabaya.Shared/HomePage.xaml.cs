@@ -43,25 +43,6 @@ namespace SahabatSurabaya
 #endif
         }
 
-        private void changeSource(object sender,RoutedEventArgs e)
-        {
-            string tag = (sender as Button).Tag.ToString();
-            if (tag == "1")
-            {
-                lvHeadline.ItemsSource = listLaporanLostFound;
-                btnSelectionLaporanKriminalitas.IsEnabled = true;
-                btnSelectionLaporanLostFound.IsEnabled = false;
-                lvHeadline.Tag = "lvLostfound";
-            }
-            else
-            {
-                lvHeadline.ItemsSource = listLaporanKriminalitas;
-                btnSelectionLaporanKriminalitas.IsEnabled = false;
-                btnSelectionLaporanLostFound.IsEnabled = true;
-                lvHeadline.Tag = "lvKriminalitas";
-            }
-        }
-
         private async Task<string> getUserAddress()
         {
             var location = await Geolocation.GetLastKnownLocationAsync();
@@ -107,19 +88,7 @@ namespace SahabatSurabaya
             this.Frame.Navigate(typeof(AllReportPage));
         }
 
-        private async void loadHeadlineLaporanKriminalitas()
-        {
-            string responseData = await httpObject.GetRequest("/getHeadlineLaporanKriminalitas");
-            listLaporanKriminalitas = JsonConvert.DeserializeObject<ObservableCollection<LaporanKriminalitas>>(responseData);
-            lvHeadline.ItemsSource = listLaporanKriminalitas;
-        }
-
-        private async void loadHeadlineLaporanLostFound()
-        {
-            string responseData = await httpObject.GetRequest("/getHeadlineLaporanLostFound");
-            listLaporanLostFound = JsonConvert.DeserializeObject<ObservableCollection<LaporanLostFound>>(responseData);
-            lvHeadline.ItemsSource = listLaporanLostFound;
-        }
+        
 
         public async void HomePageLoaded(object sender, RoutedEventArgs e)
         {
@@ -130,12 +99,12 @@ namespace SahabatSurabaya
             listLaporanKriminalitas = JsonConvert.DeserializeObject<ObservableCollection<LaporanKriminalitas>>(responseData);
             responseData = await httpObject.GetRequest("/getHeadlineLaporanLostFound");
             listLaporanLostFound = JsonConvert.DeserializeObject<ObservableCollection<LaporanLostFound>>(responseData);
+#if __ANDROID__
             lvHeadline.ItemsSource = listLaporanLostFound;
             btnSelectionLaporanKriminalitas.IsEnabled = true;
             btnSelectionLaporanLostFound.IsEnabled = false;
             lvHeadline.Tag = "lvLostfound";
-#if __ANDROID__
-             if (userLogin.status_user == 1)
+            if (userLogin.status_user == 1)
             {
                 btnEmergency.Visibility = Visibility.Visible;
             }
@@ -143,6 +112,9 @@ namespace SahabatSurabaya
             {
                 btnEmergency.Visibility = Visibility.Collapsed;
             }
+#elif NETFX_CORE
+            lvLaporanKriminalitas.ItemsSource = listLaporanKriminalitas;
+            lvLaporanLostFound.ItemsSource = listLaporanLostFound;
 #endif
             if (userLogin.status_user == 1)
             {
@@ -195,6 +167,26 @@ namespace SahabatSurabaya
         }
 
 #if __ANDROID__
+        private void changeSource(object sender,RoutedEventArgs e)
+        {
+            string tag = (sender as Button).Tag.ToString();
+            if (tag == "1")
+            {
+                lvHeadline.ItemsSource = listLaporanLostFound;
+                btnSelectionLaporanKriminalitas.IsEnabled = true;
+                btnSelectionLaporanLostFound.IsEnabled = false;
+                lvHeadline.Tag = "lvLostfound";
+                txtHeadlineTitle
+            }
+            else
+            {
+                lvHeadline.ItemsSource = listLaporanKriminalitas;
+                btnSelectionLaporanKriminalitas.IsEnabled = false;
+                btnSelectionLaporanLostFound.IsEnabled = true;
+                lvHeadline.Tag = "lvKriminalitas";
+            }
+        }
+
         private async void sendNotification()
         {
             string responseData=await httpObject.GetRequest("user/getEmergencyContact/"+userLogin.id_user);
