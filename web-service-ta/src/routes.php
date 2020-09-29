@@ -20,11 +20,23 @@ return function (App $app) {
         return $response->withJson($result, 200);
     });
 
+    // $app->get('/getHeadlineLaporanLostFound', function ($request, $response) {
+    //     $sql = "SELECT lf.id_laporan,lf.judul_laporan,lf.jenis_laporan,lf.tanggal_laporan,lf.waktu_laporan,lf.alamat_laporan,lf.lat_laporan,lf.lng_laporan,lf.deskripsi_barang,lf.deskripsi_barang,lf.id_user_pelapor,u.nama_user as nama_user_pelapor,count(kl.id_laporan) AS jumlah_komentar,gf.nama_file AS thumbnail_gambar FROM laporan_lostfound_barang lf 
+    //             JOIN user u ON lf.id_user_pelapor=u.id_user 
+    //             LEFT JOIN komentar_laporan kl ON lf.id_laporan=kl.id_laporan
+    //             JOIN gambar_lostfound_barang gf ON lf.id_laporan=gf.id_laporan
+    //             GROUP BY lf.id_laporan 
+    //             ORDER BY lf.tanggal_laporan DESC, lf.waktu_laporan DESC LIMIT 5";
+    //     $stmt = $this->db->prepare($sql);
+    //     $stmt->execute();
+    //     $result = $stmt->fetchAll();
+    //     return $response->withJson($result);
+    // });
+
     $app->get('/getHeadlineLaporanLostFound', function ($request, $response) {
-        $sql = "SELECT lf.id_laporan,lf.judul_laporan,lf.jenis_laporan,lf.tanggal_laporan,lf.waktu_laporan,lf.alamat_laporan,lf.lat_laporan,lf.lng_laporan,lf.deskripsi_barang,lf.deskripsi_barang,lf.id_user_pelapor,u.nama_user as nama_user_pelapor,count(kl.id_laporan) AS jumlah_komentar,gf.nama_file AS thumbnail_gambar FROM laporan_lostfound_barang lf 
+        $sql = "SELECT lf.id_laporan,lf.judul_laporan,lf.jenis_laporan,lf.tanggal_laporan,lf.waktu_laporan,lf.alamat_laporan,lf.lat_laporan,lf.lng_laporan,lf.deskripsi_barang,lf.deskripsi_barang,lf.id_user_pelapor,u.nama_user AS nama_user_pelapor,count(kl.id_laporan) AS jumlah_komentar,lf.nama_file_gambar AS thumbnail_gambar FROM laporan_lostfound_barang lf 
                 JOIN user u ON lf.id_user_pelapor=u.id_user 
                 LEFT JOIN komentar_laporan kl ON lf.id_laporan=kl.id_laporan
-                JOIN gambar_lostfound_barang gf ON lf.id_laporan=gf.id_laporan
                 GROUP BY lf.id_laporan 
                 ORDER BY lf.tanggal_laporan DESC, lf.waktu_laporan DESC LIMIT 5";
         $stmt = $this->db->prepare($sql);
@@ -32,12 +44,24 @@ return function (App $app) {
         $result = $stmt->fetchAll();
         return $response->withJson($result);
     });
+    
+
+    // $app->get('/getHeadlineLaporanKriminalitas', function ($request, $response) {
+    //     $sql = "SELECT lk.id_laporan,lk.judul_laporan,lk.jenis_kejadian,lk.deskripsi_kejadian,lk.tanggal_laporan,lk.waktu_laporan,lk.alamat_laporan,lk.lat_laporan,lk.lng_laporan,lk.id_user_pelapor,u.nama_user AS nama_user_pelapor, COUNT(kl.id_laporan) AS jumlah_komentar,gk.nama_file AS thumbnail_gambar FROM user u 
+    //             JOIN laporan_kriminalitas lk ON lk.id_user_pelapor=u.id_user 
+    //             LEFT JOIN komentar_laporan kl ON lk.id_laporan=kl.id_laporan 
+    //             JOIN gambar_kriminalitas gk ON lk.id_laporan=gk.id_laporan
+    //             GROUP BY lk.id_laporan ORDER BY lk.tanggal_laporan DESC, lk.waktu_laporan DESC LIMIT 5";
+    //     $stmt = $this->db->prepare($sql);
+    //     $stmt->execute();
+    //     $result = $stmt->fetchAll();
+    //     return $response->withJson($result);
+    // });
 
     $app->get('/getHeadlineLaporanKriminalitas', function ($request, $response) {
-        $sql = "SELECT lk.id_laporan,lk.judul_laporan,lk.jenis_kejadian,lk.deskripsi_kejadian,lk.tanggal_laporan,lk.waktu_laporan,lk.alamat_laporan,lk.lat_laporan,lk.lng_laporan,lk.id_user_pelapor,u.nama_user AS nama_user_pelapor, COUNT(kl.id_laporan) AS jumlah_komentar,gk.nama_file AS thumbnail_gambar FROM user u 
+        $sql = "SELECT lk.id_laporan,lk.judul_laporan,lk.jenis_kejadian,lk.deskripsi_kejadian,lk.tanggal_laporan,lk.waktu_laporan,lk.alamat_laporan,lk.lat_laporan,lk.lng_laporan,lk.id_user_pelapor,u.nama_user AS nama_user_pelapor, COUNT(kl.id_laporan) AS jumlah_komentar,lk.nama_file_gambar AS thumbnail_gambar FROM user u 
                 JOIN laporan_kriminalitas lk ON lk.id_user_pelapor=u.id_user 
                 LEFT JOIN komentar_laporan kl ON lk.id_laporan=kl.id_laporan 
-                JOIN gambar_kriminalitas gk ON lk.id_laporan=gk.id_laporan
                 GROUP BY lk.id_laporan ORDER BY lk.tanggal_laporan DESC, lk.waktu_laporan DESC LIMIT 5";
         $stmt = $this->db->prepare($sql);
         $stmt->execute();

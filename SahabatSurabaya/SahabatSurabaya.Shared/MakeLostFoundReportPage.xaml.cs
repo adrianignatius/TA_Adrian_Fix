@@ -174,22 +174,28 @@ namespace SahabatSurabaya
             }
             else
             {
-                int jenisLaporan;
-                jenisLaporan = (bool)rbLostItem.IsChecked ? 1 : 0;
-                string judulLaporan = txtJudulLaporan.Text;
-                string descLaporan = txtDescBarang.Text;
-                string alamatLaporan = txtAutocompleteAddress.Text;
-                string displayJenisBarang = listSettingKategoriLostFound[cbJenisBarang.SelectedIndex].nama_kategori.ToString();
-                string valueJenisBarang = cbJenisBarang.SelectedValue.ToString();
-                string tglLaporan = DateTime.Now.ToString("dd/MM/yyyy");
-                string waktuLaporan = DateTime.Now.ToString("HH:mm:ss");
-                string namaFileGambar = listSettingKategoriLostFound[cbJenisBarang.SelectedIndex].file_gambar_kategori;
-                ConfirmReportParams param = new ConfirmReportParams("lostfound",judulLaporan, jenisLaporan.ToString(), descLaporan, lat, lng, alamatLaporan,tglLaporan, waktuLaporan, displayJenisBarang, valueJenisBarang, imageLaporan,namaFileGambar);
-                session.setConfirmreportParam(param);
-                this.Frame.Navigate(typeof(ConfirmReportPage));
-                //LostFoundReportParams param = new LostFoundReportParams(userLogin, judulLaporan, jenisLaporan, lat, lng, descLaporan, tglLaporan, displayJenisBarang, valueJenisBarang, imageLaporan, alamatLaporan, waktuLaporan, namaFileGambar);
-                //session.setLostFoundReportDetailPageParams(param);
-               // this.Frame.Navigate(typeof(LostFoundReportDetailPage));
+                if (imageLaporan != null)
+                {
+                    int jenisLaporan;
+                    jenisLaporan = (bool)rbLostItem.IsChecked ? 1 : 0;
+                    string judulLaporan = txtJudulLaporan.Text;
+                    string descLaporan = txtDescBarang.Text;
+                    string alamatLaporan = txtAutocompleteAddress.Text;
+                    string displayJenisBarang = listSettingKategoriLostFound[cbJenisBarang.SelectedIndex].nama_kategori.ToString();
+                    string valueJenisBarang = cbJenisBarang.SelectedValue.ToString();
+                    string tglLaporan = DateTime.Now.ToString("dd/MM/yyyy");
+                    string waktuLaporan = DateTime.Now.ToString("HH:mm:ss");
+                    string namaFileGambar = listSettingKategoriLostFound[cbJenisBarang.SelectedIndex].file_gambar_kategori;
+                    ConfirmReportParams param = new ConfirmReportParams("lostfound", judulLaporan, jenisLaporan.ToString(), descLaporan, lat, lng, alamatLaporan, tglLaporan, waktuLaporan, displayJenisBarang, valueJenisBarang, imageLaporan, namaFileGambar);
+                    session.setConfirmreportParam(param);
+                    this.Frame.Navigate(typeof(ConfirmReportPage));
+                }
+                else
+                {
+                    var message = new MessageDialog("Wajib menyertakan gambar untuk membuat laporan Lost & Found");
+                    await message.ShowAsync();
+                }
+                
             }
 
         }
@@ -222,6 +228,9 @@ namespace SahabatSurabaya
         {
             if (this.Frame.CanGoBack)
             {
+                var cacheSize = ((Frame)Parent).CacheSize;
+                ((Frame)Parent).CacheSize = 0;
+                ((Frame)Parent).CacheSize = cacheSize;
                 this.Frame.GoBack();
                 return true;
             }

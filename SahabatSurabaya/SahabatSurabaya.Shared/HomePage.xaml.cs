@@ -92,9 +92,16 @@ namespace SahabatSurabaya
 
         public async void HomePageLoaded(object sender, RoutedEventArgs e)
         {
-            this.Frame.BackStack.Clear();
             userLogin = session.getUserLogin();
             txtNamaUser.Text = "Selamat Datang, " + userLogin.nama_user + "!";
+            if (userLogin.status_user == 1)
+            {
+                txtStatusUser.Text = "Premium Account";
+            }
+            else
+            {
+                txtStatusUser.Text = "Free Account";
+            }
             string responseData = await httpObject.GetRequest("/getHeadlineLaporanKriminalitas");
             listLaporanKriminalitas = JsonConvert.DeserializeObject<ObservableCollection<LaporanKriminalitas>>(responseData);
             responseData = await httpObject.GetRequest("/getHeadlineLaporanLostFound");
@@ -115,15 +122,7 @@ namespace SahabatSurabaya
 #elif NETFX_CORE
             lvLaporanKriminalitas.ItemsSource = listLaporanKriminalitas;
             lvLaporanLostFound.ItemsSource = listLaporanLostFound;
-#endif
-            if (userLogin.status_user == 1)
-            {
-                txtStatusUser.Text = "Premium Account";
-            }
-            else
-            {
-                txtStatusUser.Text = "Free Account";
-            }
+#endif 
         }
 
         private void emergencyAction(object sender, HoldingRoutedEventArgs e)

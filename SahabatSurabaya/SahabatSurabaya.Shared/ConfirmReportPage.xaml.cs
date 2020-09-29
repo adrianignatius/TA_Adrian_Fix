@@ -78,7 +78,6 @@ namespace SahabatSurabaya
         {
             if (this.Frame.CanGoBack)
             {
-                this.Frame.BackStack.RemoveAt(this.Frame.BackStackDepth - 1);
                 this.Frame.GoBack();
                 return true;
             }

@@ -230,6 +230,9 @@ namespace SahabatSurabaya
         {
             if (this.Frame.CanGoBack)
             {
+                var cacheSize = ((Frame)Parent).CacheSize;
+                ((Frame)Parent).CacheSize = 0;
+                ((Frame)Parent).CacheSize = cacheSize;
                 this.Frame.GoBack();
                 return true;
             }
