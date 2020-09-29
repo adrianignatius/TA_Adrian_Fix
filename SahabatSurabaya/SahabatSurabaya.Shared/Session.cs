@@ -10,6 +10,7 @@ namespace SahabatSurabaya
     class Session
     {
        
+        public static ConfirmReportParams confirmReportParam { get; set; }
         public static string allReportParam { get; set; }
         public static User userLogin { get; set; }
         public static KantorPolisi kantorPolisiSelected { get; set; }
@@ -26,6 +27,16 @@ namespace SahabatSurabaya
         public readonly static string URL_WEBVIEW = "http://adrian-webview.ta-istts.com/";
         public readonly static string URL_ASSETS = "http://adrian-assets.ta-istts.com/";
 
+
+        public ConfirmReportParams getConfirmReportParams()
+        {
+            return confirmReportParam;
+        }
+
+        public void setConfirmreportParam(ConfirmReportParams param)
+        {
+            confirmReportParam = param;
+        }
         public void setAllReportParam(string param)
         {
             allReportParam = param;

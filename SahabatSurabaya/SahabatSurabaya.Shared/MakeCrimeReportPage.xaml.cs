@@ -2,6 +2,7 @@
 using Newtonsoft.Json.Linq;
 using Plugin.FilePicker;
 using Plugin.FilePicker.Abstractions;
+using SahabatSurabaya.Shared;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -158,9 +159,8 @@ namespace SahabatSurabaya
 
         private void deleteFile(object sender, RoutedEventArgs e)
         {
-            Button selectedBtn = sender as Button;
             imageLaporan = null;
-            stackFile.Children.Remove((UIElement)this.FindName("spFile"));
+            gridFile.Visibility = Visibility.Collapsed;
             txtStatusFile.Visibility = Visibility.Visible;
         }
 
@@ -212,10 +212,28 @@ namespace SahabatSurabaya
                 string tglLaporan = DateTime.Now.ToString("dd/MM/yyyy");
                 string waktuLaporan = DateTime.Now.ToString("HH:mm:ss");
                 string namaFileGambar = listSetingKategoriKriminalitas[cbJenisKejadian.SelectedIndex].file_gambar_kategori;
-                CrimeReportParams param = new CrimeReportParams(judulLaporan, lat, lng, descKejadian, tglLaporan, waktuLaporan, alamatLaporan, displayJeniskejadian, valueJenisKejadian, imageLaporan, namaFileGambar);
-                session.setCrimeReportDetailPageParams(param);
-                this.Frame.Navigate(typeof(CrimeReportDetailPage));
+                ConfirmReportParams param = new ConfirmReportParams("kriminalitas", judulLaporan, null, descKejadian, lat, lng, alamatLaporan, tglLaporan, waktuLaporan, displayJeniskejadian, valueJenisKejadian, imageLaporan, namaFileGambar);
+                session.setConfirmreportParam(param);
+                this.Frame.Navigate(typeof(ConfirmReportPage));
+                //CrimeReportParams param = new CrimeReportParams(judulLaporan, lat, lng, descKejadian, tglLaporan, waktuLaporan, alamatLaporan, displayJeniskejadian, valueJenisKejadian, imageLaporan, namaFileGambar);
+                //session.setCrimeReportDetailPageParams(param);
+                //this.Frame.Navigate(typeof(CrimeReportDetailPage));
             }     
+        }
+
+        private void Back_Click(object sender, RoutedEventArgs e)
+        {
+            On_BackRequested();
+        }
+
+        private bool On_BackRequested()
+        {
+            if (this.Frame.CanGoBack)
+            {
+                this.Frame.GoBack();
+                return true;
+            }
+            return false;
         }
 
         public async void chooseImage(object sender, RoutedEventArgs e)
@@ -230,25 +248,9 @@ namespace SahabatSurabaya
                 else
                 {
                     string fileName = fileData.FileName;
-                    imageLaporan = new UploadedImage(fileData.DataArray, fileData.DataArray.Length);
-                    StackPanel sp = new StackPanel();
-                    sp.Orientation = Orientation.Horizontal;
-                    sp.Name = "spFile";
-                    sp.Margin = new Thickness(0, 5, 0, 0);
-                    TextBlock newFile = new TextBlock();
-                    newFile.Text = fileData.FileName;
-                    newFile.FontSize = 15;
-                    newFile.Margin = new Thickness(25, 0, 0, 0);
-                    newFile.TextWrapping = TextWrapping.WrapWholeWords;
-                    sp.Children.Add(newFile);
-                    Button btnDelete = new Button();
-                    btnDelete.Content = "X";
-                    btnDelete.CornerRadius = new CornerRadius(8);
-                    btnDelete.Foreground = new SolidColorBrush(Windows.UI.Colors.White);
-                    btnDelete.Background = new SolidColorBrush(Windows.UI.Colors.Green);
-                    btnDelete.Click += deleteFile;
-                    sp.Children.Add(btnDelete);
-                    stackFile.Children.Add(sp);
+                    imageLaporan = new UploadedImage(fileName,fileData.DataArray, fileData.DataArray.Length);
+                    txtNamaFile.Text = fileName;
+                    gridFile.Visibility = Visibility.Visible;
                     txtStatusFile.Visibility = Visibility.Collapsed;
                 }      
             }

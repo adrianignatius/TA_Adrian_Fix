@@ -33,6 +33,10 @@
       <DependentUpon>ChatPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)ChatPageParams.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ConfirmReportPage.xaml.cs">
+      <DependentUpon>ConfirmReportPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)ConfirmReportParams.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ContactPage.xaml.cs">
       <DependentUpon>ContactPage.xaml</DependentUpon>
     </Compile>
@@ -119,6 +123,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="$(MSBuildThisFileDirectory)ChatPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)ConfirmReportPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

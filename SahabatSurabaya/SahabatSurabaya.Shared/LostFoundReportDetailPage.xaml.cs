@@ -53,9 +53,26 @@ namespace SahabatSurabaya
             txtJenisBarang.Text = param.displayJenisBarang;
             txtTanggalLaporan.Text = param.tglLaporan;
             txtJudulLaporan.Text = param.judulLaporan;
-            txtDescBarang.Text = param.descLaporan;
+            txtDeskripsiBarang.Text = param.descLaporan;
             txtLokasiLaporan.Text = param.alamatLaporan;
         }
+
+        private void Back_Click(object sender, RoutedEventArgs e)
+        {
+            On_BackRequested();
+        }
+
+        private bool On_BackRequested()
+        {
+            if (this.Frame.CanGoBack)
+            {
+                this.Frame.BackStack.RemoveAt(this.Frame.BackStackDepth - 1);
+                this.Frame.GoBack();
+                return true;
+            }
+            return false;
+        }
+
         public async void konfirmasi_laporan(object sender, RoutedEventArgs e)
         {
             using (var client = new HttpClient())
@@ -77,10 +94,6 @@ namespace SahabatSurabaya
                 {
                     form.Add(new StreamContent(new MemoryStream(param.imageLaporan.image)), "image", "image.jpg");
                 }
-                //for (int i = 0; i < param.listImage.Count; i++)
-                //{
-                //    form.Add(new StreamContent(new MemoryStream(param.listImage[i].image)), "image[]", "image.jpg"); ;
-                //}
                 HttpResponseMessage response = await client.PostAsync("insertLaporanLostFound", form);
                 if (response.IsSuccessStatusCode)
                 {

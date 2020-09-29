@@ -64,11 +64,11 @@ namespace SahabatSurabaya
                     break;
 
                 case "MakeLostFoundReportPage":
-                    ContentFrame.Navigate(typeof(MakeLostFoundReportPage));
+                    this.Frame.Navigate(typeof(MakeLostFoundReportPage));
                     break;
 
                 case "MakeCrimeReportPage":
-                    ContentFrame.Navigate(typeof(MakeCrimeReportPage));
+                    this.Frame.Navigate(typeof(MakeCrimeReportPage));
                     break;
 
                 case "SignOut":

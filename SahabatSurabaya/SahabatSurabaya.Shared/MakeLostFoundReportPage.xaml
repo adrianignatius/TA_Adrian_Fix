@@ -8,33 +8,28 @@
     xmlns:Maps="using:Windows.UI.Xaml.Controls.Maps"
     mc:Ignorable="d"
     RequestedTheme="Light"
+    NavigationCacheMode="Required"
     Loaded="LostFoundPageLoaded"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-
-    <VisualStateManager.VisualStateGroups>
-        <VisualStateGroup>
-            <VisualState>
-                <VisualState.StateTriggers>
-                    <AdaptiveTrigger MinWindowWidth="500"></AdaptiveTrigger>
-                </VisualState.StateTriggers>
-                <VisualState.Setters>
-                    <Setter Target="txtDescBarang.Width" Value="400"></Setter>
-                </VisualState.Setters>
-            </VisualState>
-        </VisualStateGroup>
-    </VisualStateManager.VisualStateGroups>
-    <ScrollViewer Name="rootPanel">
-        <Grid Margin="20">
-            <StackPanel Orientation="Vertical">
-                <TextBlock FontSize="24" Text="Buat Laporan Lost &amp; Found" FontWeight="ExtraBold" HorizontalAlignment="Stretch"></TextBlock>
-                <TextBlock Margin="0,40,0,0" FontSize="20" Text="Judul Laporan"></TextBlock>
-                <TextBox Name="txtJudulLaporan" FontSize="20" Margin="0,10,0,0"  HorizontalAlignment="Stretch"></TextBox>
-                <TextBlock Margin="0,40,0,0" FontSize="20" Text="Pilih Jenis Laporan"></TextBlock>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Row="0" Margin="0,8,0,0" Orientation="Horizontal">
+            <Button Click="Back_Click" VerticalAlignment="Top" HorizontalAlignment="Left" Style="{StaticResource NavigationBackButtonNormalStyle}"/>
+            <TextBlock FontSize="24" Margin="8,4,0,0" Text="Buat Laporan Lost &amp; Found" FontWeight="ExtraBold" HorizontalAlignment="Stretch"></TextBlock>
+        </StackPanel>
+        <ScrollViewer Grid.Row="1" >
+            <StackPanel Margin="20" Orientation="Vertical">
+                <TextBlock FontSize="20" Text="Judul Laporan"></TextBlock>
+                <TextBox x:FieldModifier="public" Name="txtJudulLaporan" FontSize="20" Margin="0,10,0,0"  HorizontalAlignment="Stretch"></TextBox>
+                <TextBlock Margin="0,30,0,0" FontSize="20" Text="Pilih Jenis Laporan"></TextBlock>
                 <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
                     <RadioButton Name="rbFoundItem" FontSize="17" Margin="0,0,20,0 " IsChecked="True">Penemuan Barang</RadioButton>
                     <RadioButton Name="rbLostItem" FontSize="17">Kehilangan Barang</RadioButton>
                 </StackPanel>
-                <TextBlock Margin="0,40,0,0" FontSize="20" Text="Jenis Barang Yang Ditemukan"></TextBlock>
+                <TextBlock Margin="0,30,0,0" FontSize="20" Text="Jenis Barang Yang Ditemukan"></TextBlock>
                 <ComboBox Name="cbJenisBarang" HorizontalAlignment="Stretch" Margin="0,10,0,0" FontSize="20">
 
                 </ComboBox>
@@ -57,11 +52,17 @@
                     <TextBlock Margin="0,30,0,10" Text="Upload Gambar (Opsional)" FontSize="20"></TextBlock>
                     <Button CornerRadius="10" Foreground="White" Background="Green" Click="chooseImage" Content="Pilih File.." Margin="10,30,0,0"></Button>
                 </StackPanel>
-                <StackPanel Name="stackFile" Orientation="Vertical"></StackPanel>
-                <TextBlock Name="txtStatusFile" FontSize="16" Foreground="Gray" Text="Tidak ada gambar terpilih"></TextBlock>
+                <Grid Visibility="Collapsed" Name="gridFile" Margin="0,4,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="auto"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock TextWrapping="Wrap" Grid.Column="0" Name="txtNamaFile" FontSize="14"></TextBlock>
+                    <Button Grid.Column="1" CornerRadius="10" Click="deleteFile" Margin="4,0,0,0" Content="X" Foreground="White" Background="Green"></Button>
+                </Grid>
+                <TextBlock Name="txtStatusFile" FontSize="14" Foreground="Gray" Text="Tidak ada gambar terpilih"></TextBlock>
                 <Button Click="goToDetail" CornerRadius="5" Foreground="AntiqueWhite" Background="Green" FontSize="20" Width="150" Margin="0,30,0,0" Content="Selanjutnya" HorizontalAlignment="Center"></Button>
             </StackPanel>
-        </Grid>
-    </ScrollViewer>
-
+        </ScrollViewer>
+    </Grid>
 </Page>
