@@ -10,8 +10,15 @@ namespace SahabatSurabaya.Shared
         public object Convert(object value, Type targetType, object parameter, string language)
         {
             string fileGambar = (string)value;
-            string baseUri = "http://adrian-webservice.ta-istts.com/public/uploads/";
-            return baseUri + fileGambar;
+            if (fileGambar == "default.png")
+            {
+                return "/Assets/default.png";
+            }
+            else
+            {
+                string baseUri = "http://adrian-webservice.ta-istts.com/public/uploads/";
+                return baseUri + fileGambar;
+            }
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)

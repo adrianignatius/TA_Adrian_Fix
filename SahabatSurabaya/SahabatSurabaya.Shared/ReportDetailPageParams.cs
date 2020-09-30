@@ -29,11 +29,11 @@ namespace SahabatSurabaya
         public string lat_laporan { get; set; }
 
         public string lng_laporan { get; set; }
-
-
         public string tag { get; set; }
 
-        public ReportDetailPageParams(int id_user_pelapor, string nama_user_pelapor, string id_laporan, string alamat_laporan, string tanggal_laporan, string waktu_laporan, string judul_laporan, string jenis_laporan, string deskripsi_laporan, string lat_laporan, string lng_laporan, string tag)
+        public string thumbnail_gambar { get; set; }
+
+        public ReportDetailPageParams(int id_user_pelapor, string nama_user_pelapor, string id_laporan, string alamat_laporan, string tanggal_laporan, string waktu_laporan, string judul_laporan, string jenis_laporan, string deskripsi_laporan, string lat_laporan, string lng_laporan, string tag, string thumbnail_gambar)
         {
             this.id_user_pelapor = id_user_pelapor;
             this.nama_user_pelapor = nama_user_pelapor;
@@ -47,6 +47,7 @@ namespace SahabatSurabaya
             this.lat_laporan = lat_laporan;
             this.lng_laporan = lng_laporan;
             this.tag = tag;
+            this.thumbnail_gambar = thumbnail_gambar;
         }
     }
 }

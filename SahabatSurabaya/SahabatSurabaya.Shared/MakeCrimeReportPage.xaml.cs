@@ -181,7 +181,7 @@ namespace SahabatSurabaya
             using (var client = new HttpClient())
             {
                 string latlng = lat + "," + lng;
-                string reqUri = "https://maps.googleapis.com/maps/api/geocode/json?latlng="+latlng+"&key=AIzaSyA9rHJZEGWe6rX4nAHTGXFxCubmw-F0BBw";
+                string reqUri = "https://maps.googleapis.com/maps/api/geocode/json?latlng="+latlng+"    ";
                 HttpResponseMessage response = await client.GetAsync(reqUri);
                 if (response.IsSuccessStatusCode)
                 {

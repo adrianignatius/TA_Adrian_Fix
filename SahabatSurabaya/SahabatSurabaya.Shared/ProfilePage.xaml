@@ -29,21 +29,26 @@
                 <TextBlock Name="txtNotelpUser" Style="{StaticResource textBlockStyle}" Margin="0,10,0,0" FontSize="14" Text="NoTelp"></TextBlock>
                 <TextBlock Style="{StaticResource textBlockStyle}" Margin="0,15,0,0" FontSize="16" Text="Nama Lengkap" FontWeight="Medium"></TextBlock>
                 <TextBox Name="txtNamaUser"  Style="{StaticResource textBoxStyle}" Margin="0,10,0,0" FontSize="14"></TextBox>
-
-                
-
                 <TextBlock Style="{StaticResource textBlockStyle}" Margin="0,15,0,0" FontSize="16" Text="Email" FontWeight="Medium"></TextBlock>
-               
                 <TextBox Name="txtEmailUser" Style="{StaticResource textBoxStyle}" Margin="0,10,0,0" FontSize="14" ></TextBox>
-                
                 <TextBlock Margin="0,15,0,0" Style="{StaticResource textBlockStyle}"  FontSize="16" Text="Lokasi Aktif" FontWeight="Medium"></TextBlock>
                 <TextBlock Name="txtStatusLokasiAktif" FontSize="12" Foreground="Gray" Text="* Anda belum mengatur lokasi aktif anda"></TextBlock>
-
-                    <TextBox Name="txtAutocompleteAddressUser" Style="{StaticResource textBoxStyle}" Margin="0,10,0,0" FontSize="14" ></TextBox>
-
-
+                <StackPanel Visibility="Visible" Orientation="Vertical" Name="stackLokasi">
+                    <TextBox Name="txtAutocompleteAddress" Style="{StaticResource textBoxStyle}" TextChanged="txtAutocompleteAddressTextChanged" Margin="0,10,0,0" FontSize="14" ></TextBox>
+                    <ListView FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" IsItemClickEnabled="True" ItemClick="suggestionChosen" Name="lvSuggestion">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock FontSize="12" Text="{Binding description}"></TextBlock>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                    <!--<StackPanel Margin="0,8,0,0" HorizontalAlignment="Center" Orientation="Horizontal">
+                        <Button Margin="4,0,4,0" Content="Batal" CornerRadius="10" Background="Red" Foreground="White"></Button>
+                        <Button Margin="4,0,4,0" Content="Simpan" CornerRadius="10" Background="Green" Foreground="White"></Button>
+                    </StackPanel>-->
+                </StackPanel>
                 <TextBlock Style="{StaticResource textBlockStyle}" Margin="0,15,0,0" FontSize="16" Text="Tipe Akun" FontWeight="Medium"></TextBlock>
-                <TextBlock Style="{StaticResource textBlockStyle}" Margin="0,10,0,0" FontSize="14" Text="Free Account" ></TextBlock>
+                <TextBlock Name="txtStatusAccount" Style="{StaticResource textBlockStyle}" Margin="0,10,0,0" FontSize="14" Text="Free Account" ></TextBlock>
 
                 <Button Name="btnSubscribe" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" Click="goToSubscriptionPage" Margin="0,15,0,0" FontSize="20" CornerRadius="10" Content="Upgrade to Premium" HorizontalAlignment="Center" Background="Green" Foreground="White"></Button>
                 <Button Name="btnUpdate" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" Margin="0,15,0,0" FontSize="20" CornerRadius="10" Content="Simpan Perubahan" HorizontalAlignment="Center" Background="Green" Foreground="White"></Button>

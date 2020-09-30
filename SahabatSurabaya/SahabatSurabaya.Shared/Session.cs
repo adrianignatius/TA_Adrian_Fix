@@ -26,6 +26,7 @@ namespace SahabatSurabaya
         public readonly static string API_URL = "http://adrian-webservice.ta-istts.com/";
         public readonly static string URL_WEBVIEW = "http://adrian-webview.ta-istts.com/";
         public readonly static string URL_ASSETS = "http://adrian-assets.ta-istts.com/";
+        public readonly static string URL_GAMBAR_LAPORAN = "http://adrian-webservice.ta-istts.com/public/uploads/";
 
 
         public ConfirmReportParams getConfirmReportParams()
@@ -129,7 +130,12 @@ namespace SahabatSurabaya
         {
             return API_URL;
         }
-        
+
+        public string getUrlGambarLaporan()
+        {
+            return URL_GAMBAR_LAPORAN;
+        }
+
         public string getUrlWebView()
         {
             return URL_WEBVIEW;

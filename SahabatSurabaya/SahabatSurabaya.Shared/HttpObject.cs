@@ -67,5 +67,24 @@ namespace SahabatSurabaya.Shared
                 }
             }
         }
+
+        public async Task<string> PutRequest(string url, FormUrlEncodedContent form)
+        {
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(API_URL);
+                client.DefaultRequestHeaders.Accept.Clear();
+                HttpResponseMessage response = await client.PutAsync(url, form);
+                if (response.IsSuccessStatusCode)
+                {
+                    var responseData = response.Content.ReadAsStringAsync().Result;
+                    return responseData;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
     }
 }

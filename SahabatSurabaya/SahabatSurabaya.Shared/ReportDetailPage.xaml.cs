@@ -8,6 +8,7 @@ using System.Net.Http;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media.Imaging;
 using Xamarin.Essentials;
 
 namespace SahabatSurabaya
@@ -34,6 +35,7 @@ namespace SahabatSurabaya
             {
                 btnChatPage.IsEnabled = false;
             }
+            imageLaporan.Source = new BitmapImage(new Uri(session.getUrlGambarLaporan() + param.thumbnail_gambar));
             txtNamaPengguna.Text = param.nama_user_pelapor;
             txtTanggalUpload.Text = param.tanggal_laporan + " Pukul " + param.waktu_laporan;
             txtDeskripsiLaporan.Text = param.deskripsi_laporan;

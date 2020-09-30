@@ -8,6 +8,22 @@ use Sk\Geohash\Geohash;
 
 date_default_timezone_set("Asia/Jakarta");
 
+function getKecamatan($lat,$lng){
+    $latlng=$lat.",".$lng;
+    $baseURL="https://maps.googleapis.com/maps/api/geocode/json?latlng=";
+    $apiURL=$baseURL.$latlng."&key=AIzaSyA9rHJZEGWe6rX4nAHTGXFxCubmw-F0BBw&result_type=administrative_area_level_3";
+    $ch = curl_init(); 
+    curl_setopt($ch, CURLOPT_URL, $apiURL); 
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+    curl_setopt($ch,CURLOPT_HTTPHEADER,array (
+        "Accept: application/json"
+    ));
+    $curl_response = curl_exec($ch);  
+    $json = json_decode(utf8_encode($curl_response), true);
+    curl_close($ch);
+    return $json["results"][0]["address_components"][0]["short_name"];
+}
+
 return function (App $app) {
     $container = $app->getContainer();
     $container['upload_directory'] = __DIR__ . '/uploads';
@@ -125,7 +141,6 @@ return function (App $app) {
                 ":otp_code" => $code,
                 ":telpon_user"=>$body["number"]
             ];
-            //return $response->withJson($api_url);
             if($stmt->execute($data)){
                 return $response->withJson(["status_code" => "200"]);
             }else{
@@ -143,7 +158,7 @@ return function (App $app) {
             $stmt->execute([":id_user" => $id_user]);
             $result=$stmt->fetchColumn();
             if(password_verify($old_password,$result)){
-                $sql="UPDATE user set password_user=:new_password where id_user=:id_user";
+                $sql="UPDATE user SET password_user=:new_password WHERE id_user=:id_user";
                 $stmt=$this->db->prepare($sql);
                 $data=[
                     ":id_user"=>$id_user,
@@ -193,7 +208,7 @@ return function (App $app) {
                 }else{
                     return $response->withJson(["status" => "400", "message" =>"Password yang dimasukkan salah"]);
                 }
-            }else{
+            }else{  
                 return $response->withJson(["status" => "404", "message" => "Nomor belum terdaftar"]);  
             }
         });
@@ -334,27 +349,16 @@ return function (App $app) {
                 }
             }else{
                 $geohash=new Geohash();
-                $lat_user="";
-                $lng_user="";
-                $lokasiAktifUser=""; 
-                $geohashAlamat=null;          
-                if($new_user["lat_user"]=="default"){
-                    $lat_user=null;
-                }else{
+                $alamat_available=$new_user["alamat_available"];
+                $lat_user=null;
+                $lng_user=null;
+                $lokasi_aktif_user=null; 
+                $geohash_lokasi_aktif_user=null;        
+                if($alamat_available=="1"){
                     $lat_user=$new_user["lat_user"];
-                }
-                if($new_user["lng_user"]=="default"){
-                    $lng_user=null;
-                }else{
                     $lng_user=$new_user["lng_user"];
-                }
-                if($new_user["lokasi_aktif_user"]=="default"){
-                    $lokasiAktifUser=null;
-                }else{
-                    $lokasiAktifUser=$new_user["lokasi_aktif_user"];
-                }
-                if($lng_user!=null && $lat_user!=null){
-                    $geohashLokasiAktifUser=$geohash->encode(floatval($lat_user), floatval($lng_user), 8);
+                    $lokasi_aktif_user=$new_user["lokasi_aktif_user"];
+                    $geohash_lokasi_aktif_user=$geohash->encode(floatval($lat_user), floatval($lng_user), 8);
                 }
                 $sql = "INSERT INTO user (email_user,password_user, nama_user, telpon_user, status_user, lat_user,lng_user,lokasi_aktif_user,geohash_lokasi_aktif_user) VALUE (:email_user,:password_user, :nama_user, :telpon_user, :status_user, :lat_user,:lng_user,:lokasi_aktif_user,:geohash_lokasi_aktif_user)";
                 $stmt = $this->db->prepare($sql);
@@ -366,8 +370,8 @@ return function (App $app) {
                     ":status_user"=>99,
                     ":lat_user"=>$lat_user,
                     ":lng_user"=>$lng_user,
-                    ":lokasi_aktif_user"=>$lokasiAktifUser,
-                    ":geohash_lokasi_aktif_user"=>$geohashLokasiAktifUser
+                    ":lokasi_aktif_user"=>$lokasi_aktif_user,
+                    ":geohash_lokasi_aktif_user"=>$geohash_lokasi_aktif_user
                 ];
                 if($stmt->execute($data)){
                     return $response->withJson(["status" => "1","message"=>"Register akun berhasil!","insertID"=>$this->db->lastInsertId()]);
@@ -597,12 +601,6 @@ return function (App $app) {
                 }
             });
 
-            $app->get('/coba',function ($request,$response){
-                $hash=password_hash("asd", PASSWORD_BCRYPT);
-                return $response->withJson($hash);
-                //return "asd";
-            });
-
             $app->post('/insertHeaderChat', function ($request, $response) {
                 $body = $request->getParsedBody();
                 $sql = "INSERT INTO header_chat (id_user_1,id_user_2)VALUE(:id_user_1,:id_user_2)";
@@ -659,7 +657,8 @@ return function (App $app) {
                 $extension = pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION);
                 $filename=$id_laporan.".".$extension;
             }
-            $sql = "INSERT INTO laporan_lostfound_barang VALUES(:id_laporan,:judul_laporan,:jenis_laporan,:tanggal_laporan,:waktu_laporan,:alamat_laporan,:lat_laporan,:lng_laporan,:deskripsi_barang,:id_user_pelapor,:status_laporan,:geohash_alamat_laporan,:nama_file_gambar) ";
+            $kecamatan=getKecamatan($new_laporan["lat_laporan"],$new_laporan["lng_laporan"]);
+            $sql = "INSERT INTO laporan_lostfound_barang VALUES(:id_laporan,:judul_laporan,:jenis_laporan,:tanggal_laporan,:waktu_laporan,:alamat_laporan,:lat_laporan,:lng_laporan,:deskripsi_barang,:id_user_pelapor,:status_laporan,:geohash_alamat_laporan,:kecamatan,:nama_file_gambar) ";
             $stmt = $this->db->prepare($sql);
             $data = [
                 ":id_laporan" => $id_laporan,
@@ -674,6 +673,7 @@ return function (App $app) {
                 ":id_user_pelapor"=>$new_laporan["id_user_pelapor"],
                 ":status_laporan"=>0,
                 ":geohash_alamat_laporan"=> $geohash->encode(floatval($new_laporan["lat_laporan"]), floatval($new_laporan["lng_laporan"]), 8),
+                ":kecamatan"=>$kecamatan,
                 ":nama_file_gambar"=>$filename
             ];
             if($stmt->execute($data)){
@@ -708,7 +708,8 @@ return function (App $app) {
                 $extension = pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION);
                 $filename=$id_laporan.".".$extension;
             }      
-            $sql = "INSERT INTO laporan_kriminalitas VALUES(:id_laporan,:judul_laporan,:jenis_kejadian,:deskripsi_kejadian,:tanggal_laporan,:waktu_laporan,:alamat_laporan,:lat_laporan,:lng_laporan,:id_user_pelapor,:status_laporan,:geohash_alamat_laporan,:nama_file_gambar) ";
+            $kecamatan=getKecamatan($new_laporan["lat_laporan"],$new_laporan["lng_laporan"]);
+            $sql = "INSERT INTO laporan_kriminalitas VALUES(:id_laporan,:judul_laporan,:jenis_kejadian,:deskripsi_kejadian,:tanggal_laporan,:waktu_laporan,:alamat_laporan,:lat_laporan,:lng_laporan,:id_user_pelapor,:status_laporan,:geohash_alamat_laporan,:kecamatan,:nama_file_gambar) ";
             $stmt = $this->db->prepare($sql);
             $data = [
                 ":id_laporan" => $id_laporan,
@@ -723,6 +724,7 @@ return function (App $app) {
                 ":id_user_pelapor"=>$new_laporan["id_user_pelapor"],
                 ":status_laporan"=>0,
                 ":geohash_alamat_laporan"=> $geohash->encode(floatval($new_laporan["lat_laporan"]), floatval($new_laporan["lng_laporan"]), 8),
+                ":kecamatan"=>$kecamatan,
                 ":nama_file_gambar"=>$filename
             ];
             if($stmt->execute($data)){
@@ -740,15 +742,13 @@ return function (App $app) {
             $id_laporan=$args["id_laporan"];
             $sql = "SELECT kl.id_komentar,kl.id_laporan,kl.isi_komentar,kl.tanggal_komentar,kl.waktu_komentar,u.nama_user AS nama_user_komentar
                     FROM komentar_laporan kl, user u 
-                    WHERE kl.id_user_komentar=u.id_user 
+                    WHERE kl.id_user_komentar=u.id_user and kl.id_laporan=:id_laporan
                     ORDER BY kl.tanggal_komentar DESC, kl.waktu_komentar DESC";
             $stmt = $this->db->prepare($sql);
             $stmt->execute([":id_laporan" => $id_laporan]);
             $result = $stmt->fetchAll();
             return $response->withJson($result, 200);
         });
-
-        
 
         $app->get('/[{name}]', function (Request     $request, Response $response, array $args) use ($container) {
             // Sample log message
