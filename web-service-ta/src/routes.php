@@ -142,12 +142,12 @@ return function (App $app) {
                     ":geohash_lokasi_aktif_user"=>$geohash_lokasi_aktif_user
                 ];
                 if($stmt->execute($data)){
-                    return $response->withJson(["status"=>"1","mesage"=>"Berhasil memperbarui informasi"]);
+                    return $response->withJson(["status"=>"1","message"=>"Berhasil memperbarui informasi"]);
                 }else{
-                    return $response->withJson(["status"=>"99","mesage"=>"Gagal memperbarui informasi, silahkan coba beberapa saat lagi"]);
+                    return $response->withJson(["status"=>"99","message"=>"Gagal memperbarui informasi, silahkan coba beberapa saat lagi"]);
                 }
             }else{
-                return $response->withJson(["status"=>"400","mesage"=>"Password tidak sesuai, gagal memperbarui informasi"]);
+                return $response->withJson(["status"=>"400","message"=>"Password tidak sesuai, gagal memperbarui informasi"]);
             }
         });
 

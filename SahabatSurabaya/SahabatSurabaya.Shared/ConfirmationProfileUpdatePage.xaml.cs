@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
@@ -63,6 +64,8 @@ namespace SahabatSurabaya
             }
             string responseData = await httpObject.PutRequest("user/updateProfile", new FormUrlEncodedContent(formContent));
             JObject json = JObject.Parse(responseData);
+            var message = new MessageDialog(json["message"].ToString());
+            await message.ShowAsync();
         }
     }
 }
