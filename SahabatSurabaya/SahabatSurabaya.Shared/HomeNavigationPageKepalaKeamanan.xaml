@@ -1,0 +1,36 @@
+﻿<Page
+    x:Class="SahabatSurabaya.Shared.HomeNavigationPageKepalaKeamanan"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:SahabatSurabaya.Shared"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    RequestedTheme="Light"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <NavigationView FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" Background="White" x:Name="NavView" ItemInvoked="NavView_ItemInvoked" IsSettingsVisible="False" Loaded="NavView_Loaded" IsBackButtonVisible="Collapsed">
+        <NavigationView.MenuItems>
+            <NavigationViewItem x:Uid="HomeNavItem" Content="Home" Tag="home">
+                <NavigationViewItem.Icon>
+                    <FontIcon Glyph="&#xE10F;"/>
+                </NavigationViewItem.Icon>
+            </NavigationViewItem>
+            <NavigationViewItem x:Uid="laporanLostFoundPage" Content="Lihat Laporan Lost &amp; Found" Icon="PostUpdate"></NavigationViewItem>
+            <NavigationViewItem x:Uid="laporanLostFoundPage" Content="Lihat Laporan Kriminalitas" Icon="PostUpdate"></NavigationViewItem>
+            <NavigationViewItem x:Uid="HomeNavItem" Content="Sign Out" Tag="SignOut">
+                <NavigationViewItem.Icon>
+                    <BitmapIcon UriSource="/Assets/signout.png"/>
+                </NavigationViewItem.Icon>
+            </NavigationViewItem>
+        </NavigationView.MenuItems>
+
+        <Frame Background="White" x:Name="ContentFrame" Margin="0,40,0,0">
+            <Frame.ContentTransitions>
+                <TransitionCollection>
+                    <NavigationThemeTransition/>
+                </TransitionCollection>
+            </Frame.ContentTransitions>
+        </Frame>
+    </NavigationView>
+</Page>

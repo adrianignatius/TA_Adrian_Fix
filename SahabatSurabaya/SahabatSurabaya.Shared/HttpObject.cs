@@ -10,6 +10,7 @@ namespace SahabatSurabaya.Shared
     class HttpObject
     {
         public readonly static string API_URL = "http://adrian-webservice.ta-istts.com/";
+        public readonly static string URL_DEBUG = "http://localhost:8080/";
 
         public async Task<string> GetRequest(string url)
         {
@@ -73,6 +74,7 @@ namespace SahabatSurabaya.Shared
             using (var client = new HttpClient())
             {
                 client.BaseAddress = new Uri(API_URL);
+                //client.BaseAddress = new Uri(URL_DEBUG);
                 client.DefaultRequestHeaders.Accept.Clear();
                 HttpResponseMessage response = await client.PutAsync(url, form);
                 if (response.IsSuccessStatusCode)

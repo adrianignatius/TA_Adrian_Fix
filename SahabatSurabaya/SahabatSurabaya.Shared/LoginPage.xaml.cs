@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using SahabatSurabaya.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -69,6 +70,9 @@ namespace SahabatSurabaya
                             if (userLogin.status_user == 99)
                             {
                                 this.Frame.Navigate(typeof(VerifyOtpPage));
+                            }
+                            else if(userLogin.status_user==2){
+                                this.Frame.Navigate(typeof(HomeNavigationPageKepalaKeamanan));
                             }
                             else
                             {

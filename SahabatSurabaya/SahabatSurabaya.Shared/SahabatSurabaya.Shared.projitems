@@ -56,6 +56,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)HomeNavigationPage.xaml.cs">
       <DependentUpon>HomeNavigationPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)HomeNavigationPageKepalaKeamanan.xaml.cs">
+      <DependentUpon>HomeNavigationPageKepalaKeamanan.xaml</DependentUpon>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)HomePage.xaml.cs">
       <DependentUpon>HomePage.xaml</DependentUpon>
     </Compile>
@@ -151,6 +154,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="$(MSBuildThisFileDirectory)HomeNavigationPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)HomeNavigationPageKepalaKeamanan.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

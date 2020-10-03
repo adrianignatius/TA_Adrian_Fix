@@ -2,6 +2,7 @@
 using System.Linq;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
 
@@ -19,7 +20,6 @@ namespace SahabatSurabaya
 
         private void pageLoaded(object sender, RoutedEventArgs e)
         {
-
         }
 
         private void NavView_Loaded(object sender, RoutedEventArgs e)

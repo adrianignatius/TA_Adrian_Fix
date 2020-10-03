@@ -84,6 +84,7 @@ namespace SahabatSurabaya
             if (userLogin.lokasi_aktif_user == null)
             {
                 txtStatusLokasiAktif.Text = "(Belum diatur)";
+                txtLabelLokasi.Text = "Anda belum mengatur lokasi aktif";
                 btnEditLokasi.Content = "Atur";
                 btnEditLokasi.Tag = "new";
                 btnDisableLokasi.Visibility = Visibility.Collapsed;
@@ -115,15 +116,16 @@ namespace SahabatSurabaya
             if((string)(sender as Button).Tag == "new")
             {
                 txtAutocompleteAddress.Text = "";
+                isChosen = false;
             }
             else
             {
                 txtAutocompleteAddress.Text = lokasiUser;
+                isChosen = true;
             }
             btnEditLokasi.IsEnabled = false;
             btnDisableLokasi.IsEnabled = false;
             txtLabelLokasi.Visibility = Visibility.Collapsed;
-            isChosen = true;
             stackLokasi.Visibility = Visibility.Visible;
         }
 
@@ -147,12 +149,10 @@ namespace SahabatSurabaya
             lng = null;
         }
 
-        private async void editLokasi(object sender,RoutedEventArgs e)
+        private void editLokasi(object sender,RoutedEventArgs e)
         {
             lokasiUser = txtAutocompleteAddress.Text;
             txtLabelLokasi.Text = lokasiUser;
-            var message = new MessageDialog(lat + "-" + lng);
-            await message.ShowAsync();
             hideEditPanel(sender, e);
         }
 

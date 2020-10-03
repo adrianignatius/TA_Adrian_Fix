@@ -125,7 +125,7 @@ return function (App $app) {
                 $lng_user=null;
                 $lokasi_aktif_user=null;
                 $geohash_lokasi_aktif_user=null;
-                if($body["lokasi_aktif_user"]!=null){
+                if($body["lokasi_available"]=="1"){
                     $lat_user=$body["lat_user"];
                     $lng_user=$body["lng_user"];
                     $lokasi_aktif_user=$body["lokasi_aktif_user"];

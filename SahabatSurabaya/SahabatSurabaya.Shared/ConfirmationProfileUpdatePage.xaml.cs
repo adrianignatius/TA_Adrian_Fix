@@ -66,6 +66,14 @@ namespace SahabatSurabaya
             JObject json = JObject.Parse(responseData);
             var message = new MessageDialog(json["message"].ToString());
             await message.ShowAsync();
+            if (json["status"].ToString() == "1")
+            {
+                User user = session.getUserLogin();
+                user.lokasi_aktif_user = param.lokasi_aktif_user;
+                user.nama_user = param.nama_user;
+                session.setUserLogin(user);
+                this.Frame.GoBack();
+            }
         }
     }
 }
