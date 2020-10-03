@@ -7,8 +7,6 @@ using System.Net.Http;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Navigation;
-
 
 namespace SahabatSurabaya
 { 
@@ -17,7 +15,7 @@ namespace SahabatSurabaya
         Session session;
         User userLogin;
         DispatcherTimer dispatcherTimer;
-        string lat = "default", lng = "default";
+        string lat = null, lng = null, lokasiUser = null;
         ObservableCollection<AutocompleteAddress> listAutoCompleteAddress = new ObservableCollection<AutocompleteAddress>();
         int tick = 0;
         bool isChosen = false;
@@ -62,6 +60,7 @@ namespace SahabatSurabaya
                             listAutoCompleteAddress.Add(new AutocompleteAddress(description, placeId));
                         }
                         lvSuggestion.ItemsSource = listAutoCompleteAddress;
+                        lvSuggestion.IsItemClickEnabled = true;
                     }
                     else
                     {
@@ -70,36 +69,99 @@ namespace SahabatSurabaya
                             listAutoCompleteAddress.Clear();
                             listAutoCompleteAddress.Add(new AutocompleteAddress("Tidak ada hasil ditemukan", ""));
                             lvSuggestion.ItemsSource = listAutoCompleteAddress;
+                            lvSuggestion.IsItemClickEnabled = false;
                         }
                     }
                 }
             }
         }
 
-
         private void pageLoaded(object sender, RoutedEventArgs e)
         {
             userLogin = session.getUserLogin();
             txtNotelpUser.Text = userLogin.telpon_user;
             txtNamaUser.Text = userLogin.nama_user;
-            txtEmailUser.Text = userLogin.email_user;
             if (userLogin.lokasi_aktif_user == null)
             {
-                txtStatusLokasiAktif.Visibility = Visibility.Visible;     
+                txtStatusLokasiAktif.Text = "(Belum diatur)";
+                btnEditLokasi.Content = "Atur";
+                btnEditLokasi.Tag = "new";
+                btnDisableLokasi.Visibility = Visibility.Collapsed;
             }
             else
             {
-                txtStatusLokasiAktif.Visibility = Visibility.Collapsed;
-                txtAutocompleteAddress.Text = userLogin.lokasi_aktif_user;
+                lokasiUser = userLogin.lokasi_aktif_user;
+                txtStatusLokasiAktif.Text = "(Sudah diatur)";
+                btnEditLokasi.Content = "Ubah";
+                btnEditLokasi.Tag = "update";
+                txtLabelLokasi.Text = lokasiUser;
+                btnDisableLokasi.Visibility = Visibility.Visible;
             }
-            if (userLogin.status_user == 0)
+            if (userLogin.status_user == 1)
             {
+                DateTime dt = DateTime.Parse(userLogin.premium_available_until);
+                txtStatusAccount.Text = "Premium Account - Berlaku hingga "+ dt.ToString("dd MMMM yyyy", new System.Globalization.CultureInfo("id-ID"));
                 btnSubscribe.Visibility = Visibility.Collapsed;
             }
+            else
+            {
+                txtStatusAccount.Text = "Free Account";
+                btnSubscribe.Visibility = Visibility.Visible;
+            }
+        }
+
+        private void showEditPanel(object sender,RoutedEventArgs e)
+        {
+            if((string)(sender as Button).Tag == "new")
+            {
+                txtAutocompleteAddress.Text = "";
+            }
+            else
+            {
+                txtAutocompleteAddress.Text = lokasiUser;
+            }
+            btnEditLokasi.IsEnabled = false;
+            btnDisableLokasi.IsEnabled = false;
+            txtLabelLokasi.Visibility = Visibility.Collapsed;
+            isChosen = true;
+            stackLokasi.Visibility = Visibility.Visible;
+        }
+
+        private void hideEditPanel(object sender,RoutedEventArgs e)
+        {
+            txtAutocompleteAddress.Text = "";
+            txtLabelLokasi.Visibility = Visibility.Visible;
+            stackLokasi.Visibility = Visibility.Collapsed;
+            btnEditLokasi.IsEnabled = true;
+            btnDisableLokasi.IsEnabled = true;
+        }
+
+        private void disableLokasi(object sender,RoutedEventArgs e)
+        {
+            btnDisableLokasi.Visibility = Visibility.Collapsed;
+            btnEditLokasi.Content = "Atur";
+            txtStatusLokasiAktif.Text = "(Belum diatur)";
+            txtLabelLokasi.Text = "Anda belum mengatur lokasi aktif";
+            lokasiUser = null;
+            lat = null;
+            lng = null;
+        }
+
+        private async void editLokasi(object sender,RoutedEventArgs e)
+        {
+            lokasiUser = txtAutocompleteAddress.Text;
+            txtLabelLokasi.Text = lokasiUser;
+            var message = new MessageDialog(lat + "-" + lng);
+            await message.ShowAsync();
+            hideEditPanel(sender, e);
         }
 
         private void txtAutocompleteAddressTextChanged(object sender, TextChangedEventArgs e)
         {
+            if (txtAutocompleteAddress.Text.Length == 0)
+            {
+                listAutoCompleteAddress.Clear();
+            }
             if (!dispatcherTimer.IsEnabled)
             {
                 dispatcherTimer.Start();
@@ -125,6 +187,12 @@ namespace SahabatSurabaya
                 }
             }
             listAutoCompleteAddress.Clear();
+        }
+
+        private void goToConfirmationPage(object sender,RoutedEventArgs e)
+        {
+            UpdateProfileParams param = new UpdateProfileParams(userLogin.id_user,txtNamaUser.Text, lokasiUser, lat, lng);
+            this.Frame.Navigate(typeof(ConfirmationProfileUpdatePage),param);
         }
 
         private void goToSubscriptionPage(object sender, RoutedEventArgs e)

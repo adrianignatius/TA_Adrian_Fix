@@ -34,6 +34,7 @@ namespace SahabatSurabaya
             userLogin = session.getUserLogin();
             param = session.getChatPageParams();
             txtNamaUserPenerima.Text = param.nama_user_penerima;
+            loadChat();
             connection = new HubConnectionBuilder()
                  .WithUrl("https://serversignalr20200907155700.azurewebsites.net/chathub")
                  .WithAutomaticReconnect()
@@ -52,9 +53,7 @@ namespace SahabatSurabaya
                 listChat.Add(new Chat(id_chat,id_user_pengirim,id_user_penerima,isi_chat,waktu_chat,isSender));
                 lvChat.ScrollIntoView(listChat[listChat.Count - 1]);
             });
-
             await connection.StartAsync();
-            loadChat();
         }
         
         private async void loadChat()

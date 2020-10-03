@@ -110,6 +110,46 @@ return function (App $app) {
             $result = $stmt->fetchAll();
             return $response->withJson(["status" => "success", "users" => $result], 200);
         });
+        
+        $app->put('/updateProfile',function ($request, $response){
+            $body=$request->getParsedBody();
+            $id_user=$body["id_user"];
+            $password_user=$body["password_user"];
+            $sql="SELECT password_user FROM user WHERE id_user=:id_user";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([":id_user" => $id_user]);
+            $result=$stmt->fetchColumn();
+            if(password_verify($password_user,$result)){
+                $geohash=new Geohash();
+                $lat_user=null;
+                $lng_user=null;
+                $lokasi_aktif_user=null;
+                $geohash_lokasi_aktif_user=null;
+                if($body["lokasi_aktif_user"]!=null){
+                    $lat_user=$body["lat_user"];
+                    $lng_user=$body["lng_user"];
+                    $lokasi_aktif_user=$body["lokasi_aktif_user"];
+                    $geohash_lokasi_aktif_user=$geohash->encode(floatval($lat_user), floatval($lng_user), 8);
+                }
+                $sql="UPDATE user SET nama_user=:nama_user, lat_user=:lat_user, lng_user=:lng_user, lokasi_aktif_user=:lokasi_aktif_user, geohash_lokasi_aktif_user=:geohash_lokasi_aktif_user WHERE id_user=:id_user";
+                $stmt=$this->db->prepare($sql);
+                $data=[
+                    ":id_user"=>$id_user,
+                    ":nama_user"=>$body["nama_user"],
+                    ":lat_user"=>$lat_user,
+                    ":lng_user"=>$lng_user,
+                    ":lokasi_aktif_user"=>$lokasi_aktif_user,
+                    ":geohash_lokasi_aktif_user"=>$geohash_lokasi_aktif_user
+                ];
+                if($stmt->execute($data)){
+                    return $response->withJson(["status"=>"1","mesage"=>"Berhasil memperbarui informasi"]);
+                }else{
+                    return $response->withJson(["status"=>"99","mesage"=>"Gagal memperbarui informasi, silahkan coba beberapa saat lagi"]);
+                }
+            }else{
+                return $response->withJson(["status"=>"400","mesage"=>"Password tidak sesuai, gagal memperbarui informasi"]);
+            }
+        });
 
         $app->post('/sendOTP', function($request,$response){
             $body = $request->getParsedBody();

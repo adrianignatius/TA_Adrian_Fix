@@ -33,6 +33,9 @@
       <DependentUpon>ChatPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)ChatPageParams.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ConfirmationProfileUpdatePage.xaml.cs">
+      <DependentUpon>ConfirmationProfileUpdatePage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)ConfirmReportPage.xaml.cs">
       <DependentUpon>ConfirmReportPage.xaml</DependentUpon>
     </Compile>
@@ -107,6 +110,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)SubscriptionPage.xaml.cs">
       <DependentUpon>SubscriptionPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)UpdateProfileParams.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UploadedImage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)User.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)VerifyOtpPage.xaml.cs">
@@ -123,6 +127,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="$(MSBuildThisFileDirectory)ChatPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)ConfirmationProfileUpdatePage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -31,7 +31,6 @@ namespace SahabatSurabaya
         int tick = 0;
         bool isChosen = false;
         string lat, lng = "";
-        int imageCount = 0;
         Session session;
         UploadedImage imageLaporan;
         List<SettingKategori> listSetingKategoriKriminalitas;
@@ -46,7 +45,6 @@ namespace SahabatSurabaya
             dispatcherTimer = new DispatcherTimer();
             dispatcherTimer.Interval = new TimeSpan(0, 0, 0, 0, 200);
             dispatcherTimer.Tick += DispatcherTimer_Tick;
-
         }
 
         private void DispatcherTimer_Tick(object sender, object e)
@@ -102,6 +100,7 @@ namespace SahabatSurabaya
                             listAutoCompleteAddress.Add(new AutocompleteAddress(description, placeId));
                         }
                         lvSuggestion.ItemsSource = listAutoCompleteAddress;
+                        lvSuggestion.IsItemClickEnabled = true;
                     }
                     else
                     {
@@ -110,6 +109,7 @@ namespace SahabatSurabaya
                             listAutoCompleteAddress.Clear();
                             listAutoCompleteAddress.Add(new AutocompleteAddress("Tidak ada hasil ditemukan", ""));
                             lvSuggestion.ItemsSource = listAutoCompleteAddress;
+                            lvSuggestion.IsItemClickEnabled = false;
                         }
                     }
                 }
@@ -130,6 +130,10 @@ namespace SahabatSurabaya
 
         private void txtAutocompleteAddressTextChanged(object sender, TextChangedEventArgs e)
         {
+            if (txtAutocompleteAddress.Text.Length == 0)
+            {
+                listAutoCompleteAddress.Clear();
+            }
             if (!dispatcherTimer.IsEnabled)
             {
                 dispatcherTimer.Start();

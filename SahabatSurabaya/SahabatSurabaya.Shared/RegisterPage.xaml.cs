@@ -89,6 +89,7 @@ namespace SahabatSurabaya
                             listAutoCompleteAddress.Add(new AutocompleteAddress(description, placeId));
                         }
                         lvSuggestion.ItemsSource = listAutoCompleteAddress;
+                        lvSuggestion.IsItemClickEnabled = true;
                     }
                     else
                     {
@@ -97,6 +98,7 @@ namespace SahabatSurabaya
                             listAutoCompleteAddress.Clear();
                             listAutoCompleteAddress.Add(new AutocompleteAddress("Tidak ada hasil ditemukan", ""));
                             lvSuggestion.ItemsSource = listAutoCompleteAddress;
+                            lvSuggestion.IsItemClickEnabled = false;
                         }
                     }
                 }
@@ -105,6 +107,10 @@ namespace SahabatSurabaya
 
         private void txtAutocompleteAddressTextChanged(object sender, TextChangedEventArgs e)
         {
+            if (txtAutocompleteAddress.Text.Length == 0)
+            {
+                listAutoCompleteAddress.Clear();
+            }
             if (!dispatcherTimer.IsEnabled)
             {
                 dispatcherTimer.Start();
@@ -130,8 +136,8 @@ namespace SahabatSurabaya
                 {
                     using (var client = new HttpClient())
                     {
-                        client.BaseAddress = new Uri("http://localhost:8080/");
-                        //client.BaseAddress = new Uri(session.getApiURL());
+                        //client.BaseAddress = new Uri("http://localhost:8080/");
+                        client.BaseAddress = new Uri(session.getApiURL());
                         client.DefaultRequestHeaders.Accept.Clear();
                         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                         MultipartFormDataContent form = new MultipartFormDataContent();
