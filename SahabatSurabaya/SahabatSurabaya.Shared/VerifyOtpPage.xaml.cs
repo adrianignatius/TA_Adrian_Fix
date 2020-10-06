@@ -65,8 +65,8 @@ namespace SahabatSurabaya
         {
             using (var client = new HttpClient())
             {
-               client.BaseAddress = new Uri(session.getApiURL());
-                //client.BaseAddress = new Uri("http://localhost:8080/");
+               //client.BaseAddress = new Uri(session.getApiURL());
+               client.BaseAddress = new Uri("http://localhost:8080/");
                client.DefaultRequestHeaders.Accept.Clear();
                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                MultipartFormDataContent form = new MultipartFormDataContent();

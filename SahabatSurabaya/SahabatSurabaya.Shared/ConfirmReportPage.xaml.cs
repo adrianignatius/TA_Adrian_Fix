@@ -108,6 +108,7 @@ namespace SahabatSurabaya
             }
             else
             {
+                form.Add(new StringContent(param.display_combobox.ToString()), "jenis_barang");
                 form.Add(new StringContent(param.jenis_laporan.ToString()), "jenis_laporan");
                 form.Add(new StringContent(param.deskripsi_laporan), "deskripsi_barang");
                 form.Add(new StreamContent(new MemoryStream(param.image_laporan.image)), "image", "image.jpg");

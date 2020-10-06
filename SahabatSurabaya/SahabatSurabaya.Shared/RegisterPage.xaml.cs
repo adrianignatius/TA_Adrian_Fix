@@ -19,7 +19,7 @@ namespace SahabatSurabaya
         DispatcherTimer dispatcherTimer;
         int tick = 0;
         bool isChosen = false;
-        string lat = null, lng = null, postal_code = null;
+        string lat = null, lng = null;
         Session session = new Session();
         ObservableCollection<AutocompleteAddress> listAutoCompleteAddress = new ObservableCollection<AutocompleteAddress>();
         public RegisterPage()
@@ -136,14 +136,13 @@ namespace SahabatSurabaya
                 {
                     using (var client = new HttpClient())
                     {
-                        //client.BaseAddress = new Uri("http://localhost:8080/");
-                        client.BaseAddress = new Uri(session.getApiURL());
+                        client.BaseAddress = new Uri("http://localhost:8080/");
+                        //client.BaseAddress = new Uri(session.getApiURL());
                         client.DefaultRequestHeaders.Accept.Clear();
                         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                         MultipartFormDataContent form = new MultipartFormDataContent();
                         form.Add(new StringContent(txtFullName.Text), "nama_user");
                         form.Add(new StringContent(txtPhone.Text), "telpon_user");
-                        form.Add(new StringContent(txtEmail.Text), "email_user");
                         form.Add(new StringContent(txtPassword.Password), "password_user");
                         if (txtAutocompleteAddress.Text.Length != 0)
                         {

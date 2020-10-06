@@ -101,16 +101,115 @@ return function (App $app) {
         $result = $stmt->fetchAll();
         return $response->withJson($result, 200);
     });
-
-    $app->group('/user', function () use ($app) {
+    
+    $app->group('/admin', function() use($app){
         $app->get('/getAllUser', function ($request, $response) {
-            $sql = "SELECT * FROM user";
+            $sql = "SELECT id_user,telpon_user,nama_user,status_user,status_aktif_user FROM user where status_user!=2";
             $stmt = $this->db->prepare($sql);
             $stmt->execute();
             $result = $stmt->fetchAll();
-            return $response->withJson(["status" => "success", "users" => $result], 200);
+            return $response->withJson($result, 200);
         });
         
+        $app->get('/getKecamatan',function ($request,$response){
+            $sql="SELECT * FROM kecamatan";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute();
+            $result = $stmt->fetchAll();
+            return $response->withJson($result, 200);
+        });
+        
+        $app->get('/getLaporanLostFoundVerify',function ($request,$response){
+            $sql="SELECT id_laporan,judul_laporan,jenis_laporan,tanggal_laporan,waktu_laporan,alamat_laporan,kecamatan FROM laporan_lostfound_barang";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute();
+            $result = $stmt->fetchAll();
+            return $response->withJson($result, 200);
+        });
+
+        $app->get('/getLaporanKriminalitasVerify',function ($request,$response){
+            $sql="SELECT id_laporan,judul_laporan,jenis_laporan,tanggal_laporan,waktu_laporan,alamat_laporan,kecamatan FROM laporan_lostfound_barang";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute();
+            $result = $stmt->fetchAll();
+            return $response->withJson($result, 200);
+        });
+        
+        $app->get('/getKepalaKeamanan',function ($request,$response){
+            $sql="SELECT * FROM user where status_user=2";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute();
+            $result = $stmt->fetchAll();
+            return $response->withJson($result, 200);
+        });
+        
+        $app->put('/activateUser/{id_user}',function ($request,$response,$args){
+            $id_user=$args["id_user"];
+            $sql="UPDATE user SET status_aktif_user=1 WHERE id_user=:id_user";
+            $stmt = $this->db->prepare($sql);
+            if($stmt->execute([":id_user" => $id_user])){
+                return $response->withJson(["status"=>"1","message"=>"Berhasil mengaktifkan user"]);
+            }else{
+                return $response->withJson(["status"=>"400","message"=>"Gagal mengaktifkan user"]);
+            }
+        });
+
+        $app->put('/banUser/{id_user}',function ($request,$response,$args){
+            $id_user=$args["id_user"];
+            $sql="UPDATE user SET status_aktif_user=0 WHERE id_user=:id_user";
+            $stmt = $this->db->prepare($sql);
+            if($stmt->execute([":id_user" => $id_user])){
+                return $response->withJson(["status"=>"1","message"=>"Berhasil menonaktifkan user"]);
+            }else{
+                return $response->withJson(["status"=>"400","message"=>"Gagal menonaktifkan user"]);
+            }
+        });
+
+        $app->put('/updateKepalaKeamanan/{id_user}',function ($request,$response,$args){
+            $id_user=$args["id_user"];
+            $body=$request->getParsedBody();
+            $sql="UPDATE user SET nama_user=:nama_user,kecamatan_user=:kecamatan_user WHERE id_user=:id_user";
+            $stmt = $this->db->prepare($sql);
+            $data = [
+                ":id_user" =>$id_user,
+                ":nama_user" => $body["nama_user"],
+                ":kecamatan_user"=>$body["kecamatan_user"]
+            ];
+            if($stmt->execute($data)){
+                return $response->withJson(["status"=>"1","message"=>"Berhasil mengubah data kepala keamanan"]);
+            }else{
+                return $response->withJson(["status"=>"400","message"=>"Gagal mengubah data kepala keamanan"]);
+            }
+        });
+
+        $app->post('/addKepalaKeamanan',function ($request,$response){
+            $body=$request->getParsedBody();
+            $sql="SELECT COUNT(*) from user where telpon_user=:telpon_user";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([":telpon_user" => $body["telpon_user"]]);
+            $result=$stmt->fetchColumn();
+            if($result==0){
+                $sql = "INSERT INTO user (password_user, nama_user, telpon_user, status_user,kecamatan_user) VALUE (:password_user, :nama_user, :telpon_user, :status_user,:kecamatan_user)";
+                $stmt = $this->db->prepare($sql);
+                $data = [
+                    ":password_user"=>password_hash($body["password_user"], PASSWORD_BCRYPT),
+                    ":nama_user" => $body["nama_user"],
+                    ":telpon_user" => $body["telpon_user"],
+                    ":status_user"=>2,
+                    ":kecamatan_user"=>$body["kecamatan_user"]
+                ];
+                if($stmt->execute($data)){
+                    return $response->withJson(["status"=>"1","message"=>"Tambah kepala keamanan berhasil"]);
+                }else{
+                    return $response->withJson(["status"=>"99","message"=>"Tambah kepala keamanan gagal, coba beberapa saat lagi"]);
+                }     
+            }else{
+                return $response->withJson(["status"=>"400","message"=>"Nomor handphone sudah terdaftar"]);
+            }
+        });
+    });
+
+    $app->group('/user', function () use ($app) {
         $app->put('/updateProfile',function ($request, $response){
             $body=$request->getParsedBody();
             $id_user=$body["id_user"];
@@ -224,7 +323,7 @@ return function (App $app) {
             $result = $stmt->fetchAll();
             if($result[0]["otp_code"]==$body["otp_code"]){
                 if($date<new DateTime($result[0]["otp_code_available_until"])){
-                    $sql="UPDATE user set status_user=0,otp_code=null,otp_code_available_until=null where telpon_user='".$body["number"]."'";
+                    $sql="UPDATE user set status_aktif_user=1,otp_code=null,otp_code_available_until=null where telpon_user='".$body["number"]."'";
                     $stmt = $this->db->prepare($sql);
                     $stmt->execute();
                     return $response->withJson(["status"=>"1","message"=>"Verify kode OTP berhasil"]);
@@ -238,12 +337,12 @@ return function (App $app) {
 
         $app->post('/checkLogin', function ($request, $response) {
             $body = $request->getParsedBody();
-            $sql = "SELECT * FROM user where telpon_user='".$body["email"]."'";
+            $sql = "SELECT * FROM user where telpon_user='".$body["telpon_user"]."'";
             $stmt = $this->db->prepare($sql);
             $stmt->execute();
             $result = $stmt->fetch();
             if($result!=null){
-                if(password_verify($body["password"],$result["password_user"])){
+                if(password_verify($body["password_user"],$result["password_user"])){
                     return $response->withJson(["status" => "200", "data" => $result]);
                 }else{
                     return $response->withJson(["status" => "400", "message" =>"Password yang dimasukkan salah"]);
@@ -255,7 +354,7 @@ return function (App $app) {
 
         $app->get('/getUser/{id}', function ($request, $response,$args) {
             $id=$args["id"];
-            $sql = "SELECT id_user,email_user,nama_user,telpon_user,status_user,premium_available_until,lokasi_aktif_user FROM user where id_user=:id";
+            $sql = "SELECT id_user,nama_user,telpon_user,status_user,premium_available_until,lokasi_aktif_user,kecamatan_user,status_aktif_user FROM user where id_user=:id";
             $stmt = $this->db->prepare($sql);
             $stmt->execute([":id" => $id]);
             $result = $stmt->fetch();
@@ -373,20 +472,12 @@ return function (App $app) {
 
        $app->post('/registerUser', function ($request, $response) {
             $new_user = $request->getParsedBody();
-            $sql="SELECT COUNT(*) from user where email_user='".$new_user["email_user"]."'";
-            $stmt = $this->db->prepare($sql);
-            $stmt->execute();
-            $email_kembar = $stmt->fetchColumn();
             $sql="SELECT COUNT(*) from user where telpon_user='".$new_user["telpon_user"]."'";
             $stmt = $this->db->prepare($sql);
             $stmt->execute();
             $telpon_kembar = $stmt->fetchColumn();
-            if($email_kembar==1 || $telpon_kembar==1){
-                if($email_kembar==1){
-                    return $response->withJson(["status"=>"2","message"=>"Email yang dimasukkan telah terpakai"]);
-                }else if($telpon_kembar==1){
-                    return $response->withJson(["status"=>"3","message"=>"No. Handphone yang dimasukkan telah terpakai"]);
-                }
+            if($telpon_kembar==1){
+                return $response->withJson(["status"=>"400","message"=>"No. Handphone yang dimasukkan telah terpakai"]);
             }else{
                 $geohash=new Geohash();
                 $alamat_available=$new_user["alamat_available"];
@@ -400,18 +491,18 @@ return function (App $app) {
                     $lokasi_aktif_user=$new_user["lokasi_aktif_user"];
                     $geohash_lokasi_aktif_user=$geohash->encode(floatval($lat_user), floatval($lng_user), 8);
                 }
-                $sql = "INSERT INTO user (email_user,password_user, nama_user, telpon_user, status_user, lat_user,lng_user,lokasi_aktif_user,geohash_lokasi_aktif_user) VALUE (:email_user,:password_user, :nama_user, :telpon_user, :status_user, :lat_user,:lng_user,:lokasi_aktif_user,:geohash_lokasi_aktif_user)";
+                $sql = "INSERT INTO user (telpon_user, password_user, nama_user, status_user, lat_user,lng_user,lokasi_aktif_user,geohash_lokasi_aktif_user,status_aktif_user) VALUE (:telpon_user, :password_user, :nama_user, :status_user, :lat_user,:lng_user,:lokasi_aktif_user,:geohash_lokasi_aktif_user,:status_aktif_user)";
                 $stmt = $this->db->prepare($sql);
                 $data = [
-                    ":email_user" => $new_user["email_user"],
                     ":password_user"=>password_hash($new_user["password_user"], PASSWORD_BCRYPT),
                     ":nama_user" => $new_user["nama_user"],
                     ":telpon_user" => $new_user["telpon_user"],
-                    ":status_user"=>99,
+                    ":status_user"=>0,
                     ":lat_user"=>$lat_user,
                     ":lng_user"=>$lng_user,
                     ":lokasi_aktif_user"=>$lokasi_aktif_user,
-                    ":geohash_lokasi_aktif_user"=>$geohash_lokasi_aktif_user
+                    ":geohash_lokasi_aktif_user"=>$geohash_lokasi_aktif_user,
+                    ":status_aktif_user"=>99
                 ];
                 if($stmt->execute($data)){
                     return $response->withJson(["status" => "1","message"=>"Register akun berhasil!","insertID"=>$this->db->lastInsertId()]);
@@ -698,12 +789,13 @@ return function (App $app) {
                 $filename=$id_laporan.".".$extension;
             }
             $kecamatan=getKecamatan($new_laporan["lat_laporan"],$new_laporan["lng_laporan"]);
-            $sql = "INSERT INTO laporan_lostfound_barang VALUES(:id_laporan,:judul_laporan,:jenis_laporan,:tanggal_laporan,:waktu_laporan,:alamat_laporan,:lat_laporan,:lng_laporan,:deskripsi_barang,:id_user_pelapor,:status_laporan,:geohash_alamat_laporan,:kecamatan,:nama_file_gambar) ";
+            $sql = "INSERT INTO laporan_lostfound_barang VALUES(:id_laporan,:judul_laporan,:jenis_laporan,:jenis_barang,:tanggal_laporan,:waktu_laporan,:alamat_laporan,:lat_laporan,:lng_laporan,:deskripsi_barang,:id_user_pelapor,:status_laporan,:geohash_alamat_laporan,:kecamatan,:nama_file_gambar) ";
             $stmt = $this->db->prepare($sql);
             $data = [
                 ":id_laporan" => $id_laporan,
                 ":judul_laporan"=>$new_laporan["judul_laporan"],
                 ":jenis_laporan" => $new_laporan["jenis_laporan"],
+                ":jenis_barang"=> $new_laporan["jenis_barang"],
                 ":alamat_laporan"=>$new_laporan["alamat_laporan"],
                 ":tanggal_laporan"=>$formatDate,
                 ":waktu_laporan"=>$new_laporan["waktu_laporan"],

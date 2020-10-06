@@ -21,10 +21,12 @@ namespace SahabatSurabaya
     public sealed partial class LoginPage : Page
     {
         Session session;
+        HttpObject httpObject;
         public LoginPage()
         {
             this.InitializeComponent();
-            session = new Session();          
+            session = new Session();
+            httpObject = new HttpObject();
         }
 
         public void goToRegister(object sender, RoutedEventArgs e)
@@ -47,49 +49,90 @@ namespace SahabatSurabaya
             }
             else
             {
-                using (var client = new HttpClient())
+                var content = new FormUrlEncodedContent(new[]{
+                    new KeyValuePair<string, string>("telpon_user", txtNoHandphone.Text),
+                    new KeyValuePair<string, string>("password_user", txtPassword.Password),
+                });
+                string responseData = await httpObject.PostRequestWithUrlEncoded("user/checkLogin", content);
+                JObject json = JObject.Parse(responseData);
+                string statusCode = json["status"].ToString();
+                if (statusCode == "200")
                 {
-                    //client.BaseAddress = new Uri("http://localhost:8080/");
-                    client.BaseAddress = new Uri(session.getApiURL());
-                    client.DefaultRequestHeaders.Accept.Clear();
-                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                    MultipartFormDataContent form = new MultipartFormDataContent();
-                    form.Add(new StringContent(txtNoHandphone.Text), "email");
-                    form.Add(new StringContent(txtPassword.Password), "password");
-                    HttpResponseMessage response = await client.PostAsync("user/checkLogin", form);
-                    if (response.IsSuccessStatusCode)
+                    string data = json["data"].ToString();
+                    User userLogin = JsonConvert.DeserializeObject<User>(data);
+                    session.setUserLogin(userLogin);
+                    if (userLogin.status_aktif_user == 0)
                     {
-                        var responseData = response.Content.ReadAsStringAsync().Result;
-                        JObject json = JObject.Parse(responseData);
-                        string statusCode = json["status"].ToString();
-                        if (statusCode == "200")
-                        {
-                            string data = json["data"].ToString();
-                            User userLogin= JsonConvert.DeserializeObject<User>(data);
-                            session.setUserLogin(userLogin);
-                            if (userLogin.status_user == 99)
-                            {
-                                this.Frame.Navigate(typeof(VerifyOtpPage));
-                            }
-                            else if(userLogin.status_user==2){
-                                this.Frame.Navigate(typeof(HomeNavigationPageKepalaKeamanan));
-                            }
-                            else
-                            {
-                                this.Frame.Navigate(typeof(HomeNavigationPage));
-                            }                          
+                        var message = new MessageDialog("Akun anda telah diban oleh admin, silahkan menghubungi admin untuk mengaktifkan kembali akun anda");
+                        await message.ShowAsync();
+                    }else if (userLogin.status_aktif_user == 99)
+                    {
+                        this.Frame.Navigate(typeof(VerifyOtpPage));
+                    }
+                    else
+                    {
 #if __ANDROID__
-                              OneSignal.Current.SendTags(new Dictionary<string, string>() { {"no_handphone", userLogin.telpon_user}, {"tipe_user", userLogin.status_user.ToString()} });               
+                        OneSignal.Current.SendTags(new Dictionary<string, string>() { {"no_handphone", userLogin.telpon_user}, {"tipe_user", userLogin.status_user.ToString()} });               
 #endif
+                        if (userLogin.status_user == 2)
+                        {
+                            this.Frame.Navigate(typeof(HomeNavigationPageKepalaKeamanan));
                         }
                         else
                         {
-                            var dialog = new MessageDialog(json["message"].ToString());
-                            await dialog.ShowAsync();
+                            this.Frame.Navigate(typeof(HomeNavigationPage));
                         }
                     }
-
                 }
+                else
+                {
+                    var dialog = new MessageDialog(json["message"].ToString());
+                    await dialog.ShowAsync();
+                }
+
+                //                using (var client = new HttpClient())
+                //                {
+                //                    client.BaseAddress = new Uri("http://localhost:8080/");
+                //                    //client.BaseAddress = new Uri(session.getApiURL());
+                //                    client.DefaultRequestHeaders.Accept.Clear();
+                //                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                //                    MultipartFormDataContent form = new MultipartFormDataContent();
+                //                    form.Add(new StringContent(txtNoHandphone.Text), "telpon_user");
+                //                    form.Add(new StringContent(txtPassword.Password), "password_user");
+                //                    HttpResponseMessage response = await client.PostAsync("user/checkLogin", form);
+                //                    if (response.IsSuccessStatusCode)
+                //                    {
+                //                        var responseData = response.Content.ReadAsStringAsync().Result;
+                //                        JObject json = JObject.Parse(responseData);
+                //                        string statusCode = json["status"].ToString();
+                //                        if (statusCode == "200")
+                //                        {
+                //                            string data = json["data"].ToString();
+                //                            User userLogin= JsonConvert.DeserializeObject<User>(data);
+                //                            session.setUserLogin(userLogin);
+                //                            if (userLogin.status_user == 99)
+                //                            {
+                //                                this.Frame.Navigate(typeof(VerifyOtpPage));
+                //                            }
+                //                            else if(userLogin.status_user==2){
+                //                                this.Frame.Navigate(typeof(HomeNavigationPageKepalaKeamanan));
+                //                            }
+                //                            else
+                //                            {
+                //                                this.Frame.Navigate(typeof(HomeNavigationPage));
+                //                            }                          
+                //#if __ANDROID__
+                //                              OneSignal.Current.SendTags(new Dictionary<string, string>() { {"no_handphone", userLogin.telpon_user}, {"tipe_user", userLogin.status_user.ToString()} });               
+                //#endif
+                //                        }
+                //                        else
+                //                        {
+                //                            var dialog = new MessageDialog(json["message"].ToString());
+                //                            await dialog.ShowAsync();
+                //                        }
+                //                    }
+
+                //                }
             }
         }
     }

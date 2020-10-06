@@ -43,9 +43,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)ContactPage.xaml.cs">
       <DependentUpon>ContactPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)CrimeReportDetailPage.xaml.cs">
-      <DependentUpon>CrimeReportDetailPage.xaml</DependentUpon>
-    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)CrimeReportParams.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DatetimeConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DisplayHeaderChat.cs" />
@@ -73,9 +70,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)ListViewCardConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LoginPage.xaml.cs">
       <DependentUpon>LoginPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)LostFoundReportDetailPage.xaml.cs">
-      <DependentUpon>LostFoundReportDetailPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)LostFoundReportParams.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MakeCrimeReportPage.xaml.cs">
@@ -145,10 +139,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="$(MSBuildThisFileDirectory)CrimeReportDetailPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="$(MSBuildThisFileDirectory)HistoryPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -166,10 +156,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="$(MSBuildThisFileDirectory)LoginPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="$(MSBuildThisFileDirectory)LostFoundReportDetailPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
