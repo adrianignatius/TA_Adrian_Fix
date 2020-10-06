@@ -41,7 +41,6 @@ namespace SahabatSurabaya
 
         public async void login(object sender, RoutedEventArgs e)
         {
-
             if (txtNoHandphone.Text.Length == 0 || txtPassword.Password.Length == 0)
             {
                 var dialog = new MessageDialog("Silahkan isi Email dan Password terlebih dahulu!");
@@ -49,6 +48,7 @@ namespace SahabatSurabaya
             }
             else
             {
+                progressRing.IsActive = true;
                 var content = new FormUrlEncodedContent(new[]{
                     new KeyValuePair<string, string>("telpon_user", txtNoHandphone.Text),
                     new KeyValuePair<string, string>("password_user", txtPassword.Password),

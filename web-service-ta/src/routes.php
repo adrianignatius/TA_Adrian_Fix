@@ -50,7 +50,7 @@ return function (App $app) {
     // });
 
     $app->get('/getHeadlineLaporanLostFound', function ($request, $response) {
-        $sql = "SELECT lf.id_laporan,lf.judul_laporan,lf.jenis_laporan,lf.tanggal_laporan,lf.waktu_laporan,lf.alamat_laporan,lf.lat_laporan,lf.lng_laporan,lf.deskripsi_barang,lf.deskripsi_barang,lf.id_user_pelapor,u.nama_user AS nama_user_pelapor,count(kl.id_laporan) AS jumlah_komentar,lf.nama_file_gambar AS thumbnail_gambar FROM laporan_lostfound_barang lf 
+        $sql = "SELECT lf.id_laporan,lf.judul_laporan,lf.jenis_laporan,lf.tanggal_laporan,lf.waktu_laporan,lf.alamat_laporan,lf.lat_laporan,lf.lng_laporan,lf.deskripsi_barang,lf.deskripsi_barang,lf.id_user_pelapor,u.nama_user AS nama_user_pelapor,count(kl.id_laporan) AS jumlah_komentar,lf.thumbnail_gambar AS thumbnail_gambar FROM laporan_lostfound_barang lf 
                 JOIN user u ON lf.id_user_pelapor=u.id_user 
                 LEFT JOIN komentar_laporan kl ON lf.id_laporan=kl.id_laporan
                 GROUP BY lf.id_laporan 
@@ -75,7 +75,7 @@ return function (App $app) {
     // });
 
     $app->get('/getHeadlineLaporanKriminalitas', function ($request, $response) {
-        $sql = "SELECT lk.id_laporan,lk.judul_laporan,lk.jenis_kejadian,lk.deskripsi_kejadian,lk.tanggal_laporan,lk.waktu_laporan,lk.alamat_laporan,lk.lat_laporan,lk.lng_laporan,lk.id_user_pelapor,u.nama_user AS nama_user_pelapor, COUNT(kl.id_laporan) AS jumlah_komentar,lk.nama_file_gambar AS thumbnail_gambar FROM user u 
+        $sql = "SELECT lk.id_laporan,lk.judul_laporan,lk.jenis_kejadian,lk.deskripsi_kejadian,lk.tanggal_laporan,lk.waktu_laporan,lk.alamat_laporan,lk.lat_laporan,lk.lng_laporan,lk.id_user_pelapor,u.nama_user AS nama_user_pelapor, COUNT(kl.id_laporan) AS jumlah_komentar,lk.thumbnail_gambar AS thumbnail_gambar FROM user u 
                 JOIN laporan_kriminalitas lk ON lk.id_user_pelapor=u.id_user 
                 LEFT JOIN komentar_laporan kl ON lk.id_laporan=kl.id_laporan 
                 GROUP BY lk.id_laporan ORDER BY lk.tanggal_laporan DESC, lk.waktu_laporan DESC LIMIT 5";
@@ -789,7 +789,7 @@ return function (App $app) {
                 $filename=$id_laporan.".".$extension;
             }
             $kecamatan=getKecamatan($new_laporan["lat_laporan"],$new_laporan["lng_laporan"]);
-            $sql = "INSERT INTO laporan_lostfound_barang VALUES(:id_laporan,:judul_laporan,:jenis_laporan,:jenis_barang,:tanggal_laporan,:waktu_laporan,:alamat_laporan,:lat_laporan,:lng_laporan,:deskripsi_barang,:id_user_pelapor,:status_laporan,:geohash_alamat_laporan,:kecamatan,:nama_file_gambar) ";
+            $sql = "INSERT INTO laporan_lostfound_barang VALUES(:id_laporan,:judul_laporan,:jenis_laporan,:jenis_barang,:tanggal_laporan,:waktu_laporan,:alamat_laporan,:lat_laporan,:lng_laporan,:deskripsi_barang,:id_user_pelapor,:status_laporan,:geohash_alamat_laporan,:kecamatan,:thumbnail_gambar) ";
             $stmt = $this->db->prepare($sql);
             $data = [
                 ":id_laporan" => $id_laporan,
@@ -806,7 +806,7 @@ return function (App $app) {
                 ":status_laporan"=>0,
                 ":geohash_alamat_laporan"=> $geohash->encode(floatval($new_laporan["lat_laporan"]), floatval($new_laporan["lng_laporan"]), 8),
                 ":kecamatan"=>$kecamatan,
-                ":nama_file_gambar"=>$filename
+                ":thumbnail_gambar"=>$filename
             ];
             if($stmt->execute($data)){
                 if($uploadedFiles!=null){
@@ -841,7 +841,7 @@ return function (App $app) {
                 $filename=$id_laporan.".".$extension;
             }      
             $kecamatan=getKecamatan($new_laporan["lat_laporan"],$new_laporan["lng_laporan"]);
-            $sql = "INSERT INTO laporan_kriminalitas VALUES(:id_laporan,:judul_laporan,:jenis_kejadian,:deskripsi_kejadian,:tanggal_laporan,:waktu_laporan,:alamat_laporan,:lat_laporan,:lng_laporan,:id_user_pelapor,:status_laporan,:geohash_alamat_laporan,:kecamatan,:nama_file_gambar) ";
+            $sql = "INSERT INTO laporan_kriminalitas VALUES(:id_laporan,:judul_laporan,:jenis_kejadian,:deskripsi_kejadian,:tanggal_laporan,:waktu_laporan,:alamat_laporan,:lat_laporan,:lng_laporan,:id_user_pelapor,:status_laporan,:geohash_alamat_laporan,:kecamatan,:thumbnail_gambar) ";
             $stmt = $this->db->prepare($sql);
             $data = [
                 ":id_laporan" => $id_laporan,
@@ -857,7 +857,7 @@ return function (App $app) {
                 ":status_laporan"=>0,
                 ":geohash_alamat_laporan"=> $geohash->encode(floatval($new_laporan["lat_laporan"]), floatval($new_laporan["lng_laporan"]), 8),
                 ":kecamatan"=>$kecamatan,
-                ":nama_file_gambar"=>$filename
+                ":thumbnail_gambar"=>$filename
             ];
             if($stmt->execute($data)){
                 if($uploadedFiles!=null){

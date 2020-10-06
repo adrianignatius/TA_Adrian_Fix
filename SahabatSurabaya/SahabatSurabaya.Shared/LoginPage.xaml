@@ -68,6 +68,7 @@
                 <TextBlock FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" Name="textBlockPassword" Foreground="Black" Margin="30,20,30,0" FontSize="30">Password</TextBlock>
                 <PasswordBox FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" Name="txtPassword" Padding="8" Foreground="Black" Margin="30,10,30,0" FontSize="20" Height="50"></PasswordBox>
                 <Button FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" Click="login"  Foreground="AntiqueWhite" x:Name="btnLogin" Background="DarkGreen" FontWeight="SemiBold" Padding="15" Content="Login" HorizontalAlignment="Stretch" Margin="30,35,30,0" FontSize="30" />
+                <ProgressRing Margin="0,40,0,0" Width="50" Height="50" Name="progressRing"></ProgressRing>
             </StackPanel>
             <Grid Name="gridGambar" Grid.Column="1">
                 <Grid.Background>

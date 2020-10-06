@@ -7,8 +7,15 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     RequestedTheme="Light"
+    Loaded="pageLoaded"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
+    <Page.Resources>
+        <SolidColorBrush x:Key="brushTransparent" Color="Black" Opacity="0.4"></SolidColorBrush>
+        <local:DatetimeConverter x:Key="dateTimeConverter"/>
+        <local:ImageLaporanConverter x:Key="imageConverter"/>
+    </Page.Resources>
+    
     <Grid>
         <Grid>
             <Grid.RowDefinitions>
@@ -29,23 +36,22 @@
             <ListView Grid.Row="1" Name="lvHistory" Margin="8,16,8,0">
                 <ListView.ItemTemplate>
                     <DataTemplate>
-                        <Border CornerRadius="10" BorderThickness="1" BorderBrush="LightGray">
-                            <StackPanel Margin="0,10,0,0" Orientation="Vertical">
-                                <Image Width="300" Height="200" HorizontalAlignment="Left"  Source="/Assets/appicon.jpg" ></Image>
-                                <StackPanel Orientation="Vertical" Margin="10,10,0,0">
-                                    <TextBlock FontSize="12" FontWeight="SemiBold" Text="{Binding judul_laporan}"></TextBlock>
-                                    <StackPanel Margin="0,2,0,0" Orientation="Horizontal">
-                                        <TextBlock Text="{Binding tanggal_laporan}" FontSize="12"></TextBlock>
-                                        <TextBlock Text="Pukul" FontSize="12"></TextBlock>
-                                        <TextBlock Text="{Binding waktu_laporan}" FontSize="12"></TextBlock>
+                        <Border Margin="0,4,0,4" CornerRadius="10" BorderBrush="Gray" BorderThickness="1">
+                            <Grid MaxHeight="280">
+                                <Image Source="{Binding thumbnail_gambar,Converter={StaticResource imageConverter}}" Stretch="UniformToFill"/>
+                                <StackPanel Orientation="Vertical" Height="80" VerticalAlignment="Bottom" Background="{StaticResource brushTransparent}" Padding="12">
+                                    <TextBlock FontWeight="ExtraBold" Opacity="1" Foreground="White" FontSize="14" Text="{Binding judul_laporan }"/>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Opacity="1" Foreground="White" FontSize="14" Text="{Binding tanggal_laporan,Converter={StaticResource dateTimeConverter}}"></TextBlock>
+                                        <TextBlock Margin="2,0,0,0" Text="Pukul" Opacity="1" Foreground="White" FontSize="14"></TextBlock>
+                                        <TextBlock Margin="2,0,0,0" Opacity="1" Foreground="White" Text="{Binding waktu_laporan}" FontSize="14"></TextBlock>
                                     </StackPanel>
-                                    <Border BorderThickness="1" BorderBrush="Black"></Border>
-                                    <StackPanel Margin="0,5,0,5" Orientation="Horizontal">
-                                        <TextBlock Text="0" FontSize="12"></TextBlock>
-                                        <TextBlock Text="Komentar" FontSize="12"></TextBlock>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Opacity="1" Foreground="White" FontSize="14" Text="Oleh"></TextBlock>
+                                        <TextBlock Margin="2,0,0,0" Opacity="1" Foreground="White" FontSize="14" Text="{Binding nama_user_pelapor}"></TextBlock>
                                     </StackPanel>
                                 </StackPanel>
-                            </StackPanel>
+                            </Grid>
                         </Border>
                     </DataTemplate>
                 </ListView.ItemTemplate>
