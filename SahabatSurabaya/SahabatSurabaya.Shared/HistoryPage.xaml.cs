@@ -39,6 +39,24 @@ namespace SahabatSurabaya.Shared
             lvHistory.ItemsSource = listHistoryLaporanLostFound;
         }
 
-        
+        private void changeSource(object sender, RoutedEventArgs e)
+        {
+            string tag = (sender as Button).Tag.ToString();
+            if (tag == "1")
+            {
+                lvHistory.ItemsSource = listHistoryLaporanLostFound;
+                btnSelectionLaporanKriminalitas.IsEnabled = true;
+                btnSelectionLaporanLostFound.IsEnabled = false;
+                lvHistory.Tag = "lvLostfound";
+            }
+            else
+            {
+                lvHistory.ItemsSource = listHistoryLaporanKriminalitas;
+                btnSelectionLaporanKriminalitas.IsEnabled = false;
+                btnSelectionLaporanLostFound.IsEnabled = true;
+                lvHistory.Tag = "lvKriminalitas";
+            }
+        }
+
     }
 }

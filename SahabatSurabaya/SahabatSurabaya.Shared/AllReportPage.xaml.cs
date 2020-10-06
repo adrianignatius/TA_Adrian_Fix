@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using SahabatSurabaya.Shared;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -15,12 +16,14 @@ namespace SahabatSurabaya
     public sealed partial class AllReportPage : Page
     {
         Session session;
+        HttpObject httpObject;
         ObservableCollection<LaporanKriminalitas> listLaporanKriminalitas = new ObservableCollection<LaporanKriminalitas>();
         ObservableCollection<LaporanLostFound> listLaporanLostFound = new ObservableCollection<LaporanLostFound>();
         public AllReportPage()
         {
             this.InitializeComponent();
             session = new Session();
+            httpObject = new HttpObject();
         }
 
         private void Back_Click(object sender, RoutedEventArgs e)
@@ -38,49 +41,62 @@ namespace SahabatSurabaya
             return false;
         }
 
-        private async void loadHeadlineLaporanKriminalitas()
+        private async void loadLaporanKriminalitas()
         {
-            using (var client = new HttpClient())
+            if (listLaporanLostFound.Count == 0)
             {
-                client.BaseAddress = new Uri(session.getApiURL());
-                client.DefaultRequestHeaders.Accept.Clear();
-                HttpResponseMessage response = await client.GetAsync("/getHeadlineLaporanKriminalitas");
-                if (response.IsSuccessStatusCode)
-                {
-                    var jsonString = await response.Content.ReadAsStringAsync();
-                    var responseData = response.Content.ReadAsStringAsync().Result;
-                    listLaporanKriminalitas = JsonConvert.DeserializeObject<ObservableCollection<LaporanKriminalitas>>(responseData);
-                    lvLaporanKriminalitas.ItemsSource = listLaporanKriminalitas;
-                }
-                else
-                {
-                    var message = new MessageDialog("Tidak ada koneksi internet, silahkan coba beberapa saat lagi");
-                    await message.ShowAsync();
-                }
+                string responseData = await httpObject.GetRequest("getLaporanLostFound");
+                listLaporanLostFound = JsonConvert.DeserializeObject<ObservableCollection<LaporanLostFound>>(responseData);
             }
+            lvLaporan.ItemsSource = listLaporanLostFound;
+            
+            //using (var client = new HttpClient())
+            //{
+            //    client.BaseAddress = new Uri(session.getApiURL());
+            //    client.DefaultRequestHeaders.Accept.Clear();
+            //    HttpResponseMessage response = await client.GetAsync("/getHeadlineLaporanKriminalitas");
+            //    if (response.IsSuccessStatusCode)
+            //    {
+            //        var jsonString = await response.Content.ReadAsStringAsync();
+            //        var responseData = response.Content.ReadAsStringAsync().Result;
+            //        listLaporanKriminalitas = JsonConvert.DeserializeObject<ObservableCollection<LaporanKriminalitas>>(responseData);
+            //        lvLaporanKriminalitas.ItemsSource = listLaporanKriminalitas;
+            //    }
+            //    else
+            //    {
+            //        var message = new MessageDialog("Tidak ada koneksi internet, silahkan coba beberapa saat lagi");
+            //        await message.ShowAsync();
+            //    }
+            //}
         }
 
         private async void loadHeadlineLaporanLostFound()
         {
-            using (var client = new HttpClient())
+            if (listLaporanKriminalitas.Count == 0)
             {
-                client.BaseAddress = new Uri(session.getApiURL());
-                client.DefaultRequestHeaders.Accept.Clear();
-                HttpResponseMessage response = await client.GetAsync("/getHeadlineLaporanLostFound");
-                if (response.IsSuccessStatusCode)
-                {
-                    var jsonString = await response.Content.ReadAsStringAsync();
-                    var responseData = response.Content.ReadAsStringAsync().Result;
-                    listLaporanLostFound = JsonConvert.DeserializeObject<ObservableCollection<LaporanLostFound>>(responseData);
-                    lvLaporanLostFound.ItemsSource = listLaporanLostFound;
-
-                }
-                else
-                {
-                    var message = new MessageDialog("Tidak ada koneksi internet, silahkan coba beberapa saat lagi");
-                    await message.ShowAsync();
-                } 
+                string responseData = await httpObject.GetRequest("getLaporanKriminalitas");
+                listLaporanKriminalitas = JsonConvert.DeserializeObject<ObservableCollection<LaporanKriminalitas>>(responseData);
             }
+            lvLaporan.ItemsSource = listLaporanKriminalitas;
+            //using (var client = new HttpClient())
+            //{
+            //    client.BaseAddress = new Uri(session.getApiURL());
+            //    client.DefaultRequestHeaders.Accept.Clear();
+            //    HttpResponseMessage response = await client.GetAsync("/getHeadlineLaporanLostFound");
+            //    if (response.IsSuccessStatusCode)
+            //    {
+            //        var jsonString = await response.Content.ReadAsStringAsync();
+            //        var responseData = response.Content.ReadAsStringAsync().Result;
+            //        listLaporanLostFound = JsonConvert.DeserializeObject<ObservableCollection<LaporanLostFound>>(responseData);
+            //        lvLaporanLostFound.ItemsSource = listLaporanLostFound;
+
+            //    }
+            //    else
+            //    {
+            //        var message = new MessageDialog("Tidak ada koneksi internet, silahkan coba beberapa saat lagi");
+            //        await message.ShowAsync();
+            //    } 
+            //}
         }
 
         private void pageLoaded(object sender, RoutedEventArgs e)
@@ -88,14 +104,14 @@ namespace SahabatSurabaya
             string param = session.getAllReportParam();
             if (param == "kriminalitas")
             {
-                rootPivotLaporan.SelectedItem = pvLaporanKriminalitas;
+                btnSelectionLaporanKriminalitas.IsEnabled = false;
+                btnSelectionLaporanLostFound.IsEnabled = true;
             }
             else
             {
-                rootPivotLaporan.SelectedItem = pvLaporanLostFound;
+                btnSelectionLaporanLostFound.IsEnabled = false;
+                btnSelectionLaporanKriminalitas.IsEnabled = true;
             }
-            loadHeadlineLaporanKriminalitas();
-            loadHeadlineLaporanLostFound();
         }
 
         public void goToDetailPage(object sender, ItemClickEventArgs e)
@@ -122,20 +138,31 @@ namespace SahabatSurabaya
                 ReportDetailPageParams param = new ReportDetailPageParams(selected.id_user_pelapor, selected.nama_user_pelapor, selected.id_laporan, selected.alamat_laporan, selected.tanggal_laporan, selected.waktu_laporan, selected.judul_laporan, jenis_laporan, selected.deskripsi_barang, selected.lat_laporan, selected.lng_laporan, "lostfound",selected.thumbnail_gambar);
                 session.setReportDetailPageParams(param);
             }
-            //var contentPresenter = this.Frame.Parent as ContentPresenter;
-            //var a=this.Frame.pa
-            //var grid = contentPresenter.Parent as Grid;
-            //var parent = grid.Parent;
-            //var message = new MessageDialog(parent.ToString());
-            //await message.ShowAsync();
-            //var parent = (NavigationView.Parent as Grid).Parent as HomeNavigationPage;
-            //parent.Frame.Navigate(typeof(ReportDetailPage));  
             this.Frame.Navigate(typeof(ReportDetailPage));
         }
 
         private async void loadMoreData(object sender,RoutedEventArgs e)
         {
+            this.Frame.Navigate(typeof(FilterPage));
+        }
 
+        private void changeSource(object sender, RoutedEventArgs e)
+        {
+            string tag = (sender as Button).Tag.ToString();
+            if (tag == "1")
+            {
+                lvLaporan.ItemsSource = listLaporanLostFound;
+                btnSelectionLaporanKriminalitas.IsEnabled = true;
+                btnSelectionLaporanLostFound.IsEnabled = false;
+                lvLaporan.Tag = "lvLostfound";
+            }
+            else
+            {
+                lvLaporan.ItemsSource = listLaporanKriminalitas;
+                btnSelectionLaporanKriminalitas.IsEnabled = false;
+                btnSelectionLaporanLostFound.IsEnabled = true;
+                lvLaporan.Tag = "lvKriminalitas";
+            }
         }
     }
 }

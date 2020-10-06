@@ -13,7 +13,9 @@
     <Page.Resources>
         <SolidColorBrush x:Key="brushTransparent" Color="Black" Opacity="0.4"></SolidColorBrush>
         <local:DatetimeConverter x:Key="dateTimeConverter"/>
+        <local:StatusLaporanConverter x:Key="statusLaporanConverter"/>
         <local:ImageLaporanConverter x:Key="imageConverter"/>
+        <local:StatusLaporanColorConverter x:Key="statusLaporanColorConverter"/>
     </Page.Resources>
     
     <Grid>
@@ -29,8 +31,8 @@
                         <ColumnDefinition></ColumnDefinition>
                         <ColumnDefinition></ColumnDefinition>
                     </Grid.ColumnDefinitions>
-                    <Button FontSize="16" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" Tag="1" Name="btnSelectionLaporanLostFound" Margin="4,0,4,0"  Foreground="Green" Background="White" BorderBrush="Green" HorizontalAlignment="Stretch" Grid.Column="0" Content="Laporan &amp; Lost Found"></Button>
-                    <Button FontSize="16" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" Tag="2"  Name="btnSelectionLaporanKriminalitas" Margin="4,0,4,0" Foreground="Green" Background="White" BorderBrush="Green" HorizontalAlignment="Stretch" Grid.Column="1" Content="Laporan Kriminalitas"></Button>
+                    <Button FontSize="16" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" Click="changeSource" Tag="1" Name="btnSelectionLaporanLostFound" Margin="4,0,4,0"  Foreground="Green" Background="White" BorderBrush="Green" HorizontalAlignment="Stretch" Grid.Column="0" Content="Laporan &amp; Lost Found"></Button>
+                    <Button FontSize="16" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" Click="changeSource" Tag="2"  Name="btnSelectionLaporanKriminalitas" Margin="4,0,4,0" Foreground="Green" Background="White" BorderBrush="Green" HorizontalAlignment="Stretch" Grid.Column="1" Content="Laporan Kriminalitas"></Button>
                 </Grid>
             </StackPanel>
             <ListView Grid.Row="1" Name="lvHistory" Margin="8,16,8,0">
@@ -47,8 +49,8 @@
                                         <TextBlock Margin="2,0,0,0" Opacity="1" Foreground="White" Text="{Binding waktu_laporan}" FontSize="14"></TextBlock>
                                     </StackPanel>
                                     <StackPanel Orientation="Horizontal">
-                                        <TextBlock Opacity="1" Foreground="White" FontSize="14" Text="Oleh"></TextBlock>
-                                        <TextBlock Margin="2,0,0,0" Opacity="1" Foreground="White" FontSize="14" Text="{Binding nama_user_pelapor}"></TextBlock>
+                                        <TextBlock Opacity="1" Foreground="White" FontSize="14" Text="Status: "></TextBlock>
+                                        <TextBlock Margin="2,0,0,0" Opacity="1" Foreground="{Binding status_laporan,Converter={StaticResource statusLaporanColorConverter}}" FontSize="14" Text="{Binding status_laporan,Converter={StaticResource statusLaporanConverter}}"></TextBlock>
                                     </StackPanel>
                                 </StackPanel>
                             </Grid>

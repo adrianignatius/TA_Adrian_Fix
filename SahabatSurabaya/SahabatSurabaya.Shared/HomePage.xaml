@@ -85,7 +85,7 @@
                         <ColumnDefinition></ColumnDefinition>
                     </Grid.ColumnDefinitions>
                     <TextBlock Name="txtHeadlineTitle"  FontWeight="ExtraBold" FontSize="14" Grid.Column="0" Text="Laporan Kriminalitas Terkini"></TextBlock>
-                    <TextBlock Foreground="Green" Grid.Column="1" TextAlignment="Right" Text="Lihat Semua"></TextBlock>
+                    <TextBlock Name="txtTagLine"  Tapped="goToAllReportPage" Foreground="Green" Grid.Column="1" TextAlignment="Right" Text="Lihat Semua"></TextBlock>
                 </Grid>
             </android:StackPanel>
             <android:ListView Grid.Row="2" Name="lvHeadline" SelectionMode="Single" IsItemClickEnabled="True" ItemClick="goToDetailPage" Margin="0,10,0,0" >
@@ -135,7 +135,7 @@
                         <ColumnDefinition Width="*"></ColumnDefinition>
                     </Grid.ColumnDefinitions>
                     <TextBlock Grid.Column="0" HorizontalAlignment="Left" Margin="0,5,0,0" FontSize="15" FontWeight="ExtraBold">Laporan Lost &amp; Found Terkini</TextBlock>
-                    <TextBlock Tag="kriminalitas" Tapped="goToAllReportPage" HorizontalAlignment="Right" Grid.Column="1" Margin="10,5,0,0" Foreground="Green" FontWeight="Medium" FontSize="12" Text="Lihat semua"></TextBlock>
+                    <TextBlock Tag="lostfound" Tapped="goToAllReportPage" HorizontalAlignment="Right" Grid.Column="1" Margin="10,5,0,0" Foreground="Green" FontWeight="Medium" FontSize="12" Text="Lihat semua"></TextBlock>
                 </win:Grid>
                 <win:ListView ScrollViewer.VerticalScrollMode="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" ScrollViewer.HorizontalScrollMode="Enabled" ScrollViewer.HorizontalScrollBarVisibility="Auto" ItemTemplate="{StaticResource laporanTemplate}" Tag="lvLostfound" Name="lvLaporanLostFound" SelectionMode="Single" IsItemClickEnabled="True" ItemClick="goToDetailPage" Margin="0,10,0,0" >
                     <ListView.ItemsPanel>

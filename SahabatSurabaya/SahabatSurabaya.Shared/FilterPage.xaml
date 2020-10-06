@@ -1,0 +1,80 @@
+﻿<Page
+    x:Class="SahabatSurabaya.Shared.FilterPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:SahabatSurabaya.Shared"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Loaded="pageLoaded"
+    RequestedTheme="Light"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid>
+        <Grid>
+            <Button Click="Back_Click" Style="{StaticResource NavigationBackButtonNormalStyle}" VerticalAlignment="Top" HorizontalAlignment="Left"></Button>
+            <Grid Margin="30,40,30,30">
+                <StackPanel Orientation="Vertical">
+                    <TextBlock FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" FontSize="20" Text="Range Tanggal"></TextBlock>
+                    <DatePicker Margin="0,12,0,0" Header="Tanggal awal" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" HorizontalAlignment="Stretch"></DatePicker>
+                    <DatePicker Margin="0,12,0,0" Header="Tanggal akhir" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" HorizontalAlignment="Stretch" Grid.Column="2"></DatePicker>
+                    <TextBlock Margin="0,8,0,0" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" FontSize="20" Text="Jenis Laporan"></TextBlock>
+                    <Grid Margin="0,4,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition></ColumnDefinition>
+                            <ColumnDefinition></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <CheckBox Grid.Column="0" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" FontSize="14" >Kehilangan Barang</CheckBox>
+                        <CheckBox Grid.Column="1" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" FontSize="14" >Penemuan Barang</CheckBox>
+                    </Grid>
+                    <TextBlock Margin="0,8,0,0" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" FontSize="20" Text="Jenis Barang"></TextBlock>
+                    <Grid Margin="0,4,0,0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition></RowDefinition>
+                            <RowDefinition></RowDefinition>
+                            <RowDefinition></RowDefinition>
+                            <RowDefinition></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition></ColumnDefinition>
+                            <ColumnDefinition></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <CheckBox Grid.Row="0" Grid.Column="0" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" FontSize="14" >Tas</CheckBox>
+                        <CheckBox Grid.Row="0" Grid.Column="1" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" FontSize="14" >Handphone</CheckBox>
+                        <CheckBox Grid.Row="1" Grid.Column="0" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" FontSize="14" >Jam Tangan</CheckBox>
+                        <CheckBox Grid.Row="1" Grid.Column="1" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" FontSize="14" >Perhiasan</CheckBox>
+                        <CheckBox Grid.Row="2" Grid.Column="0" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" FontSize="14" >Sepatu</CheckBox>
+                        <CheckBox Grid.Row="2" Grid.Column="1" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" FontSize="14" >Hewan Peliharaan</CheckBox>
+                        <CheckBox Grid.Row="3" Grid.Column="0" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" FontSize="14" >Dompet</CheckBox>
+                    </Grid>
+                    <StackPanel Margin="0,8,0,0" Orientation="Horizontal">
+                        <TextBlock  FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" FontSize="20" Text="Kecamatan"></TextBlock>
+                        <Button Margin="4,0,0,0" CornerRadius="10" Foreground="White" Background="Green" Content="Pilih Lokasi">
+                            <Button.Flyout>
+                                <Flyout x:Name="flyoutKecamatan" Placement="Full">
+                                    <StackPanel Margin="10" Orientation="Vertical">
+                                        <GridView Name="gvKecamatan">
+                                            <GridView.ItemTemplate>
+                                                <DataTemplate>
+                                                    <CheckBox Unchecked="kecamatanUnchecked" Checked="kecamatanChecked" Content="{Binding nama_kecamatan}" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" FontSize="14" ></CheckBox>
+                                                </DataTemplate>
+                                            </GridView.ItemTemplate>
+                                            <GridView.ItemsPanel>
+                                                <ItemsPanelTemplate>
+                                                    <ItemsWrapGrid MaximumRowsOrColumns="3" Orientation="Horizontal"/>
+                                                </ItemsPanelTemplate>
+                                            </GridView.ItemsPanel>
+                                        </GridView>
+                                        <Button Click="flyoutDone" CornerRadius="10" HorizontalAlignment="Stretch" Margin="0,10,0,0" Content="Simpan" Foreground="White" Background="Green"></Button>
+                                    </StackPanel>
+                                </Flyout>
+                            </Button.Flyout>
+                        </Button>
+                    </StackPanel>
+                    <TextBlock TextWrapping="WrapWholeWords" Name="txtStackKecamatan" Margin="0,4,0,0" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" FontSize="14" ></TextBlock>
+                    <Button Margin="0,20,0,0" Content="Terapkan" HorizontalAlignment="Stretch" CornerRadius="10" Foreground="White" Background="Green" FontSize="16"></Button>
+                </StackPanel>
+            </Grid>
+        </Grid>
+    </Grid>
+</Page>

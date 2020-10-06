@@ -46,6 +46,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)CrimeReportParams.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DatetimeConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DisplayHeaderChat.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)FilterPage.xaml.cs">
+      <DependentUpon>FilterPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)HeaderChat.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)HistoryPage.xaml.cs">
       <DependentUpon>HistoryPage.xaml</DependentUpon>
@@ -63,6 +66,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)ImageLaporanConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ImageSourceKantorPolisiConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)KantorPolisi.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Kecamatan.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)KomentarLaporan.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LaporanKriminalitas.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LaporanLostFound.cs" />
@@ -104,6 +108,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Splashscreen.xaml.cs">
       <DependentUpon>Splashscreen.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)StatusLaporanColorConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)StatusLaporanConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SubscriptionPage.xaml.cs">
       <DependentUpon>SubscriptionPage.xaml</DependentUpon>
     </Compile>
@@ -136,6 +142,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="$(MSBuildThisFileDirectory)ContactPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)FilterPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -211,7 +221,7 @@
     <Content Include="$(MSBuildThisFileDirectory)Assets\avatar-profile.png" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\bg.jpg" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\border.png" />
-    <Content Include="$(MSBuildThisFileDirectory)Assets\default.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Assets\no-image.png" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\icon\back.png" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\icon\bag-icon.png" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\emergency-icon.png" />

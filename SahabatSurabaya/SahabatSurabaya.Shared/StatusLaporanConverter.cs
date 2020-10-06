@@ -5,19 +5,18 @@ using Windows.UI.Xaml.Data;
 
 namespace SahabatSurabaya.Shared
 {
-    class ImageLaporanConverter:IValueConverter
+    class StatusLaporanConverter:IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            string fileGambar = (string)value;
-            if (fileGambar == "no-image.png")
+            int status = (int)value;
+            if (status == 0)
             {
-                return "/Assets/no-image.png";
+                return "Belum diverifikasi";
             }
             else
             {
-                string baseUri = "http://adrian-webservice.ta-istts.com/public/uploads/";
-                return baseUri + fileGambar;
+                return "Sudah diverifikasi";
             }
         }
 

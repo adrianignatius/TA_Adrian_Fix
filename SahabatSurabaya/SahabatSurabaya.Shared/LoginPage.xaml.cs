@@ -49,6 +49,7 @@ namespace SahabatSurabaya
             else
             {
                 progressRing.IsActive = true;
+                progressRing.Visibility = Visibility.Visible;
                 var content = new FormUrlEncodedContent(new[]{
                     new KeyValuePair<string, string>("telpon_user", txtNoHandphone.Text),
                     new KeyValuePair<string, string>("password_user", txtPassword.Password),
@@ -63,9 +64,12 @@ namespace SahabatSurabaya
                     session.setUserLogin(userLogin);
                     if (userLogin.status_aktif_user == 0)
                     {
+                        progressRing.Visibility = Visibility.Visible;
+                        progressRing.IsActive = false;
                         var message = new MessageDialog("Akun anda telah diban oleh admin, silahkan menghubungi admin untuk mengaktifkan kembali akun anda");
-                        await message.ShowAsync();
-                    }else if (userLogin.status_aktif_user == 99)
+                        await message.ShowAsync();     
+                    }
+                    else if (userLogin.status_aktif_user == 99)
                     {
                         this.Frame.Navigate(typeof(VerifyOtpPage));
                     }
@@ -86,6 +90,8 @@ namespace SahabatSurabaya
                 }
                 else
                 {
+                    progressRing.Visibility = Visibility.Visible;
+                    progressRing.IsActive = false;
                     var dialog = new MessageDialog(json["message"].ToString());
                     await dialog.ShowAsync();
                 }

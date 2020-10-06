@@ -175,7 +175,7 @@ namespace SahabatSurabaya
                 btnSelectionLaporanKriminalitas.IsEnabled = true;
                 btnSelectionLaporanLostFound.IsEnabled = false;
                 lvHeadline.Tag = "lvLostfound";
-                txtHeadlineTitle
+                txtTagLine.Tag="lostfound";
             }
             else
             {
@@ -183,6 +183,7 @@ namespace SahabatSurabaya
                 btnSelectionLaporanKriminalitas.IsEnabled = false;
                 btnSelectionLaporanLostFound.IsEnabled = true;
                 lvHeadline.Tag = "lvKriminalitas";
+                txtTagLine.Tag="kriminalitas";
             }
         }
 
