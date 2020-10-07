@@ -94,6 +94,14 @@ namespace SahabatSurabaya
             ContentDialogResult result = await confirmDialog.ShowAsync();
             if (result == ContentDialogResult.Primary)
             {
+                var content = new FormUrlEncodedContent(new[]{
+                    new KeyValuePair<string, string>("id_laporan", param.id_laporan),
+                    new KeyValuePair<string, string>("id_user", userLogin.id_user.ToString())
+                });
+                string responseData = await httpObject.PostRequestWithUrlEncoded("user/konfirmasiLaporanKriminalitas", content);
+                JObject json = JObject.Parse(responseData);
+                var messageDialog = new MessageDialog(json["message"].ToString());
+                await messageDialog.ShowAsync();
                 btnKonfirmasi.IsEnabled = false;
             }
         }
@@ -125,19 +133,6 @@ namespace SahabatSurabaya
             string responseData = await httpObject.GetRequest("getKomentarLaporan/" + param.id_laporan);
             listKomentar = JsonConvert.DeserializeObject<ObservableCollection<KomentarLaporan>>(responseData);
             lvKomentarLaporan.ItemsSource = listKomentar;
-            //using (var client = new HttpClient())
-            //{
-            //    client.BaseAddress = new Uri(session.getApiURL());
-            //    client.DefaultRequestHeaders.Accept.Clear();
-            //    HttpResponseMessage response = await client.GetAsync("/getKomentarLaporan/"+ param.id_laporan);
-            //    if (response.IsSuccessStatusCode)
-            //    {
-            //        var jsonString = await response.Content.ReadAsStringAsync();
-            //        var responseData = response.Content.ReadAsStringAsync().Result;
-            //        listKomentar = JsonConvert.DeserializeObject<ObservableCollection<KomentarLaporan>>(responseData);
-            //        lvKomentarLaporan.ItemsSource = listKomentar;
-            //    }
-            //}
         }
 
         private async void shareLaporan(object sender, RoutedEventArgs e)

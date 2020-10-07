@@ -144,6 +144,7 @@ namespace SahabatSurabaya
         public async void CrimeReportPageLoaded(object sender,RoutedEventArgs e)
         {
             userLogin = session.getUserLogin();
+            listSetingKategoriKriminalitas.Add(new SettingKategori())
             using (var client = new HttpClient())
             {
                 client.BaseAddress = new Uri(session.getApiURL());

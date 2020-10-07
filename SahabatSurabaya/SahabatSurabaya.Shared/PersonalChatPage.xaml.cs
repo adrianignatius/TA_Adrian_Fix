@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.ObjectModel;
 using System.Net.Http;
+using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
@@ -53,7 +54,16 @@ namespace SahabatSurabaya
                 listChat.Add(new Chat(id_chat,id_user_pengirim,id_user_penerima,isi_chat,waktu_chat,isSender));
                 lvChat.ScrollIntoView(listChat[listChat.Count - 1]);
             });
-            await connection.StartAsync();
+            try
+            {
+                await connection.StartAsync();
+            }
+            catch
+            {
+                var messageDialog = new MessageDialog("Koneksi bermasalah");
+                await messageDialog.ShowAsync();
+            }
+            
         }
         
         private async void loadChat()
@@ -79,7 +89,10 @@ namespace SahabatSurabaya
                         }
                     }
                     lvChat.ItemsSource = listChat;
-                    lvChat.ScrollIntoView(listChat[listChat.Count - 1]);
+                    if (listChat.Count > 0)
+                    {
+                        lvChat.ScrollIntoView(listChat[listChat.Count - 1]);
+                    }
                 }
             }
         }
