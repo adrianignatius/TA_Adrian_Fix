@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Services.Maps;
+using Windows.UI.Popups;
 
 namespace SahabatSurabaya.Shared
 {
@@ -18,14 +19,23 @@ namespace SahabatSurabaya.Shared
             {
                 client.BaseAddress = new Uri(API_URL);
                 client.DefaultRequestHeaders.Accept.Clear();
-                HttpResponseMessage response = await client.GetAsync(url);
-                if (response.IsSuccessStatusCode)
+                try
                 {
-                    var responseData = response.Content.ReadAsStringAsync().Result;
-                    return responseData;
+                    HttpResponseMessage response = await client.GetAsync(url);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var responseData = response.Content.ReadAsStringAsync().Result;
+                        return responseData;
+                    }
+                    else
+                    {
+                        return null;
+                    }
                 }
-                else
+                catch
                 {
+                    var message = new MessageDialog("Koneksi Error");
+                    await message.ShowAsync();
                     return null;
                 }
             }
@@ -77,6 +87,25 @@ namespace SahabatSurabaya.Shared
                 //client.BaseAddress = new Uri(URL_DEBUG);
                 client.DefaultRequestHeaders.Accept.Clear();
                 HttpResponseMessage response = await client.PutAsync(url, form);
+                if (response.IsSuccessStatusCode)
+                {
+                    var responseData = response.Content.ReadAsStringAsync().Result;
+                    return responseData;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
+
+        public async Task<string> DeleteRequest(string url)
+        {
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(API_URL);
+                client.DefaultRequestHeaders.Accept.Clear();
+                HttpResponseMessage response = await client.DeleteAsync (url);
                 if (response.IsSuccessStatusCode)
                 {
                     var responseData = response.Content.ReadAsStringAsync().Result;

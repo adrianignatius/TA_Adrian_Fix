@@ -191,24 +191,8 @@ namespace SahabatSurabaya
                 string responseData = await httpObject.PostRequestWithUrlEncoded("user/insertKomentarLaporan", content);
                 JObject json = JObject.Parse(responseData);
                 var messageDialog = new MessageDialog(json["message"].ToString());
-                //using (var client = new HttpClient())
-                //{
-                //    client.BaseAddress = new Uri(session.getApiURL());
-                //    MultipartFormDataContent form = new MultipartFormDataContent();
-                //    form.Add(new StringContent(param.id_laporan), "id_laporan");
-                //    form.Add(new StringContent(isi_komentar), "isi_komentar");
-                //    form.Add(new StringContent(tanggal_komentar), "tanggal_komentar");
-                //    form.Add(new StringContent(waktu_komentar), "waktu_komentar");
-                //    form.Add(new StringContent(userLogin.id_user.ToString()), "id_user_komentar");
-                //    HttpResponseMessage response = await client.PostAsync("insertKomentarLaporan", form);
-                //    if (response.IsSuccessStatusCode)
-                //    {
-                //        var message = new MessageDialog("Berhasil menambahkan komentar!");
-                //        await message.ShowAsync();
-                //        loadKomentarLaporan();
-                //        txtKomentar.Text = "";
-                //    }
-                //}
+                await messageDialog.ShowAsync();
+                loadKomentarLaporan();
             }
             else
             {

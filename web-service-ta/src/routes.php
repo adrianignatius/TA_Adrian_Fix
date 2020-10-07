@@ -504,10 +504,13 @@ return function (App $app) {
                   ":id_user"=>$id_user
                 ];
                 $stmt=$this->db->prepare($sql);
-                $stmt->execute($data);
-                return $response->withJson(200); 
+                if($stmt->execute($data)){
+                    return $response->withJson(["status"=>"1","message"=>"Berhasil melakukan penagihan","premium_available_until"=>$final]); 
+                }else{
+                    return $response->withJson(["status"=>"99","message"=>"Proses penagihan bermasalah, silahkan coba beberapa saat lagi"]); 
+                }
             }else{
-                return $response->withJson(400); 
+                return $response->withJson(["status"=>"400","message"=>"Gagal melakukan penagihan"]); 
             }
         });
 

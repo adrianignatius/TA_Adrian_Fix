@@ -17,6 +17,7 @@ namespace SahabatSurabaya
     public sealed partial class ContactPage : Page
     {
         Session session;
+        HttpObject httpObject;
         User userLogin;
         ObservableCollection<User> listEmergencyContact = new ObservableCollection<User>();
         ObservableCollection<PendingContact> listPendingContactRequest = new ObservableCollection<PendingContact>();
@@ -26,7 +27,7 @@ namespace SahabatSurabaya
         {
             this.InitializeComponent();
             session = new Session();
-            
+            httpObject = new HttpObject();
         }
 
         private void validateInput(TextBox sender, TextBoxBeforeTextChangingEventArgs args)
@@ -54,53 +55,62 @@ namespace SahabatSurabaya
 
         private async void updateListContact()
         {
-            using (var client = new HttpClient())
-            {
-                client.BaseAddress = new Uri(session.getApiURL());
-                client.DefaultRequestHeaders.Accept.Clear();
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                HttpResponseMessage response = await client.GetAsync("user/getEmergencyContact/" + userLogin.id_user);
-                if (response.IsSuccessStatusCode)
-                {
-                    var responseData = response.Content.ReadAsStringAsync().Result;
-                    listEmergencyContact = JsonConvert.DeserializeObject<ObservableCollection<User>>(responseData);
-                    lvEmergencyContact.ItemsSource = listEmergencyContact;
-                }
-            }
+            string responseData = await httpObject.GetRequest("user/getEmergencyContact/" + userLogin.id_user);
+            listEmergencyContact = JsonConvert.DeserializeObject<ObservableCollection<User>>(responseData);
+            lvEmergencyContact.ItemsSource = listEmergencyContact;
+            //using (var client = new HttpClient())
+            //{
+            //    client.BaseAddress = new Uri(session.getApiURL());
+            //    client.DefaultRequestHeaders.Accept.Clear();
+            //    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            //    HttpResponseMessage response = await client.GetAsync("user/getEmergencyContact/" + userLogin.id_user);
+            //    if (response.IsSuccessStatusCode)
+            //    {
+            //        var responseData = response.Content.ReadAsStringAsync().Result;
+            //        listEmergencyContact = JsonConvert.DeserializeObject<ObservableCollection<User>>(responseData);
+            //        lvEmergencyContact.ItemsSource = listEmergencyContact;
+            //    }
+            //}
         }
 
         private async void updateListSentPendingContactRequest()
         {
-            using (var client = new HttpClient())
-            {
-                client.BaseAddress = new Uri(session.getApiURL());
-                client.DefaultRequestHeaders.Accept.Clear();
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                HttpResponseMessage response = await client.GetAsync("user/getSentPendingContactRequest/" + userLogin.id_user);
-                if (response.IsSuccessStatusCode)
-                {
-                    var responseData = response.Content.ReadAsStringAsync().Result;
-                    listSentPendingContactRequest = JsonConvert.DeserializeObject<ObservableCollection<User>>(responseData);
-                    lvSentPendingContact.ItemsSource = listSentPendingContactRequest;
-                }
-            }
+            string responseData = await httpObject.GetRequest("user/getSentPendingContactRequest/" + userLogin.id_user);
+            listSentPendingContactRequest = JsonConvert.DeserializeObject<ObservableCollection<User>>(responseData);
+            lvSentPendingContact.ItemsSource = listSentPendingContactRequest;
+            //using (var client = new HttpClient())
+            //{
+            //    client.BaseAddress = new Uri(session.getApiURL());
+            //    client.DefaultRequestHeaders.Accept.Clear();
+            //    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            //    HttpResponseMessage response = await client.GetAsync("user/getSentPendingContactRequest/" + userLogin.id_user);
+            //    if (response.IsSuccessStatusCode)
+            //    {
+            //        var responseData = response.Content.ReadAsStringAsync().Result;
+            //        listSentPendingContactRequest = JsonConvert.DeserializeObject<ObservableCollection<User>>(responseData);
+            //        lvSentPendingContact.ItemsSource = listSentPendingContactRequest;
+            //    }
+            //}
         }
 
         private async void updateListPendingContactRequest()
         {
-            using (var client = new HttpClient())
-            {
-                client.BaseAddress = new Uri(session.getApiURL());
-                client.DefaultRequestHeaders.Accept.Clear();
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                HttpResponseMessage response = await client.GetAsync("user/getPendingContactRequest/" + userLogin.id_user);
-                if (response.IsSuccessStatusCode)
-                {
-                    var responseData = response.Content.ReadAsStringAsync().Result;
-                    listPendingContactRequest = JsonConvert.DeserializeObject<ObservableCollection<PendingContact>>(responseData);
-                    lvPendingContactRequest.ItemsSource = listPendingContactRequest;
-                }
-            }
+            string responseData = await httpObject.GetRequest("user/getPendingContactRequest/" + userLogin.id_user);
+            listPendingContactRequest = JsonConvert.DeserializeObject<ObservableCollection<PendingContact>>(responseData);
+            lvPendingContactRequest.ItemsSource = listPendingContactRequest;
+            //using (var client = new HttpClient())
+            //{
+            //    client.BaseAddress = new Uri(session.getApiURL());
+            //    client.DefaultRequestHeaders.Accept.Clear();
+            //    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            //    HttpResponseMessage response = await client.GetAsync("user/getPendingContactRequest/" + userLogin.id_user);
+            //    if (response.IsSuccessStatusCode)
+            //    {
+            //        var responseData = response.Content.ReadAsStringAsync().Result;
+            //        listPendingContactRequest = JsonConvert.DeserializeObject<ObservableCollection<PendingContact>>(responseData);
+            //        lvPendingContactRequest.ItemsSource = listPendingContactRequest;
+            //    }
+            //}
         }
 
         private async void addContact(object sender, RoutedEventArgs e)
@@ -109,25 +119,35 @@ namespace SahabatSurabaya
             {
                 if (txtSearchNumber.Text != userLogin.telpon_user)
                 {
-                    using (var client = new HttpClient())
-                    {
-                        client.BaseAddress = new Uri(session.getApiURL());
-                        client.DefaultRequestHeaders.Accept.Clear();
-                        client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                        MultipartFormDataContent form = new MultipartFormDataContent();
-                        form.Add(new StringContent(userLogin.id_user.ToString()), "id_user_pengirim");
-                        form.Add(new StringContent(txtSearchNumber.Text), "nomor_tujuan");
-                        HttpResponseMessage response = await client.PostAsync("user/addEmergencyContact", form);
-                        if (response.IsSuccessStatusCode)
-                        {
-                            var responseData = response.Content.ReadAsStringAsync().Result;
-                            JObject json = JObject.Parse(responseData);
-                            var message = new MessageDialog(json["message"].ToString());
-                            await message.ShowAsync();
-                            txtSearchNumber.Text = "";
-                            updateListSentPendingContactRequest();
-                        }
-                    }
+                    var content = new FormUrlEncodedContent(new[]{
+                        new KeyValuePair<string, string>("id_user_pengirim", userLogin.id_user.ToString()),
+                        new KeyValuePair<string, string>("nomor_tujuan", txtSearchNumber.Text)
+                    });
+                    string responseData = await httpObject.PostRequestWithUrlEncoded("user/addEmergencyContact", content);
+                    JObject json = JObject.Parse(responseData);
+                    var message = new MessageDialog(json["message"].ToString());
+                    await message.ShowAsync();
+                    txtSearchNumber.Text = "";
+                    updateListSentPendingContactRequest();
+                    //using (var client = new HttpClient())
+                    //{
+                    //    client.BaseAddress = new Uri(session.getApiURL());
+                    //    client.DefaultRequestHeaders.Accept.Clear();
+                    //    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                    //    MultipartFormDataContent form = new MultipartFormDataContent();
+                    //    form.Add(new StringContent(userLogin.id_user.ToString()), "id_user_pengirim");
+                    //    form.Add(new StringContent(txtSearchNumber.Text), "nomor_tujuan");
+                    //    HttpResponseMessage response = await client.PostAsync("user/addEmergencyContact", form);
+                    //    if (response.IsSuccessStatusCode)
+                    //    {
+                    //        var responseData = response.Content.ReadAsStringAsync().Result;
+                    //        JObject json = JObject.Parse(responseData);
+                    //        var message = new MessageDialog(json["message"].ToString());
+                    //        await message.ShowAsync();
+                    //        txtSearchNumber.Text = "";
+                    //        updateListSentPendingContactRequest();
+                    //    }
+                    //}
                 }
                 else
                 {
@@ -145,48 +165,64 @@ namespace SahabatSurabaya
         private async void acceptRequest(object Sender, RoutedEventArgs e)
         {
             string id_daftar_kontak = (Sender as Button).Tag.ToString();
-            using (var client = new HttpClient())
+            string responseData = await httpObject.PutRequest("user/acceptContactRequest/" + id_daftar_kontak, null);
+            JObject json = JObject.Parse(responseData);
+            var message = new MessageDialog(json["message"].ToString());
+            await message.ShowAsync();
+            if (json["status"].ToString() == "1")
             {
-                client.BaseAddress = new Uri(session.getApiURL());
-                client.DefaultRequestHeaders.Accept.Clear();
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                HttpContent content = new StringContent("");
-                HttpResponseMessage response = await client.PutAsync("user/acceptContactRequest/" +id_daftar_kontak, content);
-                if (response.IsSuccessStatusCode)
-                {
-                    var responseData = response.Content.ReadAsStringAsync().Result;
-                    JObject json = JObject.Parse(responseData);
-                    var message = new MessageDialog(json["message"].ToString());
-                    await message.ShowAsync();
-                    if (json["status"].ToString() == "1")
-                    {
-                        updateListContact();
-                        updateListPendingContactRequest();
-                    } 
-                }
+                updateListContact();
+                updateListPendingContactRequest();
             }
+            //using (var client = new HttpClient())
+            //{
+            //    client.BaseAddress = new Uri(session.getApiURL());
+            //    client.DefaultRequestHeaders.Accept.Clear();
+            //    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            //    HttpContent content = new StringContent("");
+            //    HttpResponseMessage response = await client.PutAsync("user/acceptContactRequest/" +id_daftar_kontak, content);
+            //    if (response.IsSuccessStatusCode)
+            //    {
+            //        var responseData = response.Content.ReadAsStringAsync().Result;
+            //        JObject json = JObject.Parse(responseData);
+            //        var message = new MessageDialog(json["message"].ToString());
+            //        await message.ShowAsync();
+            //        if (json["status"].ToString() == "1")
+            //        {
+            //            updateListContact();
+            //            updateListPendingContactRequest();
+            //        } 
+            //    }
+            //}
         }
 
         private async void declineRequest(object Sender, RoutedEventArgs e)
         {
             string id_daftar_kontak = (Sender as Button).Tag.ToString();
-            using (var client = new HttpClient())
+            string responseData = await httpObject.DeleteRequest("user/declineContactRequest/" + id_daftar_kontak);
+            JObject json = JObject.Parse(responseData);
+            if (json["status"].ToString() == "1")
             {
-                client.BaseAddress = new Uri(session.getApiURL());
-                client.DefaultRequestHeaders.Accept.Clear();
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                HttpResponseMessage response = await client.DeleteAsync("user/declineContactRequest/" + id_daftar_kontak);
-                if (response.IsSuccessStatusCode)
-                {
-                    var responseData = response.Content.ReadAsStringAsync().Result;
-                    JObject json = JObject.Parse(responseData);
-                    if (json["status"].ToString() == "1")
-                    {
-                        updateListContact();
-                        updateListPendingContactRequest();
-                    }
-                }
+                updateListContact();
+                updateListPendingContactRequest();
             }
+            //using (var client = new HttpClient())
+            //{
+            //    client.BaseAddress = new Uri(session.getApiURL());
+            //    client.DefaultRequestHeaders.Accept.Clear();
+            //    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            //    HttpResponseMessage response = await client.DeleteAsync("user/declineContactRequest/" + id_daftar_kontak);
+            //    if (response.IsSuccessStatusCode)
+            //    {
+            //        var responseData = response.Content.ReadAsStringAsync().Result;
+            //        JObject json = JObject.Parse(responseData);
+            //        if (json["status"].ToString() == "1")
+            //        {
+            //            updateListContact();
+            //            updateListPendingContactRequest();
+            //        }
+            //    }
+            //}
         }
     }
 }

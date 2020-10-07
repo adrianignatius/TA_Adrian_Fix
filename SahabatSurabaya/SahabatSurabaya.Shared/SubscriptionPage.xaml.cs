@@ -85,17 +85,16 @@ namespace SahabatSurabaya
                                 response2 = await client2.PostAsync("user/chargeUser", content2);
                                 if (response2.IsSuccessStatusCode)
                                 {
-                                    var message = new MessageDialog("");
                                     string subscribeResponse = response2.Content.ReadAsStringAsync().Result;
-                                    if (subscribeResponse == "200")
-                                    {
-                                        message.Content = "Berhasil Berlangganan";
-                                    }
-                                    else
-                                    {
-                                        message.Content = "Proses Berlangganan Bermasalah, Silahkan coba lagi beberapa saat";
-                                    }
+                                    json = JObject.Parse(subscribeResponse);
+                                    var message = new MessageDialog(json["message"].ToString());
                                     await message.ShowAsync();
+                                    if (json["status"].ToString() == "1")
+                                    {
+                                        userLogin.status_user = 1;
+                                        userLogin.premium_available_until = json["premium_available_until"].ToString();
+                                        this.Frame.GoBack();
+                                    }
                                 }
                                 else
                                 {

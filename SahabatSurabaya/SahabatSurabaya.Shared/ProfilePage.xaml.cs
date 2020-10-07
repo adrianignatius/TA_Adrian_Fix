@@ -144,6 +144,7 @@ namespace SahabatSurabaya
             btnEditLokasi.Content = "Atur";
             txtStatusLokasiAktif.Text = "(Belum diatur)";
             txtLabelLokasi.Text = "Anda belum mengatur lokasi aktif";
+            btnEditLokasi.Tag = "new";
             lokasiUser = null;
             lat = null;
             lng = null;
@@ -153,6 +154,10 @@ namespace SahabatSurabaya
         {
             lokasiUser = txtAutocompleteAddress.Text;
             txtLabelLokasi.Text = lokasiUser;
+            btnEditLokasi.Tag = "update";
+            txtStatusLokasiAktif.Text = "(Sudah diatur)";
+            btnEditLokasi.Content = "Ubah";
+            btnDisableLokasi.Visibility = Visibility.Visible;
             hideEditPanel(sender, e);
         }
 
