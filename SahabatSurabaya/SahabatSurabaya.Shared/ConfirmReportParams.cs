@@ -25,13 +25,11 @@ namespace SahabatSurabaya.Shared
 
         public string display_combobox { get; set; }
 
-        public string value_combobox { get; set; }
-
         public UploadedImage image_laporan { get; set; }
 
         public string nama_file_gambar { get; set; }
 
-        public ConfirmReportParams(string tag_laporan,string judul_laporan, string jenis_laporan, string deskripsi_laporan, string lat_laporan, string lng_laporan, string alamat_laporan, string tanggal_laporan, string waktu_laporan, string display_combobox, string value_combobox, UploadedImage image_laporan,string nama_file_gambar)
+        public ConfirmReportParams(string tag_laporan,string judul_laporan, string jenis_laporan, string deskripsi_laporan, string lat_laporan, string lng_laporan, string alamat_laporan, string tanggal_laporan, string waktu_laporan, string display_combobox, UploadedImage image_laporan,string nama_file_gambar)
         {
             this.tag_laporan = tag_laporan;
             this.judul_laporan = judul_laporan;
@@ -43,7 +41,6 @@ namespace SahabatSurabaya.Shared
             this.alamat_laporan = alamat_laporan;
             this.waktu_laporan = waktu_laporan;
             this.display_combobox = display_combobox;
-            this.value_combobox = value_combobox;
             this.image_laporan = image_laporan;
             this.nama_file_gambar = nama_file_gambar;
         }

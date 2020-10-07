@@ -32,6 +32,7 @@ namespace SahabatSurabaya
         bool isChosen = false;
         string lat, lng = "";
         Session session;
+        HttpObject httpObject;
         UploadedImage imageLaporan;
         List<SettingKategori> listSetingKategoriKriminalitas;
         ObservableCollection<AutocompleteAddress> listAutoCompleteAddress;
@@ -45,6 +46,7 @@ namespace SahabatSurabaya
             dispatcherTimer = new DispatcherTimer();
             dispatcherTimer.Interval = new TimeSpan(0, 0, 0, 0, 200);
             dispatcherTimer.Tick += DispatcherTimer_Tick;
+            httpObject = new HttpObject();
         }
 
         private void DispatcherTimer_Tick(object sender, object e)
@@ -72,7 +74,7 @@ namespace SahabatSurabaya
                     JObject json = JObject.Parse(jsonString);
                     lat = json["results"][0]["geometry"]["location"]["lat"].ToString().Replace(",", ".");
                     lng = json["results"][0]["geometry"]["location"]["lng"].ToString().Replace(",", ".");
-                    webViewMap.Navigate(new Uri(session.getUrlWebView() + "location-map.php?lat=" + lat + "&lng=" + lng));
+                    webViewMap.Navigate(new Uri(session.getUrlWebView() + "location-map.php?lat=" + lat + "&lng=" + lng+"&type=2"));
                 }
             }
             listAutoCompleteAddress.Clear();
@@ -141,25 +143,37 @@ namespace SahabatSurabaya
             tick = 0;
         }
 
-        public async void CrimeReportPageLoaded(object sender,RoutedEventArgs e)
+        private void setComboBoxKategoriKriminalitas()
+        {
+            listSetingKategoriKriminalitas.Add(new SettingKategori("Penculikkan", "kidnap-icon.jpg"));
+            listSetingKategoriKriminalitas.Add(new SettingKategori("Pencurian", "robbery-icon.png"));
+            listSetingKategoriKriminalitas.Add(new SettingKategori("Perusakkan Fasilitas Umum", "vandalism-icon.png"));
+            listSetingKategoriKriminalitas.Add(new SettingKategori("Tabrak Lari", "hitandrun-icon.png"));
+            listSetingKategoriKriminalitas.Add(new SettingKategori("Kekerasan", "violence-icon.png"));
+            listSetingKategoriKriminalitas.Add(new SettingKategori("Aktifitas Mencurigakan", "suspicious-activity.jpg"));
+            cbJenisKejadian.ItemsSource = listSetingKategoriKriminalitas;
+            cbJenisKejadian.DisplayMemberPath = "nama_kategori";
+            cbJenisKejadian.SelectedValuePath = "nama_kategori";
+        }
+        public void CrimeReportPageLoaded(object sender,RoutedEventArgs e)
         {
             userLogin = session.getUserLogin();
-            listSetingKategoriKriminalitas.Add(new SettingKategori())
-            using (var client = new HttpClient())
-            {
-                client.BaseAddress = new Uri(session.getApiURL());
-                client.DefaultRequestHeaders.Accept.Clear();
-                HttpResponseMessage response = await client.GetAsync("/getAllKategoriCrime");
-                if (response.IsSuccessStatusCode)
-                {
-                    var jsonString = await response.Content.ReadAsStringAsync();
-                    var responseData = response.Content.ReadAsStringAsync().Result;
-                    listSetingKategoriKriminalitas = JsonConvert.DeserializeObject<List<SettingKategori>>(responseData);
-                    cbJenisKejadian.ItemsSource = listSetingKategoriKriminalitas;
-                    cbJenisKejadian.DisplayMemberPath = "nama_kategori";
-                    cbJenisKejadian.SelectedValuePath = "id_kategori";
-                }
-            }
+            setComboBoxKategoriKriminalitas();
+            //using (var client = new HttpClient())
+            //{
+            //    client.BaseAddress = new Uri(session.getApiURL());
+            //    client.DefaultRequestHeaders.Accept.Clear();
+            //    HttpResponseMessage response = await client.GetAsync("/getAllKategoriCrime");
+            //    if (response.IsSuccessStatusCode)
+            //    {
+            //        var jsonString = await response.Content.ReadAsStringAsync();
+            //        var responseData = response.Content.ReadAsStringAsync().Result;
+            //        listSetingKategoriKriminalitas = JsonConvert.DeserializeObject<List<SettingKategori>>(responseData);
+            //        cbJenisKejadian.ItemsSource = listSetingKategoriKriminalitas;
+            //        cbJenisKejadian.DisplayMemberPath = "nama_kategori";
+            //        cbJenisKejadian.SelectedValuePath = "id_kategori";
+            //    }
+            //}
         }
 
         private void deleteFile(object sender, RoutedEventArgs e)
@@ -177,26 +191,19 @@ namespace SahabatSurabaya
             {
                 location = await Geolocation.GetLocationAsync(new GeolocationRequest
                 {
-                    DesiredAccuracy = GeolocationAccuracy.Medium,
+                    DesiredAccuracy = GeolocationAccuracy.Best,
                     Timeout = TimeSpan.FromSeconds(30)
                 }); ;
             }
             lat = location.Latitude.ToString().Replace(",", ".");
             lng = location.Longitude.ToString().Replace(",", ".");
-            using (var client = new HttpClient())
-            {
-                string latlng = lat + "," + lng;
-                string reqUri = "https://maps.googleapis.com/maps/api/geocode/json?latlng="+latlng+"    ";
-                HttpResponseMessage response = await client.GetAsync(reqUri);
-                if (response.IsSuccessStatusCode)
-                {
-                    var jsonString = response.Content.ReadAsStringAsync().Result;
-                    JObject json = JObject.Parse(jsonString);
-                    string address = json["results"][0]["formatted_address"].ToString();
-                    txtAutocompleteAddress.Text = address;
-                    webViewMap.Navigate(new Uri(session.getUrlWebView() + "location-map.php?lat=" + lat + "&lng=" + lng));
-                }
-            }
+            string latlng = lat + "," + lng;
+            string reqUri = "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + latlng + "&key=AIzaSyA9rHJZEGWe6rX4nAHTGXFxCubmw-F0BBw";
+            string responseData = await httpObject.GetRequest(reqUri);
+            JObject json = JObject.Parse(responseData);
+            string address = json["results"][0]["formatted_address"].ToString();
+            txtAutocompleteAddress.Text = address;
+            webViewMap.Navigate(new Uri(session.getUrlWebView() + "location-map.php?lat=" + lat + "&lng=" + lng+"&type=2"));
         }
 
         public async void goToDetail(object sender, RoutedEventArgs e)
@@ -213,16 +220,12 @@ namespace SahabatSurabaya
                 string valueKategoriKejadian = cbJenisKejadian.SelectedValue.ToString();
                 string alamatLaporan = txtAutocompleteAddress.Text;
                 string displayJeniskejadian = listSetingKategoriKriminalitas[cbJenisKejadian.SelectedIndex].nama_kategori.ToString();
-                string valueJenisKejadian = cbJenisKejadian.SelectedValue.ToString();
                 string tglLaporan = DateTime.Now.ToString("dd/MM/yyyy");
                 string waktuLaporan = DateTime.Now.ToString("HH:mm:ss");
                 string namaFileGambar = listSetingKategoriKriminalitas[cbJenisKejadian.SelectedIndex].file_gambar_kategori;
-                ConfirmReportParams param = new ConfirmReportParams("kriminalitas", judulLaporan, null, descKejadian, lat, lng, alamatLaporan, tglLaporan, waktuLaporan, displayJeniskejadian, valueJenisKejadian, imageLaporan, namaFileGambar);
+                ConfirmReportParams param = new ConfirmReportParams("kriminalitas", judulLaporan, null, descKejadian, lat, lng, alamatLaporan, tglLaporan, waktuLaporan, displayJeniskejadian, imageLaporan, namaFileGambar);
                 session.setConfirmreportParam(param);
                 this.Frame.Navigate(typeof(ConfirmReportPage));
-                //CrimeReportParams param = new CrimeReportParams(judulLaporan, lat, lng, descKejadian, tglLaporan, waktuLaporan, alamatLaporan, displayJeniskejadian, valueJenisKejadian, imageLaporan, namaFileGambar);
-                //session.setCrimeReportDetailPageParams(param);
-                //this.Frame.Navigate(typeof(CrimeReportDetailPage));
             }     
         }
 

@@ -11,8 +11,6 @@ using System.Net.Http;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
 using Xamarin.Essentials;
 
 namespace SahabatSurabaya
@@ -25,6 +23,7 @@ namespace SahabatSurabaya
         bool isChosen = false;
         string lat, lng = "";
         UploadedImage imageLaporan;
+        HttpObject httpObject;
         ObservableCollection<AutocompleteAddress> listAutoCompleteAddress;
         List<SettingKategori> listSettingKategoriLostFound;
         Session session;
@@ -34,6 +33,7 @@ namespace SahabatSurabaya
             listSettingKategoriLostFound = new List<SettingKategori>();
             listAutoCompleteAddress = new ObservableCollection<AutocompleteAddress>();
             session = new Session();
+            httpObject = new HttpObject();
             dispatcherTimer = new DispatcherTimer();
             dispatcherTimer.Interval = new TimeSpan(0, 0, 0, 0, 200);
             dispatcherTimer.Tick += DispatcherTimer_Tick;
@@ -108,6 +108,20 @@ namespace SahabatSurabaya
             }
         }
 
+        private void setComboBoxKategoriLostFound()
+        {
+            listSettingKategoriLostFound.Add(new SettingKategori("Handphone", "handphone-icon.png"));
+            listSettingKategoriLostFound.Add(new SettingKategori("Tas", "bag-icon.png"));
+            listSettingKategoriLostFound.Add(new SettingKategori("Jam Tangan", "watch-icon.png"));
+            listSettingKategoriLostFound.Add(new SettingKategori("Perhiasan", "jewerly-icon.png"));
+            listSettingKategoriLostFound.Add(new SettingKategori("Sepatu", "shoes-icon.png"));
+            listSettingKategoriLostFound.Add(new SettingKategori("Hewan Peliharaan", "pet-icon.png"));
+            listSettingKategoriLostFound.Add(new SettingKategori("Dompet", "wallet-icon.png"));
+            cbJenisBarang.ItemsSource = listSettingKategoriLostFound;
+            cbJenisBarang.DisplayMemberPath = "nama_kategori";
+            cbJenisBarang.SelectedValuePath = "nama_kategori";
+        }
+
         private void txtAutocompleteAddressTextChanged(object sender, TextChangedEventArgs e)
         {
             if (txtAutocompleteAddress.Text.Length == 0)
@@ -129,46 +143,26 @@ namespace SahabatSurabaya
             {
                 location = await Geolocation.GetLocationAsync(new GeolocationRequest
                 {
-                    DesiredAccuracy = GeolocationAccuracy.Medium,
+                    DesiredAccuracy = GeolocationAccuracy.Best,
                     Timeout = TimeSpan.FromSeconds(30)
                 }); ;
             }
             lat = location.Latitude.ToString().Replace(",", ".");
             lng = location.Longitude.ToString().Replace(",", ".");
-            using (var client = new HttpClient())
-            {
-                string latlng = lat + "," + lng;
-                string reqUri = "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + latlng + "&key=AIzaSyA9rHJZEGWe6rX4nAHTGXFxCubmw-F0BBw";
-                HttpResponseMessage response = await client.GetAsync(reqUri);
-                if (response.IsSuccessStatusCode)
-                {
-                    var jsonString = response.Content.ReadAsStringAsync().Result;
-                    JObject json = JObject.Parse(jsonString);
-                    string address = json["results"][0]["formatted_address"].ToString();
-                    txtAutocompleteAddress.Text = address;
-                    webViewMap.Navigate(new Uri(session.getUrlWebView() + "location-map.php?lat=" + lat + "&lng=" + lng));
-                }
-            }
+            string latlng = lat + "," + lng;
+            string reqUri = "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + latlng + "&key=AIzaSyA9rHJZEGWe6rX4nAHTGXFxCubmw-F0BBw";
+            string responseData = await httpObject.GetRequest(reqUri);
+            JObject json = JObject.Parse(responseData);
+            string address = json["results"][0]["formatted_address"].ToString();
+            txtAutocompleteAddress.Text = address;
+            string type = (bool)rbLostItem.IsChecked ? "1" : "0";
+            webViewMap.Navigate(new Uri(session.getUrlWebView() + "location-map.php?lat=" + lat + "&lng=" + lng+"&type="+type));
         }
 
-        private async void LostFoundPageLoaded(object sender, RoutedEventArgs e)
+        private void LostFoundPageLoaded(object sender, RoutedEventArgs e)
         {
             userLogin = session.getUserLogin();
-            using (var client = new HttpClient()) 
-            {
-                client.BaseAddress = new Uri(session.getApiURL());
-                client.DefaultRequestHeaders.Accept.Clear();
-                HttpResponseMessage response = await client.GetAsync("/getAllKategoriLostFound");
-                if (response.IsSuccessStatusCode)
-                {
-                    var jsonString = await response.Content.ReadAsStringAsync();
-                    var responseData = response.Content.ReadAsStringAsync().Result;
-                    listSettingKategoriLostFound = JsonConvert.DeserializeObject<List<SettingKategori>>(responseData);
-                    cbJenisBarang.ItemsSource = listSettingKategoriLostFound;
-                    cbJenisBarang.DisplayMemberPath = "nama_kategori";
-                    cbJenisBarang.SelectedValuePath = "id_kategori";
-                }
-            }
+            setComboBoxKategoriLostFound();
         }
 
         private async void goToDetail(object sender, RoutedEventArgs e)
@@ -181,18 +175,16 @@ namespace SahabatSurabaya
             else
             {
                 if (imageLaporan != null)
-                {
-                    int jenisLaporan;
-                    jenisLaporan = (bool)rbLostItem.IsChecked ? 1 : 0;
+                {   
+                    int jenisLaporan = (bool)rbLostItem.IsChecked ? 1 : 0;
                     string judulLaporan = txtJudulLaporan.Text;
                     string descLaporan = txtDescBarang.Text;
                     string alamatLaporan = txtAutocompleteAddress.Text;
                     string displayJenisBarang = listSettingKategoriLostFound[cbJenisBarang.SelectedIndex].nama_kategori.ToString();
-                    string valueJenisBarang = cbJenisBarang.SelectedValue.ToString();
                     string tglLaporan = DateTime.Now.ToString("dd/MM/yyyy");
                     string waktuLaporan = DateTime.Now.ToString("HH:mm:ss");
                     string namaFileGambar = listSettingKategoriLostFound[cbJenisBarang.SelectedIndex].file_gambar_kategori;
-                    ConfirmReportParams param = new ConfirmReportParams("lostfound", judulLaporan, jenisLaporan.ToString(), descLaporan, lat, lng, alamatLaporan, tglLaporan, waktuLaporan, displayJenisBarang, valueJenisBarang, imageLaporan, namaFileGambar);
+                    ConfirmReportParams param = new ConfirmReportParams("lostfound", judulLaporan, jenisLaporan.ToString(), descLaporan, lat, lng, alamatLaporan, tglLaporan, waktuLaporan, displayJenisBarang, imageLaporan, namaFileGambar);
                     session.setConfirmreportParam(param);
                     this.Frame.Navigate(typeof(ConfirmReportPage));
                 }
@@ -251,17 +243,17 @@ namespace SahabatSurabaya
                 FileData fileData = await CrossFilePicker.Current.PickFile(new string[] { ".jpg" });
                 if (fileData == null)
                 {
-                    return; // user canceled file picking
+                    return;
                 }
                 else
                 {
                     string fileName = fileData.FileName;
                     contents = System.Text.Encoding.UTF8.GetString(fileData.DataArray);
-                    imageLaporan = new UploadedImage(fileName,fileData.DataArray, fileData.DataArray.Length);
+                    imageLaporan = new UploadedImage(fileName, fileData.DataArray, fileData.DataArray.Length);
                     txtNamaFile.Text = fileName;
                     gridFile.Visibility = Visibility.Visible;
                     txtStatusFile.Visibility = Visibility.Collapsed;
-                }              
+                }
             }
             catch (Exception ex)
             {

@@ -221,6 +221,7 @@
     <Content Include="$(MSBuildThisFileDirectory)Assets\avatar-profile.png" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\bg.jpg" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\border.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Assets\icon\wallet-icon.png" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\no-image.png" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\icon\back.png" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\icon\bag-icon.png" />
