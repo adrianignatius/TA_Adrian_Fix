@@ -52,14 +52,14 @@ namespace SahabatSurabaya
             {
                 client.BaseAddress = new Uri(session.getApiURL());
                 client.DefaultRequestHeaders.Accept.Clear();
-                HttpResponseMessage response = await client.GetAsync("getHeaderChat/"+userLogin.id_user);
+                HttpResponseMessage response = await client.GetAsync("user/getHeaderChat/"+userLogin.id_user);
                 if (response.IsSuccessStatusCode)
                 {
                     var responseData = response.Content.ReadAsStringAsync().Result;
                     ObservableCollection<HeaderChat>tempHeaderChat = JsonConvert.DeserializeObject<ObservableCollection<HeaderChat>>(responseData);
                     for (int i = 0; i < tempHeaderChat.Count; i++)
                     {
-                        HttpResponseMessage response2 = await client.GetAsync("getLastMessage/" + tempHeaderChat[i].id_chat);
+                        HttpResponseMessage response2 = await client.GetAsync("user/getLastMessage/" + tempHeaderChat[i].id_chat);
                         if (response2.IsSuccessStatusCode)
                         {
                             int id_target_chat = 0;

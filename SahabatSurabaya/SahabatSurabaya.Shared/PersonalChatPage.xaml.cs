@@ -62,7 +62,7 @@ namespace SahabatSurabaya
             {
                 client.BaseAddress = new Uri(session.getApiURL());
                 client.DefaultRequestHeaders.Accept.Clear();
-                HttpResponseMessage response = await client.GetAsync("/getAllChat/"+param.id_chat);
+                HttpResponseMessage response = await client.GetAsync("user/getAllChat/"+param.id_chat);
                 if (response.IsSuccessStatusCode)
                 {
                     var responseData = response.Content.ReadAsStringAsync().Result;
@@ -96,7 +96,7 @@ namespace SahabatSurabaya
                     form.Add(new StringContent(param.id_user_pengirim.ToString()), "id_user_pengirim");
                     form.Add(new StringContent(param.id_user_penerima.ToString()), "id_user_penerima");
                     form.Add(new StringContent(chatMessage), "isi_chat");
-                    HttpResponseMessage response = await client.PostAsync("insertDetailChat", form);
+                    HttpResponseMessage response = await client.PostAsync("user/insertDetailChat", form);
                     if (response.IsSuccessStatusCode)
                     {
                         txtChatMessage.Text = "";

@@ -698,22 +698,34 @@ return function (App $app) {
             return $response->withJson(["count"=>$result]);
         });
 
-        $app->post('/konfirmasiLaporanKriminalitas',function ($request,$response){
-            $body = $request->getParsedBody();
-            $sql="INSERT INTO konfirmasi_laporan_kriminalitas VALUES(:id_laporan,:id_user)";
+        $app->get('/checkHeaderChat', function ($request, $response,$args) {   
+            $id_user_1=$request->getQueryParam('id_user_1');
+            $id_user_2=$request->getQueryParam('id_user_2');
+            $sql = "SELECT id_chat from header_chat where id_user_1=:id_user_1 and id_user_2=:id_user_2 or id_user_1=:id_user_2 and id_user_2=:id_user_1";
             $stmt = $this->db->prepare($sql);
-            $data=[
-                ":id_laporan"=>$body["id_laporan"],
-                ":id_user"=>$body["id_user"]
+            $data = [
+                ":id_user_1" => $id_user_1,
+                ":id_user_2" => $id_user_2
             ];
-            if($stmt->execute($data)){
-                return $response->withJson(["status" => "1", "message" => "Konfirmasi Laporan Berhasil"], 200);
+            $stmt->execute($data);
+            $result = $stmt->fetchColumn();
+            if($result==false){
+                $sql = "INSERT INTO header_chat (id_user_1,id_user_2)VALUE(:id_user_1,:id_user_2)";
+                $stmt = $this->db->prepare($sql);
+                $data = [
+                    ":id_user_1" => $id_user_1,
+                    ":id_user_2"=>$id_user_2
+                ];
+                if($stmt->execute($data)){
+                    return $response->withJson(["id_chat"=>$this->db->lastInsertId()]);
+                }else{
+                    return $response->withJson(400);
+                }
             }else{
-                return $response->withJson(["status" => "400", "message" => "Konfirmasi Laporan Gagal"], 200);
+                return $response->withJson(["id_chat"=>$result]);
             }
         });
-    });
-        
+
         $app->post('/insertKomentarLaporan', function ($request, $response) {
             $new_komentar = $request->getParsedBody();
             $datetime = DateTime::createFromFormat('d/m/Y', $new_komentar["tanggal_komentar"]);
@@ -730,113 +742,100 @@ return function (App $app) {
                 ":waktu_komentar" => $new_komentar["waktu_komentar"],
                 ":id_user_komentar" => $new_komentar["id_user_komentar"]
             ];
+            if($stmt->execute($data)){
+                return $response->withJson(["status" => "1", "message" => "Berhasil menambah komentar"], 200);
+            }else{
+                return $response->withJson(["status" => "400", "message" => "Gagal menambah komentar"], 200);
+            } 
+        });
+
+        $app->post('/konfirmasiLaporanKriminalitas',function ($request,$response){
+            $body = $request->getParsedBody();
+            $sql="INSERT INTO konfirmasi_laporan_kriminalitas VALUES(:id_laporan,:id_user)";
+            $stmt = $this->db->prepare($sql);
+            $data=[
+                ":id_laporan"=>$body["id_laporan"],
+                ":id_user"=>$body["id_user"]
+            ];
+            if($stmt->execute($data)){
+                return $response->withJson(["status" => "1", "message" => "Konfirmasi Laporan Berhasil"], 200);
+            }else{
+                return $response->withJson(["status" => "400", "message" => "Konfirmasi Laporan Gagal"], 200);
+            }
+        });
+
+        $app->get('/getHeaderChat/{id_user}', function ($request, $response,$args) {   
+            $id_user=$args["id_user"];
+            $sql = "SELECT h.id_chat,h.id_user_1,h.id_user_2,u.nama_user as nama_user_1,u2.nama_user as nama_user_2 from header_chat h,user u, user u2 where h.id_user_1=u.id_user and h.id_user_2=u2.id_user and (h.id_user_1=:id_user OR h.id_user_2=:id_user)";
+            $stmt = $this->db->prepare($sql);
+            $data = [
+                ":id_user" => $id_user
+            ];
+            $stmt->execute($data);
+            $result = $stmt->fetchAll();
+            return $response->withJson($result, 200);
+        });
+
+        $app->get('/getAllChat/{id_chat}', function ($request, $response,$args) {   
+            $id_chat=$args["id_chat"];
+            $sql = "SELECT * from detail_chat where id_chat=:id_chat";
+            $stmt = $this->db->prepare($sql);
+            $data = [
+                ":id_chat" => $id_chat
+            ];
+            $stmt->execute($data);
+            $result = $stmt->fetchAll();
+            return $response->withJson($result);
+        });
+
+        $app->get('/getLastMessage/{id_chat}', function ($request, $response,$args) {   
+            $id_chat=$args["id_chat"];
+            $sql = "SELECT d.id_chat,d.id_user_pengirim,d.id_user_penerima,d.isi_chat,d.waktu_chat,u1.nama_user as nama_user_pengirim,u2.nama_user as nama_user_penerima FROM detail_chat d,user u1,user u2 where d.id_chat=:id_chat and d.id_user_pengirim=u1.id_user and d.id_user_penerima=u2.id_user order by d.waktu_chat desc LIMIT 1";
+            $stmt = $this->db->prepare($sql);
+            $data = [
+                ":id_chat" => $id_chat
+            ];
+            $stmt->execute($data);
+            $result = $stmt->fetch();
+            return $response->withJson($result);
+        });
+
+        $app->post('/insertHeaderChat', function ($request, $response) {
+            $body = $request->getParsedBody();
+            $sql = "INSERT INTO header_chat (id_user_1,id_user_2)VALUE(:id_user_1,:id_user_2)";
+            $stmt = $this->db->prepare($sql);
+            $data = [
+                ":id_user_1" => $body["id_user_1"],
+                ":id_user_2"=>$body["id_user_2"]
+            ];
+            if($stmt->execute($data)){
+                return $response->withJson(200);
+            }else{
+                return $response->withJson(400);
+            }
+        });
+        
+
+        $app->post('/insertDetailChat', function ($request, $response) {
+            $new_chat = $request->getParsedBody();
+            $datetime = date("Y/m/d H:i");
+            $sql = "INSERT INTO detail_chat (id_chat,id_user_pengirim, id_user_penerima, isi_chat, waktu_chat) VALUE (:id_chat,:id_user_pengirim,:id_user_penerima, :isi_chat, :waktu_chat)";
+            $stmt = $this->db->prepare($sql);
+            $data = [
+                ":id_chat"=>$new_chat["id_chat"],
+                ":id_user_pengirim" => $new_chat["id_user_pengirim"],
+                ":id_user_penerima"=>$new_chat["id_user_penerima"],
+                ":isi_chat" => $new_chat["isi_chat"],
+                ":waktu_chat" => $datetime
+            ];
         
             if($stmt->execute($data))
             return $response->withJson(["status" => "success", "data" => "1"], 200);
             
             return $response->withJson(["status" => "failed", "data" => "0"], 200);
             });
-
-            $app->get('/getHeaderChat/{id_user}', function ($request, $response,$args) {   
-                $id_user=$args["id_user"];
-                $sql = "SELECT h.id_chat,h.id_user_1,h.id_user_2,u.nama_user as nama_user_1,u2.nama_user as nama_user_2 from header_chat h,user u, user u2 where h.id_user_1=u.id_user and h.id_user_2=u2.id_user and (h.id_user_1=:id_user OR h.id_user_2=:id_user)";
-                $stmt = $this->db->prepare($sql);
-                $data = [
-                    ":id_user" => $id_user
-                ];
-                $stmt->execute($data);
-                $result = $stmt->fetchAll();
-                return $response->withJson($result, 200);
-            });
-            
-
-            $app->get('/getAllChat/{id_chat}', function ($request, $response,$args) {   
-                $id_chat=$args["id_chat"];
-                $sql = "SELECT * from detail_chat where id_chat=:id_chat";
-                $stmt = $this->db->prepare($sql);
-                $data = [
-                    ":id_chat" => $id_chat
-                ];
-                $stmt->execute($data);
-                $result = $stmt->fetchAll();
-                return $response->withJson($result);
-            });
-
-            $app->get('/getLastMessage/{id_chat}', function ($request, $response,$args) {   
-                $id_chat=$args["id_chat"];
-                $sql = "SELECT d.id_chat,d.id_user_pengirim,d.id_user_penerima,d.isi_chat,d.waktu_chat,u1.nama_user as nama_user_pengirim,u2.nama_user as nama_user_penerima FROM detail_chat d,user u1,user u2 where d.id_chat=:id_chat and d.id_user_pengirim=u1.id_user and d.id_user_penerima=u2.id_user order by d.waktu_chat desc LIMIT 1";
-                $stmt = $this->db->prepare($sql);
-                $data = [
-                    ":id_chat" => $id_chat
-                ];
-                $stmt->execute($data);
-                $result = $stmt->fetch();
-                return $response->withJson($result);
-            });
-
-            $app->get('/checkHeaderChat/{id_user_1}/{id_user_2}', function ($request, $response,$args) {   
-                $id_user_1=$args["id_user_1"];
-                $id_user_2=$args["id_user_2"];
-                $sql = "SELECT id_chat from header_chat where id_user_1=:id_user_1 and id_user_2=:id_user_2 or id_user_1=:id_user_2 and id_user_2=:id_user_1";
-                $stmt = $this->db->prepare($sql);
-                $data = [
-                    ":id_user_1" => $id_user_1,
-                    ":id_user_2" => $id_user_2
-                ];
-                $stmt->execute($data);
-                $result = $stmt->fetchColumn();
-                if($result==false){
-                    $sql = "INSERT INTO header_chat (id_user_1,id_user_2)VALUE(:id_user_1,:id_user_2)";
-                    $stmt = $this->db->prepare($sql);
-                    $data = [
-                        ":id_user_1" => $id_user_1,
-                        ":id_user_2"=>$id_user_2
-                    ];
-                    if($stmt->execute($data)){
-                        return $response->withJson(["id_chat"=>$this->db->lastInsertId()]);
-                    }else{
-                        return $response->withJson(400);
-                    }
-                }else{
-                    return $response->withJson(["id_chat"=>$result]);
-                }
-            });
-
-            $app->post('/insertHeaderChat', function ($request, $response) {
-                $body = $request->getParsedBody();
-                $sql = "INSERT INTO header_chat (id_user_1,id_user_2)VALUE(:id_user_1,:id_user_2)";
-                $stmt = $this->db->prepare($sql);
-                $data = [
-                    ":id_user_1" => $body["id_user_1"],
-                    ":id_user_2"=>$body["id_user_2"]
-                ];
-                if($stmt->execute($data)){
-                    return $response->withJson(200);
-                }else{
-                    return $response->withJson(400);
-                }
-            });
-            
-
-            $app->post('/insertDetailChat', function ($request, $response) {
-                $new_chat = $request->getParsedBody();
-                $datetime = date("Y/m/d H:i");
-                $sql = "INSERT INTO detail_chat (id_chat,id_user_pengirim, id_user_penerima, isi_chat, waktu_chat) VALUE (:id_chat,:id_user_pengirim,:id_user_penerima, :isi_chat, :waktu_chat)";
-                $stmt = $this->db->prepare($sql);
-                $data = [
-                    ":id_chat"=>$new_chat["id_chat"],
-                    ":id_user_pengirim" => $new_chat["id_user_pengirim"],
-                    ":id_user_penerima"=>$new_chat["id_user_penerima"],
-                    ":isi_chat" => $new_chat["isi_chat"],
-                    ":waktu_chat" => $datetime
-                ];
-            
-                if($stmt->execute($data))
-                return $response->withJson(["status" => "success", "data" => "1"], 200);
-                
-                return $response->withJson(["status" => "failed", "data" => "0"], 200);
-                });
-
+    });
+        
         $app->post('/insertLaporanLostFound', function(Request $request, Response $response,$args) {
             $new_laporan = $request->getParsedBody();
             $datetime = DateTime::createFromFormat('d/m/Y', $new_laporan["tanggal_laporan"]);

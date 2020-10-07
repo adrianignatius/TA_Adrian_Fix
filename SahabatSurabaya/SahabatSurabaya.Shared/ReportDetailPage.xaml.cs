@@ -2,6 +2,7 @@
 using Newtonsoft.Json.Linq;
 using SahabatSurabaya.Shared;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Globalization;
@@ -23,10 +24,12 @@ namespace SahabatSurabaya
         User userLogin;
         ObservableCollection<KomentarLaporan> listKomentar;
         Session session;
+        HttpObject httpObject;
         public ReportDetailPage()
         {
             this.InitializeComponent();
             session = new Session();
+            httpObject = new HttpObject();
             listKomentar = new ObservableCollection<KomentarLaporan>();
         }
         
@@ -89,6 +92,10 @@ namespace SahabatSurabaya
                 CloseButtonText = "Batal"
             };
             ContentDialogResult result = await confirmDialog.ShowAsync();
+            if (result == ContentDialogResult.Primary)
+            {
+                btnKonfirmasi.IsEnabled = false;
+            }
         }
 
         private void Back_Click(object sender, RoutedEventArgs e)
@@ -115,19 +122,22 @@ namespace SahabatSurabaya
 
         public async void loadKomentarLaporan()
         {
-            using (var client = new HttpClient())
-            {
-                client.BaseAddress = new Uri(session.getApiURL());
-                client.DefaultRequestHeaders.Accept.Clear();
-                HttpResponseMessage response = await client.GetAsync("/getKomentarLaporan/"+ param.id_laporan);
-                if (response.IsSuccessStatusCode)
-                {
-                    var jsonString = await response.Content.ReadAsStringAsync();
-                    var responseData = response.Content.ReadAsStringAsync().Result;
-                    listKomentar = JsonConvert.DeserializeObject<ObservableCollection<KomentarLaporan>>(responseData);
-                    lvKomentarLaporan.ItemsSource = listKomentar;
-                }
-            }
+            string responseData = await httpObject.GetRequest("getKomentarLaporan/" + param.id_laporan);
+            listKomentar = JsonConvert.DeserializeObject<ObservableCollection<KomentarLaporan>>(responseData);
+            lvKomentarLaporan.ItemsSource = listKomentar;
+            //using (var client = new HttpClient())
+            //{
+            //    client.BaseAddress = new Uri(session.getApiURL());
+            //    client.DefaultRequestHeaders.Accept.Clear();
+            //    HttpResponseMessage response = await client.GetAsync("/getKomentarLaporan/"+ param.id_laporan);
+            //    if (response.IsSuccessStatusCode)
+            //    {
+            //        var jsonString = await response.Content.ReadAsStringAsync();
+            //        var responseData = response.Content.ReadAsStringAsync().Result;
+            //        listKomentar = JsonConvert.DeserializeObject<ObservableCollection<KomentarLaporan>>(responseData);
+            //        lvKomentarLaporan.ItemsSource = listKomentar;
+            //    }
+            //}
         }
 
         private async void shareLaporan(object sender, RoutedEventArgs e)
@@ -140,20 +150,25 @@ namespace SahabatSurabaya
         }
         private async void goToChatPage(object sender, RoutedEventArgs e)
         {
-            using (var client = new HttpClient())
-            {
-                client.BaseAddress = new Uri(session.getApiURL());
-                client.DefaultRequestHeaders.Accept.Clear();
-                HttpResponseMessage response = await client.GetAsync("/checkHeaderChat/" + userLogin.id_user+"/"+param.id_user_pelapor);
-                if (response.IsSuccessStatusCode)
-                {
-                    var responseData = response.Content.ReadAsStringAsync().Result;
-                    JObject json = JObject.Parse(responseData);
-                    ChatPageParams chatParam = new ChatPageParams(Convert.ToInt32(json["id_chat"].ToString()), userLogin.id_user, param.id_user_pelapor, param.nama_user_pelapor);
-                    session.setChatPageParams(chatParam);
-                    this.Frame.Navigate(typeof(PersonalChatPage));
-                }
-            }
+            string responseData = await httpObject.GetRequest("user/checkHeaderChat?id_user_1=" + userLogin.id_user + "&id_user_2=" + param.id_user_pelapor);
+            JObject json = JObject.Parse(responseData);
+            ChatPageParams chatParam = new ChatPageParams(Convert.ToInt32(json["id_chat"].ToString()), userLogin.id_user, param.id_user_pelapor, param.nama_user_pelapor);
+            session.setChatPageParams(chatParam);
+            this.Frame.Navigate(typeof(PersonalChatPage));
+            //using (var client = new HttpClient())
+            //{
+            //    client.BaseAddress = new Uri(session.getApiURL());
+            //    client.DefaultRequestHeaders.Accept.Clear();
+            //    HttpResponseMessage response = await client.GetAsync("/checkHeaderChat/" + userLogin.id_user+"/"+param.id_user_pelapor);
+            //    if (response.IsSuccessStatusCode)
+            //    {
+            //        var responseData = response.Content.ReadAsStringAsync().Result;
+            //        JObject json = JObject.Parse(responseData);
+            //        ChatPageParams chatParam = new ChatPageParams(Convert.ToInt32(json["id_chat"].ToString()), userLogin.id_user, param.id_user_pelapor, param.nama_user_pelapor);
+            //        session.setChatPageParams(chatParam);
+            //        this.Frame.Navigate(typeof(PersonalChatPage));
+            //    }
+            //}
         }
 
         private async void sendComment(object sender,RoutedEventArgs e)
@@ -163,24 +178,34 @@ namespace SahabatSurabaya
                 string isi_komentar = txtKomentar.Text;
                 string tanggal_komentar = DateTime.Now.ToString("dd/MM/yyyy");
                 string waktu_komentar = DateTime.Now.ToString("HH:mm:ss");
-                using (var client = new HttpClient())
-                {
-                    client.BaseAddress = new Uri(session.getApiURL());
-                    MultipartFormDataContent form = new MultipartFormDataContent();
-                    form.Add(new StringContent(param.id_laporan), "id_laporan");
-                    form.Add(new StringContent(isi_komentar), "isi_komentar");
-                    form.Add(new StringContent(tanggal_komentar), "tanggal_komentar");
-                    form.Add(new StringContent(waktu_komentar), "waktu_komentar");
-                    form.Add(new StringContent(userLogin.id_user.ToString()), "id_user_komentar");
-                    HttpResponseMessage response = await client.PostAsync("insertKomentarLaporan", form);
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var message = new MessageDialog("Berhasil menambahkan komentar!");
-                        await message.ShowAsync();
-                        loadKomentarLaporan();
-                        txtKomentar.Text = "";
-                    }
-                }
+                var content = new FormUrlEncodedContent(new[]{
+                    new KeyValuePair<string, string>("id_laporan", param.id_laporan),
+                    new KeyValuePair<string, string>("isi_komentar", isi_komentar),
+                    new KeyValuePair<string, string>("tanggal_komentar", tanggal_komentar),
+                    new KeyValuePair<string, string>("waktu_komentar", waktu_komentar),
+                    new KeyValuePair<string, string>("id_user_komentar", userLogin.id_user.ToString())
+                });
+                string responseData = await httpObject.PostRequestWithUrlEncoded("user/insertKomentarLaporan", content);
+                JObject json = JObject.Parse(responseData);
+                var messageDialog = new MessageDialog(json["message"].ToString());
+                //using (var client = new HttpClient())
+                //{
+                //    client.BaseAddress = new Uri(session.getApiURL());
+                //    MultipartFormDataContent form = new MultipartFormDataContent();
+                //    form.Add(new StringContent(param.id_laporan), "id_laporan");
+                //    form.Add(new StringContent(isi_komentar), "isi_komentar");
+                //    form.Add(new StringContent(tanggal_komentar), "tanggal_komentar");
+                //    form.Add(new StringContent(waktu_komentar), "waktu_komentar");
+                //    form.Add(new StringContent(userLogin.id_user.ToString()), "id_user_komentar");
+                //    HttpResponseMessage response = await client.PostAsync("insertKomentarLaporan", form);
+                //    if (response.IsSuccessStatusCode)
+                //    {
+                //        var message = new MessageDialog("Berhasil menambahkan komentar!");
+                //        await message.ShowAsync();
+                //        loadKomentarLaporan();
+                //        txtKomentar.Text = "";
+                //    }
+                //}
             }
             else
             {
