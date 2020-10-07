@@ -3,11 +3,14 @@ using Newtonsoft.Json.Linq;
 using SahabatSurabaya.Shared;
 using System;
 using System.Collections.ObjectModel;
+using System.Drawing;
 using System.Globalization;
 using System.Net.Http;
+using Windows.UI;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using Xamarin.Essentials;
 
@@ -33,7 +36,37 @@ namespace SahabatSurabaya
             userLogin = session.getUserLogin();
             if (userLogin.id_user == param.id_user_pelapor)
             {
-                btnChatPage.IsEnabled = false;
+                btnChatPage.Visibility = Visibility.Collapsed;
+                btnKonfirmasi.Visibility = Visibility.Collapsed;
+            }
+            if (param.status_laporan == 0)
+            {
+                txtStatusLaporan.Text = "Belum diverifikasi";
+                txtStatusLaporan.Foreground = new SolidColorBrush(Colors.Red);
+                btnShare.Visibility = Visibility.Collapsed;
+                stackComment.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                txtStatusLaporan.Text = "Sudah diverifikasi";
+                txtStatusLaporan.Foreground = new SolidColorBrush(Colors.Green);
+            }
+            string type = "";
+            if (param.tag == "kriminalitas")
+            {
+                type = "2";
+            }
+            else
+            {
+                btnKonfirmasi.Visibility = Visibility.Collapsed;
+                if(param.jenis_laporan == "Penemuan barang")
+                {
+                    type = "0";
+                }
+                else
+                {
+                    type = "1";
+                }
             }
             imageLaporan.Source = new BitmapImage(new Uri(session.getUrlGambarLaporan() + param.thumbnail_gambar));
             txtNamaPengguna.Text = param.nama_user_pelapor;
@@ -43,7 +76,19 @@ namespace SahabatSurabaya
             txtAlamatLaporan.Text = param.alamat_laporan;
             txtJenisLaporan.Text = param.jenis_laporan;
             loadKomentarLaporan();
-            webVieMapLokasi.Navigate(new Uri(session.getUrlWebView() + "location-map.php?lat=" + param.lat_laporan + "&lng=" + param.lng_laporan));
+            webVieMapLokasi.Navigate(new Uri(session.getUrlWebView() + "location-map.php?lat=" + param.lat_laporan + "&lng=" + param.lng_laporan+"&type="+type));
+        }
+
+        private async void konfirmasiLaporan(object sender,RoutedEventArgs e)
+        {
+            ContentDialog confirmDialog = new ContentDialog
+            {
+                Title = "Apakah anda yakin ingin melakukan konfirmasi?",
+                Content = "Dengan melakukan konfirmasi maka anda membantu meningkatkan kebenaran informasi laporan ini ",
+                PrimaryButtonText = "Konfirmasi",
+                CloseButtonText = "Batal"
+            };
+            ContentDialogResult result = await confirmDialog.ShowAsync();
         }
 
         private void Back_Click(object sender, RoutedEventArgs e)

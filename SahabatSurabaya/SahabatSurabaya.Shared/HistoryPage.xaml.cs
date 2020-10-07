@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
-// The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
 namespace SahabatSurabaya.Shared
 {
@@ -29,14 +29,72 @@ namespace SahabatSurabaya.Shared
             listHistoryLaporanLostFound = new ObservableCollection<LaporanLostFound>();
         }
 
-        private async void pageLoaded(object sender,RoutedEventArgs e)
+        private void pageLoaded(object sender,RoutedEventArgs e)
+        {
+            setListViewLostFound();
+        }
+
+        public async void goToDetailPage(object sender, ItemClickEventArgs e)
+        {
+            string tag = (sender as ListView).Tag.ToString();
+            if (tag == "lvKriminalitas")
+            {
+                LaporanKriminalitas selected = (LaporanKriminalitas)e.ClickedItem;
+                ReportDetailPageParams param = new ReportDetailPageParams(userLogin.id_user, userLogin.nama_user, selected.id_laporan, selected.alamat_laporan, selected.tanggal_laporan, selected.waktu_laporan, selected.judul_laporan, selected.jenis_kejadian, selected.deskripsi_kejadian, selected.lat_laporan, selected.lng_laporan, "kriminalitas", selected.thumbnail_gambar,selected.status_laporan);
+                session.setReportDetailPageParams(param);;
+            }
+            else if (tag == "lvLostFound")
+            {
+                LaporanLostFound selected = (LaporanLostFound)e.ClickedItem;
+                string jenis_laporan = "";
+                if (selected.jenis_laporan == 0)
+                {
+                    jenis_laporan = "Penemuan barang";
+                }
+                else
+                {
+                    jenis_laporan = "Kehilangan barang";
+                }
+                ReportDetailPageParams param = new ReportDetailPageParams(userLogin.id_user, userLogin.nama_user, selected.id_laporan, selected.alamat_laporan, selected.tanggal_laporan, selected.waktu_laporan, selected.judul_laporan, jenis_laporan, selected.deskripsi_barang, selected.lat_laporan, selected.lng_laporan, "lostfound", selected.thumbnail_gambar,selected.status_laporan);
+                session.setReportDetailPageParams(param);
+            }
+            this.Frame.Navigate(typeof(ReportDetailPage));
+        }
+
+        private void setListViewLostFound()
         {
             btnSelectionLaporanLostFound.IsEnabled = false;
-            string responseData = await httpObject.GetRequest("user/getHistoryLaporanLostFound/" + userLogin.id_user);
-            listHistoryLaporanLostFound = JsonConvert.DeserializeObject<ObservableCollection<LaporanLostFound>>(responseData);
-            responseData = await httpObject.GetRequest("user/getHistoryLaporanKriminalitas/" + userLogin.id_user);
-            listHistoryLaporanKriminalitas = JsonConvert.DeserializeObject<ObservableCollection<LaporanKriminalitas>>(responseData);
+            btnSelectionLaporanKriminalitas.IsEnabled = true;
+            loadLaporanLostFound();
+            lvHistory.Tag = "lvLostFound";
+        }
+
+        private void setListViewKriminalitas()
+        {
+            btnSelectionLaporanKriminalitas.IsEnabled = false;
+            btnSelectionLaporanLostFound.IsEnabled = true;
+            loadLaporanKriminalitas();
+            lvHistory.Tag = "lvKriminalitas";
+        }
+
+        private async void loadLaporanLostFound()
+        {
+            if (listHistoryLaporanLostFound.Count == 0)
+            {
+                string responseData = await httpObject.GetRequest("user/getHistoryLaporanLostFound/"+userLogin.id_user);
+                listHistoryLaporanLostFound = JsonConvert.DeserializeObject<ObservableCollection<LaporanLostFound>>(responseData);
+            }
             lvHistory.ItemsSource = listHistoryLaporanLostFound;
+        }
+
+        private async void loadLaporanKriminalitas()
+        {
+            if (listHistoryLaporanKriminalitas.Count == 0)
+            {
+                string responseData = await httpObject.GetRequest("user/getHistoryLaporanKriminalitas/"+userLogin.id_user);
+                listHistoryLaporanKriminalitas = JsonConvert.DeserializeObject<ObservableCollection<LaporanKriminalitas>>(responseData);
+            }
+            lvHistory.ItemsSource = listHistoryLaporanKriminalitas;
         }
 
         private void changeSource(object sender, RoutedEventArgs e)
@@ -44,17 +102,11 @@ namespace SahabatSurabaya.Shared
             string tag = (sender as Button).Tag.ToString();
             if (tag == "1")
             {
-                lvHistory.ItemsSource = listHistoryLaporanLostFound;
-                btnSelectionLaporanKriminalitas.IsEnabled = true;
-                btnSelectionLaporanLostFound.IsEnabled = false;
-                lvHistory.Tag = "lvLostfound";
+                setListViewLostFound();
             }
             else
             {
-                lvHistory.ItemsSource = listHistoryLaporanKriminalitas;
-                btnSelectionLaporanKriminalitas.IsEnabled = false;
-                btnSelectionLaporanLostFound.IsEnabled = true;
-                lvHistory.Tag = "lvKriminalitas";
+                setListViewKriminalitas();
             }
         }
 

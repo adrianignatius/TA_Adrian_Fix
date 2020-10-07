@@ -143,9 +143,27 @@ return function (App $app) {
         });
         
         $app->get('/getLaporanLostFoundVerify',function ($request,$response){
-            $sql="SELECT id_laporan,judul_laporan,jenis_laporan,tanggal_laporan,waktu_laporan,alamat_laporan,kecamatan FROM laporan_lostfound_barang";
+            $sql="SELECT id_laporan,judul_laporan,jenis_laporan,jenis_barang,tanggal_laporan,waktu_laporan,alamat_laporan,kecamatan FROM laporan_lostfound_barang";
             $stmt = $this->db->prepare($sql);
             $stmt->execute();
+            $result = $stmt->fetchAll();
+            return $response->withJson($result, 200);
+        });
+
+        $app->get('/getDetailLaporanLostFound/{id_laporan}',function ($request,$response,$args){
+            $id_laporan=$args['id_laporan'];
+            $sql="SELECT * FROM laporan_lostfound_barang WHERE id_laporan=:id_laporan";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([":id_laporan" => $id_laporan]);
+            $result = $stmt->fetch();
+            return $response->withJson($result, 200);
+        });
+
+        $app->get('/getDetailLaporanKriminalitas/{id_laporan}',function ($request,$response,$args){
+            $id_laporan=$args['id_laporan'];
+            $sql="SELECT * FROM laporan_kriminalitas WHERE id_laporan=:id_laporan";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([":id_laporan" => $id_laporan]);
             $result = $stmt->fetchAll();
             return $response->withJson($result, 200);
         });
@@ -158,7 +176,7 @@ return function (App $app) {
             return $response->withJson($result, 200);
         });
         
-        $app->get('/getKepalaKeamanan',function ($request,$response){
+        $app->get('/getKepalaKeamanan   ',function ($request,$response){
             $sql="SELECT * FROM user where status_user=2";
             $stmt = $this->db->prepare($sql);
             $stmt->execute();
@@ -254,7 +272,7 @@ return function (App $app) {
                     $geohash_lokasi_aktif_user=$geohash->encode(floatval($lat_user), floatval($lng_user), 8);
                 }
                 $sql="UPDATE user SET nama_user=:nama_user, lat_user=:lat_user, lng_user=:lng_user, lokasi_aktif_user=:lokasi_aktif_user, geohash_lokasi_aktif_user=:geohash_lokasi_aktif_user WHERE id_user=:id_user";
-                $stmt=$this->db->prepare($sql);
+                $stmt=$this->db->prepare($sql); 
                 $data=[
                     ":id_user"=>$id_user,
                     ":nama_user"=>$body["nama_user"],
@@ -664,6 +682,35 @@ return function (App $app) {
             $res = curl_exec($ch);
             curl_close($ch);
             return $response->withJson($res);
+        });
+
+        $app->get('/getKonfirmasiLaporan',function ($request,$response){
+            $id_laporan = $request->getQueryParam('id_laporan');
+            $id_user = $request->getQueryParam('id_user');
+            $sql="SELECT COUNT(*) FROM konfirmasi_laporan_kriminalitas WHERE id_laporan=:id_laporan AND id_user=:id_user";
+            $stmt = $this->db->prepare($sql);
+            $data=[
+                ":id_laporan"=>$id_laporan,
+                ":id_user"=>$id_user
+            ];
+            $stmt->execute($data);
+            $result = $stmt->fetchColumn();
+            return $response->withJson(["count"=>$result]);
+        });
+
+        $app->post('/konfirmasiLaporanKriminalitas',function ($request,$response){
+            $body = $request->getParsedBody();
+            $sql="INSERT INTO konfirmasi_laporan_kriminalitas VALUES(:id_laporan,:id_user)";
+            $stmt = $this->db->prepare($sql);
+            $data=[
+                ":id_laporan"=>$body["id_laporan"],
+                ":id_user"=>$body["id_user"]
+            ];
+            if($stmt->execute($data)){
+                return $response->withJson(["status" => "1", "message" => "Konfirmasi Laporan Berhasil"], 200);
+            }else{
+                return $response->withJson(["status" => "400", "message" => "Konfirmasi Laporan Gagal"], 200);
+            }
         });
     });
         

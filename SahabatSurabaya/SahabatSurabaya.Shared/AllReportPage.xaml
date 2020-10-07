@@ -30,7 +30,7 @@
                 <Button Click="Back_Click" VerticalAlignment="Top" HorizontalAlignment="Left" Style="{StaticResource NavigationBackButtonNormalStyle}"></Button>
                 <TextBlock Text="Daftar semua laporan" Margin="12,4,0,0" FontSize="24" FontWeight="Bold" ></TextBlock>
             </StackPanel>
-            <Grid Grid.Row="1" Margin="8,8,8,0">
+            <Grid Grid.Row="1" Margin="8">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition></ColumnDefinition>
                     <ColumnDefinition></ColumnDefinition>
@@ -38,29 +38,34 @@
                 <Button FontSize="16" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" Click="changeSource" Tag="1" Name="btnSelectionLaporanLostFound" Margin="4,0,4,0"  Foreground="Green" Background="White" BorderBrush="Green" HorizontalAlignment="Stretch" Grid.Column="0" Content="Laporan &amp; Lost Found"></Button>
                 <Button FontSize="16" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" Click="changeSource" Tag="2"  Name="btnSelectionLaporanKriminalitas" Margin="4,0,4,0" Foreground="Green" Background="White" BorderBrush="Green" HorizontalAlignment="Stretch" Grid.Column="1" Content="Laporan Kriminalitas"></Button>
             </Grid>
-            <ListView Grid.Row="2" Name="lvLaporan" SelectionMode="None" IsItemClickEnabled="True" ItemClick="goToDetailPage" Margin="0,16,0,0" >
-                <ListView.ItemTemplate>
-                    <DataTemplate x:Name="ImageOverlayDataTemplate">
-                        <Border Margin="0,4,0,4" CornerRadius="10" BorderBrush="Gray" BorderThickness="1">
-                            <Grid MaxHeight="280">
-                                <Image Source="{Binding thumbnail_gambar,Converter={StaticResource imageConverter}}" Stretch="UniformToFill"/>
-                                <StackPanel Orientation="Vertical" Height="80" VerticalAlignment="Bottom" Background="{StaticResource brushTransparent}" Padding="12">
-                                    <TextBlock FontWeight="ExtraBold" Opacity="1" Foreground="White" FontSize="14" Text="{Binding judul_laporan }"/>
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock Opacity="1" Foreground="White" FontSize="14" Text="{Binding tanggal_laporan,Converter={StaticResource dateTimeConverter}}"></TextBlock>
-                                        <TextBlock Margin="2,0,0,0" Text="Pukul" Opacity="1" Foreground="White" FontSize="14"></TextBlock>
-                                        <TextBlock Margin="2,0,0,0" Opacity="1" Foreground="White" Text="{Binding waktu_laporan}" FontSize="14"></TextBlock>
-                                    </StackPanel>
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock Opacity="1" Foreground="White" FontSize="14" Text="Oleh"></TextBlock>
-                                        <TextBlock Margin="2,0,0,0" Opacity="1" Foreground="White" FontSize="14" Text="{Binding nama_user_pelapor}"></TextBlock>
-                                    </StackPanel>
-                                </StackPanel>
-                            </Grid>
-                        </Border>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
+            <ScrollViewer Grid.Row="2">
+                <StackPanel Orientation="Vertical">
+                    <ListView Name="lvLaporan" SelectionMode="None" IsItemClickEnabled="True" ItemClick="goToDetailPage" Margin="0,16,0,0" >
+                        <ListView.ItemTemplate>
+                            <DataTemplate x:Name="ImageOverlayDataTemplate">
+                                <Border Margin="0,4,0,4" CornerRadius="10" BorderBrush="Gray" BorderThickness="1">
+                                    <Grid MaxHeight="280">
+                                        <Image Source="{Binding thumbnail_gambar,Converter={StaticResource imageConverter}}" Stretch="UniformToFill"/>
+                                        <StackPanel Orientation="Vertical" Height="80" VerticalAlignment="Bottom" Background="{StaticResource brushTransparent}" Padding="12">
+                                            <TextBlock FontWeight="ExtraBold" Opacity="1" Foreground="White" FontSize="14" Text="{Binding judul_laporan }"/>
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Opacity="1" Foreground="White" FontSize="14" Text="{Binding tanggal_laporan,Converter={StaticResource dateTimeConverter}}"></TextBlock>
+                                                <TextBlock Margin="2,0,0,0" Text="Pukul" Opacity="1" Foreground="White" FontSize="14"></TextBlock>
+                                                <TextBlock Margin="2,0,0,0" Opacity="1" Foreground="White" Text="{Binding waktu_laporan}" FontSize="14"></TextBlock>
+                                            </StackPanel>
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Opacity="1" Foreground="White" FontSize="14" Text="Oleh"></TextBlock>
+                                                <TextBlock Margin="2,0,0,0" Opacity="1" Foreground="White" FontSize="14" Text="{Binding nama_user_pelapor}"></TextBlock>
+                                            </StackPanel>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                    <Button Click="loadMoreData" Margin="0,8,0,8" Grid.Row="2" HorizontalAlignment="Center" Foreground="White" Background="Green" CornerRadius="10" Content="Muat lagi"></Button>
+                </StackPanel>
+            </ScrollViewer>
             <!--<Pivot Name="rootPivotLaporan" Grid.Row="1">
                 <Pivot.HeaderTemplate>
                     <DataTemplate>
@@ -105,7 +110,7 @@
                                         </Style>
                                     </ListView.ItemContainerStyle>
                                 </ListView>
-                                <Button Click="loadMoreData" Margin="0,8,0,8" Grid.Row="2" HorizontalAlignment="Center" Foreground="White" Background="Green" CornerRadius="10" Content="Muat lagi"></Button>
+                                
                             </StackPanel>
                         </ScrollViewer>
                     </PivotItem>

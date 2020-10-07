@@ -35,7 +35,7 @@
                     <Button FontSize="16" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" Click="changeSource" Tag="2"  Name="btnSelectionLaporanKriminalitas" Margin="4,0,4,0" Foreground="Green" Background="White" BorderBrush="Green" HorizontalAlignment="Stretch" Grid.Column="1" Content="Laporan Kriminalitas"></Button>
                 </Grid>
             </StackPanel>
-            <ListView Grid.Row="1" Name="lvHistory" Margin="8,16,8,0">
+            <ListView SelectionMode="None" IsItemClickEnabled="True" ItemClick="goToDetailPage" Grid.Row="1" Name="lvHistory" Margin="8,16,8,0">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <Border Margin="0,4,0,4" CornerRadius="10" BorderBrush="Gray" BorderThickness="1">

@@ -33,7 +33,9 @@ namespace SahabatSurabaya
 
         public string thumbnail_gambar { get; set; }
 
-        public ReportDetailPageParams(int id_user_pelapor, string nama_user_pelapor, string id_laporan, string alamat_laporan, string tanggal_laporan, string waktu_laporan, string judul_laporan, string jenis_laporan, string deskripsi_laporan, string lat_laporan, string lng_laporan, string tag, string thumbnail_gambar)
+        public int status_laporan { get; set; }
+
+        public ReportDetailPageParams(int id_user_pelapor, string nama_user_pelapor, string id_laporan, string alamat_laporan, string tanggal_laporan, string waktu_laporan, string judul_laporan, string jenis_laporan, string deskripsi_laporan, string lat_laporan, string lng_laporan, string tag, string thumbnail_gambar,int status_laporan)
         {
             this.id_user_pelapor = id_user_pelapor;
             this.nama_user_pelapor = nama_user_pelapor;
@@ -48,6 +50,7 @@ namespace SahabatSurabaya
             this.lng_laporan = lng_laporan;
             this.tag = tag;
             this.thumbnail_gambar = thumbnail_gambar;
+            this.status_laporan = status_laporan;
         }
     }
 }

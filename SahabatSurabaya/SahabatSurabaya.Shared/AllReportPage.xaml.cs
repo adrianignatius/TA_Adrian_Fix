@@ -41,7 +41,7 @@ namespace SahabatSurabaya
             return false;
         }
 
-        private async void loadLaporanKriminalitas()
+        private async void loadLaporanLostFound()
         {
             if (listLaporanLostFound.Count == 0)
             {
@@ -49,28 +49,9 @@ namespace SahabatSurabaya
                 listLaporanLostFound = JsonConvert.DeserializeObject<ObservableCollection<LaporanLostFound>>(responseData);
             }
             lvLaporan.ItemsSource = listLaporanLostFound;
-            
-            //using (var client = new HttpClient())
-            //{
-            //    client.BaseAddress = new Uri(session.getApiURL());
-            //    client.DefaultRequestHeaders.Accept.Clear();
-            //    HttpResponseMessage response = await client.GetAsync("/getHeadlineLaporanKriminalitas");
-            //    if (response.IsSuccessStatusCode)
-            //    {
-            //        var jsonString = await response.Content.ReadAsStringAsync();
-            //        var responseData = response.Content.ReadAsStringAsync().Result;
-            //        listLaporanKriminalitas = JsonConvert.DeserializeObject<ObservableCollection<LaporanKriminalitas>>(responseData);
-            //        lvLaporanKriminalitas.ItemsSource = listLaporanKriminalitas;
-            //    }
-            //    else
-            //    {
-            //        var message = new MessageDialog("Tidak ada koneksi internet, silahkan coba beberapa saat lagi");
-            //        await message.ShowAsync();
-            //    }
-            //}
         }
 
-        private async void loadHeadlineLaporanLostFound()
+        private async void loadLaporanKriminalitas()
         {
             if (listLaporanKriminalitas.Count == 0)
             {
@@ -78,25 +59,22 @@ namespace SahabatSurabaya
                 listLaporanKriminalitas = JsonConvert.DeserializeObject<ObservableCollection<LaporanKriminalitas>>(responseData);
             }
             lvLaporan.ItemsSource = listLaporanKriminalitas;
-            //using (var client = new HttpClient())
-            //{
-            //    client.BaseAddress = new Uri(session.getApiURL());
-            //    client.DefaultRequestHeaders.Accept.Clear();
-            //    HttpResponseMessage response = await client.GetAsync("/getHeadlineLaporanLostFound");
-            //    if (response.IsSuccessStatusCode)
-            //    {
-            //        var jsonString = await response.Content.ReadAsStringAsync();
-            //        var responseData = response.Content.ReadAsStringAsync().Result;
-            //        listLaporanLostFound = JsonConvert.DeserializeObject<ObservableCollection<LaporanLostFound>>(responseData);
-            //        lvLaporanLostFound.ItemsSource = listLaporanLostFound;
+        }
 
-            //    }
-            //    else
-            //    {
-            //        var message = new MessageDialog("Tidak ada koneksi internet, silahkan coba beberapa saat lagi");
-            //        await message.ShowAsync();
-            //    } 
-            //}
+        private void setListViewLostFound()
+        {
+            btnSelectionLaporanLostFound.IsEnabled = false;
+            btnSelectionLaporanKriminalitas.IsEnabled = true;
+            loadLaporanLostFound();
+            lvLaporan.Tag = "lvLostFound";
+        }
+
+        private void setListViewKriminalitas()
+        {
+            btnSelectionLaporanKriminalitas.IsEnabled = false;
+            btnSelectionLaporanLostFound.IsEnabled = true;
+            loadLaporanKriminalitas();
+            lvLaporan.Tag = "lvKriminalitas";
         }
 
         private void pageLoaded(object sender, RoutedEventArgs e)
@@ -104,13 +82,11 @@ namespace SahabatSurabaya
             string param = session.getAllReportParam();
             if (param == "kriminalitas")
             {
-                btnSelectionLaporanKriminalitas.IsEnabled = false;
-                btnSelectionLaporanLostFound.IsEnabled = true;
+                setListViewKriminalitas();
             }
             else
             {
-                btnSelectionLaporanLostFound.IsEnabled = false;
-                btnSelectionLaporanKriminalitas.IsEnabled = true;
+                setListViewLostFound();
             }
         }
 
@@ -120,10 +96,10 @@ namespace SahabatSurabaya
             if (tag == "lvKriminalitas")
             {
                 LaporanKriminalitas selected = (LaporanKriminalitas)e.ClickedItem;
-                ReportDetailPageParams param = new ReportDetailPageParams(selected.id_user_pelapor, selected.nama_user_pelapor, selected.id_laporan, selected.alamat_laporan, selected.tanggal_laporan, selected.waktu_laporan, selected.judul_laporan, selected.jenis_kejadian, selected.deskripsi_kejadian, selected.lat_laporan, selected.lng_laporan, "kriminalitas",selected.thumbnail_gambar);
+                ReportDetailPageParams param = new ReportDetailPageParams(selected.id_user_pelapor, selected.nama_user_pelapor, selected.id_laporan, selected.alamat_laporan, selected.tanggal_laporan, selected.waktu_laporan, selected.judul_laporan, selected.jenis_kejadian, selected.deskripsi_kejadian, selected.lat_laporan, selected.lng_laporan, "kriminalitas",selected.thumbnail_gambar,selected.status_laporan);
                 session.setReportDetailPageParams(param);
             }
-            else if (tag == "lvLostfound")
+            else if (tag == "lvLostFound")
             {
                 LaporanLostFound selected = (LaporanLostFound)e.ClickedItem;
                 string jenis_laporan = "";
@@ -135,7 +111,7 @@ namespace SahabatSurabaya
                 {
                     jenis_laporan = "Kehilangan barang";
                 }
-                ReportDetailPageParams param = new ReportDetailPageParams(selected.id_user_pelapor, selected.nama_user_pelapor, selected.id_laporan, selected.alamat_laporan, selected.tanggal_laporan, selected.waktu_laporan, selected.judul_laporan, jenis_laporan, selected.deskripsi_barang, selected.lat_laporan, selected.lng_laporan, "lostfound",selected.thumbnail_gambar);
+                ReportDetailPageParams param = new ReportDetailPageParams(selected.id_user_pelapor, selected.nama_user_pelapor, selected.id_laporan, selected.alamat_laporan, selected.tanggal_laporan, selected.waktu_laporan, selected.judul_laporan, jenis_laporan, selected.deskripsi_barang, selected.lat_laporan, selected.lng_laporan, "lostfound",selected.thumbnail_gambar,selected.status_laporan);
                 session.setReportDetailPageParams(param);
             }
             this.Frame.Navigate(typeof(ReportDetailPage));
@@ -151,17 +127,11 @@ namespace SahabatSurabaya
             string tag = (sender as Button).Tag.ToString();
             if (tag == "1")
             {
-                lvLaporan.ItemsSource = listLaporanLostFound;
-                btnSelectionLaporanKriminalitas.IsEnabled = true;
-                btnSelectionLaporanLostFound.IsEnabled = false;
-                lvLaporan.Tag = "lvLostfound";
+                setListViewLostFound();
             }
             else
             {
-                lvLaporan.ItemsSource = listLaporanKriminalitas;
-                btnSelectionLaporanKriminalitas.IsEnabled = false;
-                btnSelectionLaporanLostFound.IsEnabled = true;
-                lvLaporan.Tag = "lvKriminalitas";
+                setListViewKriminalitas();
             }
         }
     }
