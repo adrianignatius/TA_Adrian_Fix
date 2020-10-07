@@ -70,8 +70,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)KomentarLaporan.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LaporanKriminalitas.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LaporanLostFound.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ListViewButtonConverter.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ListViewCardConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LoginPage.xaml.cs">
       <DependentUpon>LoginPage.xaml</DependentUpon>
     </Compile>

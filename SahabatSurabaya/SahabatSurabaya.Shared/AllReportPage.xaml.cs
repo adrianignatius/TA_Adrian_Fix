@@ -117,7 +117,7 @@ namespace SahabatSurabaya
             this.Frame.Navigate(typeof(ReportDetailPage));
         }
 
-        private async void loadMoreData(object sender,RoutedEventArgs e)
+        private void loadMoreData(object sender,RoutedEventArgs e)
         {
             this.Frame.Navigate(typeof(FilterPage));
         }

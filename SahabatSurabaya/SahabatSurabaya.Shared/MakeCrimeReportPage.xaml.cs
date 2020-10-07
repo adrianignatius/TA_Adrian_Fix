@@ -1,7 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Plugin.FilePicker;
-using Plugin.FilePicker.Abstractions;
+using Xamarin.Essentials;
 using SahabatSurabaya.Shared;
 using System;
 using System.Collections.Generic;
@@ -18,7 +17,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
-using Xamarin.Essentials;
+using System.IO;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -247,29 +246,61 @@ namespace SahabatSurabaya
             return false;
         }
 
-        public async void chooseImage(object sender, RoutedEventArgs e)
-        {    
-            try
+        private async void chooseImage(object sender, RoutedEventArgs e)
+        {
+            var customFileType =
+            new FilePickerFileType(new Dictionary<DevicePlatform, IEnumerable<string>>
             {
-                FileData fileData = await CrossFilePicker.Current.PickFile(new string[] { ".jpg" });
-                if (fileData == null)
+                { DevicePlatform.Android, new string[] { "image/png", "image/jpeg"} },
+                { DevicePlatform.UWP, new string[] { ".jpg", ".png" } }
+            });
+            var options = new PickOptions
+            {
+                PickerTitle = "Pilih Gambar..",
+                FileTypes = customFileType,
+            };
+            var result = await FilePicker.PickAsync(options);
+            byte[] hasil;
+            if (result != null)
+            {
+                Stream stream = await result.OpenReadAsync();
+                using (var streamReader = new MemoryStream())
                 {
-                    return;
+                    stream.CopyTo(streamReader);
+                    hasil = streamReader.ToArray();
                 }
-                else
-                {
-                    string fileName = fileData.FileName;
-                    imageLaporan = new UploadedImage(fileName,fileData.DataArray, fileData.DataArray.Length);
-                    txtNamaFile.Text = fileName;
-                    gridFile.Visibility = Visibility.Visible;
-                    txtStatusFile.Visibility = Visibility.Collapsed;
-                }      
-            }
-            catch (Exception ex)
-            {
-                var message = new MessageDialog(ex.ToString());
-                await message.ShowAsync();
+                string fileName = result.FileName;
+                imageLaporan = new UploadedImage(fileName, hasil, 0);
+                txtNamaFile.Text = fileName;
+                gridFile.Visibility = Visibility.Visible;
+                txtStatusFile.Visibility = Visibility.Collapsed;
             }
         }
+
+        //public async void chooseImage(object sender, RoutedEventArgs e)
+        //{
+        //    await FilePicker
+        //    try
+        //    {
+        //        FileData fileData = await CrossFilePicker.Current.PickFile(new string[] { ".jpg" });
+        //        if (fileData == null)
+        //        {
+        //            return;
+        //        }
+        //        else
+        //        {
+        //            string fileName = fileData.FileName;
+        //            imageLaporan = new UploadedImage(fileName, fileData.DataArray, fileData.DataArray.Length);
+        //            txtNamaFile.Text = fileName;
+        //            gridFile.Visibility = Visibility.Visible;
+        //            txtStatusFile.Visibility = Visibility.Collapsed;
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        var message = new MessageDialog(ex.ToString());
+        //        await message.ShowAsync();
+        //    }
+        //}
     }
 }

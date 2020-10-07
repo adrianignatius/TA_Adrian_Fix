@@ -32,11 +32,36 @@ namespace SahabatSurabaya
             httpObject = new HttpObject();
             listKomentar = new ObservableCollection<KomentarLaporan>();
         }
+
+        private async void checkKonfirmasiLaporan()
+        {
+            string responseData = await httpObject.GetRequest("user/checkKonfirmasiLaporan?id_laporan=" + param.id_laporan + "&id_user=" + userLogin.id_user);
+            JObject json = JObject.Parse(responseData);
+            if (json["count"].ToString() == "0")
+            {
+                btnKonfirmasi.IsEnabled = true;
+            }
+            else
+            {
+                btnKonfirmasi.IsEnabled = false;
+            }
+        }
         
         private void pageLoaded(object sender,RoutedEventArgs e)
         {
             param = session.getReportDetailPageParams();
             userLogin = session.getUserLogin();
+            string type = "";
+            if (param.tag == "kriminalitas")
+            {
+                type = "2";
+                checkKonfirmasiLaporan();
+            }
+            else
+            {
+                btnKonfirmasi.Visibility = Visibility.Collapsed;
+                type = param.tag == "Penemuan barang" ? "0":"1";
+            }
             if (userLogin.id_user == param.id_user_pelapor)
             {
                 btnChatPage.Visibility = Visibility.Collapsed;
@@ -53,23 +78,6 @@ namespace SahabatSurabaya
             {
                 txtStatusLaporan.Text = "Sudah diverifikasi";
                 txtStatusLaporan.Foreground = new SolidColorBrush(Colors.Green);
-            }
-            string type = "";
-            if (param.tag == "kriminalitas")
-            {
-                type = "2";
-            }
-            else
-            {
-                btnKonfirmasi.Visibility = Visibility.Collapsed;
-                if(param.jenis_laporan == "Penemuan barang")
-                {
-                    type = "0";
-                }
-                else
-                {
-                    type = "1";
-                }
             }
             imageLaporan.Source = new BitmapImage(new Uri(session.getUrlGambarLaporan() + param.thumbnail_gambar));
             txtNamaPengguna.Text = param.nama_user_pelapor;

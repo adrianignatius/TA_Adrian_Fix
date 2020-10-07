@@ -684,7 +684,7 @@ return function (App $app) {
             return $response->withJson($res);
         });
 
-        $app->get('/getKonfirmasiLaporan',function ($request,$response){
+        $app->get('/checkKonfirmasiLaporan',function ($request,$response){
             $id_laporan = $request->getQueryParam('id_laporan');
             $id_user = $request->getQueryParam('id_user');
             $sql="SELECT COUNT(*) FROM konfirmasi_laporan_kriminalitas WHERE id_laporan=:id_laporan AND id_user=:id_user";
