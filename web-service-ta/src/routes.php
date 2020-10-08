@@ -6,6 +6,7 @@ use Slim\Http\Response;
 use Slim\Http\UploadedFile;
 use Sk\Geohash\Geohash;
 use \Firebase\JWT\JWT;
+use ReallySimpleJWT\Token;
 
 date_default_timezone_set("Asia/Jakarta");
 
@@ -31,15 +32,14 @@ return function (App $app) {
     $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
     $dotenv->load();
     $app->get('/coba', function ($request, $response) {
-        // $key = "example_key";
-        $payload = array(
-            "iss" => "ta-istts-adrian",
-            "sub" => "http://example.com",
-            "iat" => time(),
-            "exp" => time()+60*60
-        );
-        $jwt = JWT::encode($payload, $_ENV['JWT_SECRET']);
-        return $jwt_secret;
+        $payload = [
+            'iat' => time(),
+            'uid' => 10,
+            'exp' => time() + 86400*7,
+            'iss' => 'slim-framework'
+        ];
+        $token = Token::customPayload($payload, $_ENV['JWT_SECRET']);
+        return $token;
     });
 
     $app->get('/getAllKategoriLostFound', function ($request, $response) {
@@ -48,6 +48,21 @@ return function (App $app) {
         $stmt->execute();
         $result = $stmt->fetchAll();
         return $response->withJson($result, 200);
+    });
+
+    $app->post('/sessionSignIn', function ($request, $response) {
+        $body=$request->getParsedBody();
+        $result = Token::validate($body["token"], $_ENV['JWT_SECRET']);
+        if($result==true){
+            $payload=Token::getPayload($body["token"], $_ENV['JWT_SECRET']);
+            $sql="SELECT * FROM user where id_user=:id_user";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([":id_user" => $payload["sub"]]);
+            $user=$stmt->fetch();
+            return $response->withJson(["status"=>"1","message"=>"Token verified","data"=>$user]);
+        }else{
+            return $response->withJson(["status"=>"400","message"=>"Token not verified"]);
+        }
     });
 
     // $app->get('/getHeadlineLaporanLostFound', function ($request, $response) {
@@ -404,8 +419,8 @@ return function (App $app) {
                         "iat" => time(),
                         "exp" => time()+60*60
                     );
-                    $jwt = JWT::encode($payload, $_ENV['JWT_SECRET']);
-                    return $response->withJson(["status" => "200", "data" => $result,"token"=>$jwt]);
+                    $token = Token::customPayload($payload, $_ENV['JWT_SECRET']);
+                    return $response->withJson(["status" => "200", "data" => $result,"token"=>$token]);
                 }else{
                     return $response->withJson(["status" => "400", "message" =>"Password yang dimasukkan salah"]);
                 }

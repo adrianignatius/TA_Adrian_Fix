@@ -4,7 +4,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
-
+using Xamarin.Essentials;
 
 namespace SahabatSurabaya
 {
@@ -73,6 +73,7 @@ namespace SahabatSurabaya
 
                 case "SignOut":
                     this.Frame.Navigate(typeof(LoginPage));
+                    SecureStorage.Remove("jwt_token");
                     break;
 
                 case "PoliceStationPage":

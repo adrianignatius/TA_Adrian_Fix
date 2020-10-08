@@ -12,7 +12,7 @@
 
     <Grid Background="Green">
         <Grid VerticalAlignment="Center" HorizontalAlignment="Stretch">
-            <Image Source="/Assets/appicon.png"></Image>
+            <Image Source="/Assets/app-logo.png"></Image>
         </Grid>
     </Grid>
 </Page>
