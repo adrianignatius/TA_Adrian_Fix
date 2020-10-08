@@ -63,6 +63,7 @@ namespace SahabatSurabaya
                     string data = json["data"].ToString();
                     User userLogin = JsonConvert.DeserializeObject<User>(data);
                     await SecureStorage.SetAsync("jwt_token", json["token"].ToString());
+                    session.setTokenAuthorization(json["token"].ToString());
                     session.setUserLogin(userLogin);
                     if (userLogin.status_aktif_user == 0)
                     {

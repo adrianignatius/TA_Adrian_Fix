@@ -41,6 +41,7 @@ namespace SahabatSurabaya
         
         private void pageLoaded(object sender, RoutedEventArgs e)
         {
+            this.Frame.BackStack.RemoveAt(this.Frame.BackStack.Count - 1);
             userLogin = session.getUserLogin();
             param = session.getConfirmReportParams();
             imageIcon.Source = new BitmapImage(new Uri(url + param.nama_file_gambar));
@@ -66,12 +67,23 @@ namespace SahabatSurabaya
             {
                 txtHeaderDetailLaporan.Text = "Konfirmasi Laporan Kejadian";
                 txtHeaderLokasi.Text = "Lokasi kejadian";
+                txtHeaderJenisLaporan.Text = "Jenis kejadian yang dilaporkan";
+                txtHeaderDeskripsiLaporan.Text = "Deskripsi Kejadian";
             }
         }
 
         private void Back_Click(object sender, RoutedEventArgs e)
         {
-            On_BackRequested();
+            if (param.tag_laporan == "kriminalitas")
+            {
+                this.Frame.Navigate(typeof(MakeCrimeReportPage));
+            }
+            else
+            {
+                this.Frame.Navigate(typeof(MakeLostFoundReportPage));
+            }
+            
+            //On_BackRequested();
         }
 
         private bool On_BackRequested()

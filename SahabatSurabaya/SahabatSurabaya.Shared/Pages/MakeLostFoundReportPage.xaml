@@ -8,7 +8,6 @@
     xmlns:Maps="using:Windows.UI.Xaml.Controls.Maps"
     mc:Ignorable="d"
     RequestedTheme="Light"
-    NavigationCacheMode="Enabled"
     Loaded="LostFoundPageLoaded"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
     <Grid>

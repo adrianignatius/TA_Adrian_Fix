@@ -212,7 +212,14 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="$(MSBuildThisFileDirectory)Assets\app-logo.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Assets\app-logobesar.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Assets\app-logokecil.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Assets\app-logo\logo.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Assets\app-logo\logo.scale-125.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Assets\app-logo\logo.scale-150.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Assets\app-logo\logo.scale-200.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Assets\app-logo\logo.scale-300.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Assets\app-logo\logo.scale-400.png" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\avatar-profile.png" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\bg.jpg" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\icon\crime-icon.png" />
@@ -250,7 +257,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Helper\" />
-    <Folder Include="$(MSBuildThisFileDirectory)Class\" />
     <Folder Include="$(MSBuildThisFileDirectory)Pages\" />
   </ItemGroup>
 </Project>

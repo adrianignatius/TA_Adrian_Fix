@@ -12,6 +12,8 @@ namespace SahabatSurabaya
        
         public static ConfirmReportParams confirmReportParam { get; set; }
         public static string allReportParam { get; set; }
+
+        public static string tokenAuthorization { get; set; }
         public static User userLogin { get; set; }
         public static KantorPolisi kantorPolisiSelected { get; set; }
 
@@ -28,6 +30,15 @@ namespace SahabatSurabaya
         public readonly static string URL_ASSETS = "http://adrian-assets.ta-istts.com/";
         public readonly static string URL_GAMBAR_LAPORAN = "http://adrian-webservice.ta-istts.com/public/uploads/";
 
+        public void setTokenAuthorization(string token)
+        {
+            tokenAuthorization=token;
+        }
+
+        public string getTokenAuthorization()
+        {
+            return tokenAuthorization;
+        }
 
         public ConfirmReportParams getConfirmReportParams()
         {

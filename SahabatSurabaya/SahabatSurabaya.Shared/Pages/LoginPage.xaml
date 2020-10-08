@@ -60,7 +60,7 @@
             </Grid.ColumnDefinitions>
             
             <StackPanel x:Name="rootPanel" Grid.Column="0" Margin="60" Orientation="Vertical">
-                <Image Name="appIconBg" Source="/Assets/app-logo.png" Width="180" Height="180"></Image>
+                <Image Name="appIconBg" Source="/Assets/app-logobesar.png" Width="180" Height="180"></Image>
                 <TextBlock FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" x:Name="textBlockSignIn" Foreground="Black" FontSize="40" FontWeight="ExtraBold">Sign In</TextBlock>
                 <TextBlock FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" TextWrapping="Wrap" Margin="30,10,0,20" Foreground="Black" FontSize="15" >Don't have an account? <Hyperlink Click="goToRegister">Create your account here</Hyperlink></TextBlock>
                 <TextBlock FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" Name="textBlockEmail" Foreground="Black" Margin="30,0,30,0" FontSize="30">No Handphone</TextBlock>

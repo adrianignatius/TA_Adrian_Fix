@@ -10,6 +10,7 @@ using System.Net.Http;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Navigation;
 using Xamarin.Essentials;
 
 namespace SahabatSurabaya
@@ -161,7 +162,6 @@ namespace SahabatSurabaya
         private void LostFoundPageLoaded(object sender, RoutedEventArgs e)
         {
             userLogin = session.getUserLogin();
-            setComboBoxKategoriLostFound();
         }
 
         private async void goToDetail(object sender, RoutedEventArgs e)
@@ -182,8 +182,9 @@ namespace SahabatSurabaya
                     string displayJenisBarang = listSettingKategoriLostFound[cbJenisBarang.SelectedIndex].nama_kategori.ToString();
                     string tglLaporan = DateTime.Now.ToString("dd/MM/yyyy");
                     string waktuLaporan = DateTime.Now.ToString("HH:mm:ss");
+                    int index = cbJenisBarang.SelectedIndex;
                     string namaFileGambar = listSettingKategoriLostFound[cbJenisBarang.SelectedIndex].file_gambar_kategori;
-                    ConfirmReportParams param = new ConfirmReportParams("lostfound", judulLaporan, jenisLaporan.ToString(), descLaporan, lat, lng, alamatLaporan, tglLaporan, waktuLaporan, displayJenisBarang, imageLaporan, namaFileGambar);
+                    ConfirmReportParams param = new ConfirmReportParams("lostfound", judulLaporan, jenisLaporan.ToString(), descLaporan, lat, lng, alamatLaporan, tglLaporan, waktuLaporan, displayJenisBarang, index, imageLaporan, namaFileGambar);
                     session.setConfirmreportParam(param);
                     this.Frame.Navigate(typeof(ConfirmReportPage));
                 }
@@ -194,7 +195,31 @@ namespace SahabatSurabaya
                 }
                 
             }
+        }
 
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+            setComboBoxKategoriLostFound();
+            var entry = this.Frame.BackStack.LastOrDefault();
+            if (entry.SourcePageType == typeof(ConfirmReportPage))
+            {
+                ConfirmReportParams param = session.getConfirmReportParams();
+                txtJudulLaporan.Text = param.judul_laporan;
+                txtDescBarang.Text = param.deskripsi_laporan;
+                txtAutocompleteAddress.Text = param.alamat_laporan;
+                lat = param.lat_laporan;
+                lng = param.lng_laporan;
+                imageLaporan = param.image_laporan;
+                cbJenisBarang.SelectedIndex = param.combo_box_selected_index;
+                if (imageLaporan != null)
+                {
+                    txtNamaFile.Text = imageLaporan.file_name;
+                    gridFile.Visibility = Visibility.Visible;
+                    txtStatusFile.Visibility = Visibility.Collapsed;
+                }
+                this.Frame.BackStack.RemoveAt(this.Frame.BackStack.Count - 1);
+            }
         }
 
         private bool validateInput()
@@ -218,21 +243,9 @@ namespace SahabatSurabaya
 
         private void Back_Click(object sender, RoutedEventArgs e)
         {
-            On_BackRequested();
+            this.Frame.GoBack();
         }
 
-        private bool On_BackRequested()
-        {
-            if (this.Frame.CanGoBack)
-            {
-                var cacheSize = ((Frame)Parent).CacheSize;
-                ((Frame)Parent).CacheSize = 0;
-                ((Frame)Parent).CacheSize = cacheSize;
-                this.Frame.GoBack();
-                return true;
-            }
-            return false;
-        }
         private async void chooseImage(object sender, RoutedEventArgs e)
         {
             var customFileType =
@@ -263,32 +276,5 @@ namespace SahabatSurabaya
                 txtStatusFile.Visibility = Visibility.Collapsed;
             }
         }
-
-        //private async void chooseImage(object sender, RoutedEventArgs e)
-        //{
-        //    string contents = "";
-        //    try
-        //    {
-        //        FileData fileData = await CrossFilePicker.Current.PickFile(new string[] { ".jpg" });
-        //        if (fileData == null)
-        //        {
-        //            return;
-        //        }
-        //        else
-        //        {
-        //            string fileName = fileData.FileName;
-        //            contents = System.Text.Encoding.UTF8.GetString(fileData.DataArray);
-        //            imageLaporan = new UploadedImage(fileName, fileData.DataArray, fileData.DataArray.Length);
-        //            txtNamaFile.Text = fileName;
-        //            gridFile.Visibility = Visibility.Visible;
-        //            txtStatusFile.Visibility = Visibility.Collapsed;
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        var message = new MessageDialog(ex.ToString());
-        //        await message.ShowAsync();
-        //    }
-        //}
     }
 }

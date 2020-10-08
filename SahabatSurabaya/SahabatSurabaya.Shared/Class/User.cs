@@ -8,6 +8,7 @@ namespace SahabatSurabaya
     class User
     {
         
+        public string tokenAuthorization { get; set; }
         public int id_user { get; set; }
 
         public string nama_user { get; set; }

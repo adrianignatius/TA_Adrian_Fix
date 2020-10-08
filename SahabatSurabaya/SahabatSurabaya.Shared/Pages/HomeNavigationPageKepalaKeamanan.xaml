@@ -16,8 +16,16 @@
                     <FontIcon Glyph="&#xE10F;"/>
                 </NavigationViewItem.Icon>
             </NavigationViewItem>
-            <NavigationViewItem Content="Lihat semua laporan lost &amp; found" Icon="PostUpdate"></NavigationViewItem>
-            <NavigationViewItem Content="Lihat semua laporan kriminalitas" Icon="PostUpdate"></NavigationViewItem>
+            <NavigationViewItem Content="Lihat semua laporan lost &amp; found">
+                <NavigationViewItem.Icon>
+                    <BitmapIcon UriSource="/Assets/icon/lostfound-icon.png"/>
+                </NavigationViewItem.Icon>
+            </NavigationViewItem>
+            <NavigationViewItem Content="Lihat semua laporan kriminalitas">
+                <NavigationViewItem.Icon>
+                    <BitmapIcon UriSource="/Assets/icon/crime-icon.png"/>
+                </NavigationViewItem.Icon>
+            </NavigationViewItem>
             <NavigationViewItem Content="Area pengawasan saya" Icon="Admin"></NavigationViewItem>
             <NavigationViewItem x:Uid="HomeNavItem" Content="Sign Out" Tag="SignOut">
                 <NavigationViewItem.Icon>

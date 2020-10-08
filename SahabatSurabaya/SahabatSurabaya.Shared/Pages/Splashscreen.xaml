@@ -10,9 +10,9 @@
     Loaded="pageLoaded"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <Grid Background="Green">
-        <Grid VerticalAlignment="Center" HorizontalAlignment="Stretch">
-            <Image Source="/Assets/app-logo.png"></Image>
+    <Grid Background="Wheat">
+        <Grid Width="300" Height="300" VerticalAlignment="Center" HorizontalAlignment="Stretch">
+            <Image Source="/Assets/app-logobesar.png"></Image>
         </Grid>
     </Grid>
 </Page>

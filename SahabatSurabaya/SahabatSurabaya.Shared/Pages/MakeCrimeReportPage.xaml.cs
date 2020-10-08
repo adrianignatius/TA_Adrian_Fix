@@ -157,22 +157,6 @@ namespace SahabatSurabaya
         public void CrimeReportPageLoaded(object sender,RoutedEventArgs e)
         {
             userLogin = session.getUserLogin();
-            setComboBoxKategoriKriminalitas();
-            //using (var client = new HttpClient())
-            //{
-            //    client.BaseAddress = new Uri(session.getApiURL());
-            //    client.DefaultRequestHeaders.Accept.Clear();
-            //    HttpResponseMessage response = await client.GetAsync("/getAllKategoriCrime");
-            //    if (response.IsSuccessStatusCode)
-            //    {
-            //        var jsonString = await response.Content.ReadAsStringAsync();
-            //        var responseData = response.Content.ReadAsStringAsync().Result;
-            //        listSetingKategoriKriminalitas = JsonConvert.DeserializeObject<List<SettingKategori>>(responseData);
-            //        cbJenisKejadian.ItemsSource = listSetingKategoriKriminalitas;
-            //        cbJenisKejadian.DisplayMemberPath = "nama_kategori";
-            //        cbJenisKejadian.SelectedValuePath = "id_kategori";
-            //    }
-            //}
         }
 
         private void deleteFile(object sender, RoutedEventArgs e)
@@ -221,8 +205,9 @@ namespace SahabatSurabaya
                 string displayJeniskejadian = listSetingKategoriKriminalitas[cbJenisKejadian.SelectedIndex].nama_kategori.ToString();
                 string tglLaporan = DateTime.Now.ToString("dd/MM/yyyy");
                 string waktuLaporan = DateTime.Now.ToString("HH:mm:ss");
+                int index = cbJenisKejadian.SelectedIndex;
                 string namaFileGambar = listSetingKategoriKriminalitas[cbJenisKejadian.SelectedIndex].file_gambar_kategori;
-                ConfirmReportParams param = new ConfirmReportParams("kriminalitas", judulLaporan, null, descKejadian, lat, lng, alamatLaporan, tglLaporan, waktuLaporan, displayJeniskejadian, imageLaporan, namaFileGambar);
+                ConfirmReportParams param = new ConfirmReportParams("kriminalitas", judulLaporan, null, descKejadian, lat, lng, alamatLaporan, tglLaporan, waktuLaporan, displayJeniskejadian,index, imageLaporan, namaFileGambar);
                 session.setConfirmreportParam(param);
                 this.Frame.Navigate(typeof(ConfirmReportPage));
             }     
@@ -230,21 +215,10 @@ namespace SahabatSurabaya
 
         private void Back_Click(object sender, RoutedEventArgs e)
         {
-            On_BackRequested();
+            
+            this.Frame.GoBack();
         }
 
-        private bool On_BackRequested()
-        {
-            if (this.Frame.CanGoBack)
-            {
-                var cacheSize = ((Frame)Parent).CacheSize;
-                ((Frame)Parent).CacheSize = 0;
-                ((Frame)Parent).CacheSize = cacheSize;
-                this.Frame.GoBack();
-                return true;
-            }
-            return false;
-        }
 
         private async void chooseImage(object sender, RoutedEventArgs e)
         {
@@ -274,6 +248,31 @@ namespace SahabatSurabaya
                 txtNamaFile.Text = fileName;
                 gridFile.Visibility = Visibility.Visible;
                 txtStatusFile.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+            setComboBoxKategoriKriminalitas();
+            var entry = this.Frame.BackStack.LastOrDefault();
+            if (entry.SourcePageType == typeof(ConfirmReportPage))
+            {
+                ConfirmReportParams param = session.getConfirmReportParams();
+                txtJudulLaporan.Text = param.judul_laporan;
+                txtDescKejadian.Text = param.deskripsi_laporan;
+                txtAutocompleteAddress.Text = param.alamat_laporan;
+                lat = param.lat_laporan;
+                lng = param.lng_laporan;
+                imageLaporan = param.image_laporan;
+                cbJenisKejadian.SelectedIndex = param.combo_box_selected_index;
+                if (imageLaporan != null)
+                {
+                    txtNamaFile.Text = imageLaporan.file_name;
+                    gridFile.Visibility = Visibility.Visible;
+                    txtStatusFile.Visibility = Visibility.Collapsed;
+                }
+                this.Frame.BackStack.RemoveAt(this.Frame.BackStack.Count - 1);
             }
         }
 

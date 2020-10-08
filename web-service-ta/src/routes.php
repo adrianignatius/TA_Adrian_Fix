@@ -25,22 +25,11 @@ function getKecamatan($lat,$lng){
     curl_close($ch);
     return $json["results"][0]["address_components"][0]["short_name"];
 }
-
 return function (App $app) {
     $container = $app->getContainer();
     $container['upload_directory'] = __DIR__ . '/uploads';
     $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
     $dotenv->load();
-    $app->get('/coba', function ($request, $response) {
-        $payload = [
-            'iat' => time(),
-            'uid' => 10,
-            'exp' => time() + 86400*7,
-            'iss' => 'slim-framework'
-        ];
-        $token = Token::customPayload($payload, $_ENV['JWT_SECRET']);
-        return $token;
-    });
 
     $app->get('/getAllKategoriLostFound', function ($request, $response) {
         $sql = "SELECT * FROM setting_kategori_lostfound";
@@ -277,6 +266,28 @@ return function (App $app) {
                 return $response->withJson(["status"=>"400","message"=>"Nomor handphone sudah terdaftar"]);
             }
         });
+    });
+    
+    $app->group('/kepalaKeamanan',function() use($app){
+        $app->get('/getLaporanLostFound/{kecamatan}',function($request,$response,$args){
+            $kecamatan=$args["kecamatan"];
+            $sql="SELECT * FROM laporan_lostfound_barang WHERE kecamatan LIKE '%$kecamatan%'";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([":kecamatan" => $kecamatan]);
+            $result=$stmt->fetchAll();
+            return $response->withJson($result);
+        });
+        $app->get('/cc',function($request,$response){
+            return"asd";
+        });
+    })->add(function ($request, $response, $next) {
+        $headers = $request->getHeader("Authorization");
+        if($headers!=null){
+            $response = $next($request, $response);
+            return $response;
+        }else{
+            return $response->withJson('No Token');
+        }
     });
 
     $app->group('/user', function () use ($app) {
