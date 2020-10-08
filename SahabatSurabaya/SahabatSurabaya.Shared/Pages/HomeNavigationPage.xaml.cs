@@ -1,12 +1,7 @@
 ﻿using SahabatSurabaya.Shared;
-using System;
 using System.Linq;
-using System.Net.Http;
-using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
 using Xamarin.Essentials;
 
 namespace SahabatSurabaya
@@ -58,7 +53,7 @@ namespace SahabatSurabaya
             }
         }
 
-        private async void NavView_Navigate(NavigationViewItem item)
+        private void NavView_Navigate(NavigationViewItem item)
         {
             switch (item.Tag)
             {

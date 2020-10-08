@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using SahabatSurabaya.Shared;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Net.Http;
 using Windows.UI.Popups;
@@ -18,6 +21,7 @@ namespace SahabatSurabaya
         ChatPageParams param;
         Session session;
         User userLogin;
+        HttpObject httpObject;
         double height;
         public PersonalChatPage()
         {
@@ -25,6 +29,7 @@ namespace SahabatSurabaya
             listChat = new ObservableCollection<Chat>();
             lvChat.ItemsSource = listChat;
             session = new Session();
+            httpObject = new HttpObject();
             height = ((Frame)Window.Current.Content).ActualHeight;
         }
 
@@ -63,60 +68,90 @@ namespace SahabatSurabaya
                 var messageDialog = new MessageDialog("Koneksi bermasalah");
                 await messageDialog.ShowAsync();
             }
-            
         }
         
         private async void loadChat()
         {
-            using (var client = new HttpClient())
+            string responseData = await httpObject.GetRequest("user/getAllChat/" + param.id_chat,session.getTokenAuthorization());
+            listChat = JsonConvert.DeserializeObject<ObservableCollection<Chat>>(responseData);
+            foreach (var item in listChat)
             {
-                client.BaseAddress = new Uri(session.getApiURL());
-                client.DefaultRequestHeaders.Accept.Clear();
-                HttpResponseMessage response = await client.GetAsync("user/getAllChat/"+param.id_chat);
-                if (response.IsSuccessStatusCode)
+                if (item.id_user_pengirim == param.id_user_penerima)
                 {
-                    var responseData = response.Content.ReadAsStringAsync().Result;
-                    listChat = JsonConvert.DeserializeObject<ObservableCollection<Chat>>(responseData);
-                    foreach(var item in listChat)
-                    {
-                        if (item.id_user_pengirim == param.id_user_penerima)
-                        {
-                            item.isSender = false;
-                        }
-                        else
-                        {
-                            item.isSender = true;
-                        }
-                    }
-                    lvChat.ItemsSource = listChat;
-                    if (listChat.Count > 0)
-                    {
-                        lvChat.ScrollIntoView(listChat[listChat.Count - 1]);
-                    }
+                    item.isSender = false;
+                }
+                else
+                {
+                    item.isSender = true;
                 }
             }
+            lvChat.ItemsSource = listChat;
+            if (listChat.Count > 0)
+            {
+                lvChat.ScrollIntoView(listChat[listChat.Count - 1]);
+            }
+            //using (var client = new HttpClient())
+            //{
+            //    client.BaseAddress = new Uri(session.getApiURL());
+            //    client.DefaultRequestHeaders.Accept.Clear();
+            //    HttpResponseMessage response = await client.GetAsync("user/getAllChat/"+param.id_chat);
+            //    if (response.IsSuccessStatusCode)
+            //    {
+            //        var responseData = response.Content.ReadAsStringAsync().Result;
+            //        listChat = JsonConvert.DeserializeObject<ObservableCollection<Chat>>(responseData);
+            //        foreach(var item in listChat)
+            //        {
+            //            if (item.id_user_pengirim == param.id_user_penerima)
+            //            {
+            //                item.isSender = false;
+            //            }
+            //            else
+            //            {
+            //                item.isSender = true;
+            //            }
+            //        }
+            //        lvChat.ItemsSource = listChat;
+            //        if (listChat.Count > 0)
+            //        {
+            //            lvChat.ScrollIntoView(listChat[listChat.Count - 1]);
+            //        }
+            //    }
+            //}
         }
         private async void sendChat(object sender, RoutedEventArgs e)
         {
             string chatMessage = txtChatMessage.Text;
             if (chatMessage.Length > 0)
             {
-                using (var client = new HttpClient())
+                var content = new FormUrlEncodedContent(new[]{
+                    new KeyValuePair<string, string>("id_chat", param.id_chat.ToString()),
+                    new KeyValuePair<string, string>("id_user_pengirim", param.id_user_pengirim.ToString()),
+                    new KeyValuePair<string, string>("id_user_penerima", param.id_user_penerima.ToString()),
+                    new KeyValuePair<string, string>("isi_chat", chatMessage),
+                });
+                string responseData = await httpObject.PostRequestUrlEncodedWithAuthorization("user/insertDetailChat", content, session.getTokenAuthorization());
+                JObject json = JObject.Parse(responseData);
+                if (json["status"].ToString() == "1")
                 {
-                    client.BaseAddress = new Uri(session.getApiURL());
-                    MultipartFormDataContent form = new MultipartFormDataContent();
-                    form.Add(new StringContent(param.id_chat.ToString()), "id_chat");
-                    form.Add(new StringContent(param.id_user_pengirim.ToString()), "id_user_pengirim");
-                    form.Add(new StringContent(param.id_user_penerima.ToString()), "id_user_penerima");
-                    form.Add(new StringContent(chatMessage), "isi_chat");
-                    HttpResponseMessage response = await client.PostAsync("user/insertDetailChat", form);
-                    if (response.IsSuccessStatusCode)
-                    {
-                        txtChatMessage.Text = "";
-                        Chat chatSend = new Chat(param.id_chat, param.id_user_pengirim, param.id_user_penerima, chatMessage, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),true);
-                        await connection.SendAsync("SendMessage",chatSend.id_chat,chatSend.id_user_pengirim,chatSend.id_user_penerima,chatSend.isi_chat,chatSend.waktu_chat,chatSend.isSender);
-                    }
+                    Chat chatSend = new Chat(param.id_chat, param.id_user_pengirim, param.id_user_penerima, chatMessage, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), true);
+                    await connection.SendAsync("SendMessage",chatSend.id_chat,chatSend.id_user_pengirim,chatSend.id_user_penerima,chatSend.isi_chat,chatSend.waktu_chat,chatSend.isSender);
                 }
+                //using (var client = new HttpClient())
+                //{
+                //    client.BaseAddress = new Uri(session.getApiURL());
+                //    MultipartFormDataContent form = new MultipartFormDataContent();
+                //    form.Add(new StringContent(param.id_chat.ToString()), "id_chat");
+                //    form.Add(new StringContent(param.id_user_pengirim.ToString()), "id_user_pengirim");
+                //    form.Add(new StringContent(param.id_user_penerima.ToString()), "id_user_penerima");
+                //    form.Add(new StringContent(chatMessage), "isi_chat");
+                //    HttpResponseMessage response = await client.PostAsync("user/insertDetailChat", form);
+                //    if (response.IsSuccessStatusCode)
+                //    {
+                //        txtChatMessage.Text = "";
+                //        Chat chatSend = new Chat(param.id_chat, param.id_user_pengirim, param.id_user_penerima, chatMessage, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),true);
+                //        await connection.SendAsync("SendMessage",chatSend.id_chat,chatSend.id_user_pengirim,chatSend.id_user_penerima,chatSend.isi_chat,chatSend.waktu_chat,chatSend.isSender);
+                //    }
+                //}
             }     
         }
 

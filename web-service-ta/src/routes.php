@@ -885,11 +885,11 @@ return function (App $app) {
                 ":isi_chat" => $new_chat["isi_chat"],
                 ":waktu_chat" => $datetime
             ];
-        
-            if($stmt->execute($data))
-            return $response->withJson(["status" => "success", "data" => "1"], 200);
-            
-            return $response->withJson(["status" => "failed", "data" => "0"], 200);
+            if($stmt->execute($data)){
+                return $response->withJson(["status" => "1"]);
+            }else{
+                return $response->withJson(["status" => "400"]);
+            }
             });
     });
         
