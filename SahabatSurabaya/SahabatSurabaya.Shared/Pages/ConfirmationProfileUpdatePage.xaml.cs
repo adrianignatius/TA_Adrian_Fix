@@ -62,7 +62,7 @@ namespace SahabatSurabaya
                 formContent.Add("lng_user", param.lng_user);
                 formContent.Add("lokasi_aktif_user", param.lokasi_aktif_user);
             }
-            string responseData = await httpObject.PutRequest("user/updateProfile", new FormUrlEncodedContent(formContent));
+            string responseData = await httpObject.PutRequest("user/updateProfile", new FormUrlEncodedContent(formContent),session.getTokenAuthorization());
             JObject json = JObject.Parse(responseData);
             var message = new MessageDialog(json["message"].ToString());
             await message.ShowAsync();

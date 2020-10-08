@@ -55,7 +55,7 @@ namespace SahabatSurabaya
 
         private async void updateListContact()
         {
-            string responseData = await httpObject.GetRequest("user/getEmergencyContact/" + userLogin.id_user);
+            string responseData = await httpObject.GetRequest("user/getEmergencyContact/" + userLogin.id_user,session.getTokenAuthorization());
             listEmergencyContact = JsonConvert.DeserializeObject<ObservableCollection<User>>(responseData);
             lvEmergencyContact.ItemsSource = listEmergencyContact;
             //using (var client = new HttpClient())
@@ -75,7 +75,7 @@ namespace SahabatSurabaya
 
         private async void updateListSentPendingContactRequest()
         {
-            string responseData = await httpObject.GetRequest("user/getSentPendingContactRequest/" + userLogin.id_user);
+            string responseData = await httpObject.GetRequest("user/getSentPendingContactRequest/" + userLogin.id_user,session.getTokenAuthorization());
             listSentPendingContactRequest = JsonConvert.DeserializeObject<ObservableCollection<User>>(responseData);
             lvSentPendingContact.ItemsSource = listSentPendingContactRequest;
             //using (var client = new HttpClient())
@@ -95,7 +95,7 @@ namespace SahabatSurabaya
 
         private async void updateListPendingContactRequest()
         {
-            string responseData = await httpObject.GetRequest("user/getPendingContactRequest/" + userLogin.id_user);
+            string responseData = await httpObject.GetRequest("user/getPendingContactRequest/" + userLogin.id_user,session.getTokenAuthorization());
             listPendingContactRequest = JsonConvert.DeserializeObject<ObservableCollection<PendingContact>>(responseData);
             lvPendingContactRequest.ItemsSource = listPendingContactRequest;
             //using (var client = new HttpClient())
@@ -165,7 +165,7 @@ namespace SahabatSurabaya
         private async void acceptRequest(object Sender, RoutedEventArgs e)
         {
             string id_daftar_kontak = (Sender as Button).Tag.ToString();
-            string responseData = await httpObject.PutRequest("user/acceptContactRequest/" + id_daftar_kontak, null);
+            string responseData = await httpObject.PutRequest("user/acceptContactRequest/" + id_daftar_kontak, null,session.getTokenAuthorization());
             JObject json = JObject.Parse(responseData);
             var message = new MessageDialog(json["message"].ToString());
             await message.ShowAsync();
@@ -199,7 +199,7 @@ namespace SahabatSurabaya
         private async void declineRequest(object Sender, RoutedEventArgs e)
         {
             string id_daftar_kontak = (Sender as Button).Tag.ToString();
-            string responseData = await httpObject.DeleteRequest("user/declineContactRequest/" + id_daftar_kontak);
+            string responseData = await httpObject.DeleteRequest("user/declineContactRequest/" + id_daftar_kontak,session.getTokenAuthorization());
             JObject json = JObject.Parse(responseData);
             if (json["status"].ToString() == "1")
             {

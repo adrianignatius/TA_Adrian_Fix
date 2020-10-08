@@ -1,5 +1,8 @@
 ﻿using SahabatSurabaya.Shared;
+using System;
 using System.Linq;
+using System.Net.Http;
+using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
@@ -55,7 +58,7 @@ namespace SahabatSurabaya
             }
         }
 
-        private void NavView_Navigate(NavigationViewItem item)
+        private async void NavView_Navigate(NavigationViewItem item)
         {
             switch (item.Tag)
             {

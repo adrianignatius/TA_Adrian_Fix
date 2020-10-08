@@ -43,6 +43,7 @@ namespace SahabatSurabaya.Shared
                         string data = json["data"].ToString();
                         User userLogin = JsonConvert.DeserializeObject<User>(data);
                         session.setUserLogin(userLogin);
+                        session.setTokenAuthorization(secureStorage.ToString());
                         this.Frame.Navigate(typeof(HomeNavigationPage));
                     }
                     else

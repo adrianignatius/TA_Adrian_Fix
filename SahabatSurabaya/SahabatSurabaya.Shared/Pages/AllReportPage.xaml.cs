@@ -45,7 +45,7 @@ namespace SahabatSurabaya
         {
             if (listLaporanLostFound.Count == 0)
             {
-                string responseData = await httpObject.GetRequest("getLaporanLostFound");
+                string responseData = await httpObject.GetRequest("getLaporanLostFound",session.getTokenAuthorization());
                 listLaporanLostFound = JsonConvert.DeserializeObject<ObservableCollection<LaporanLostFound>>(responseData);
             }
             lvLaporan.ItemsSource = listLaporanLostFound;
@@ -55,7 +55,7 @@ namespace SahabatSurabaya
         {
             if (listLaporanKriminalitas.Count == 0)
             {
-                string responseData = await httpObject.GetRequest("getLaporanKriminalitas");
+                string responseData = await httpObject.GetRequest("getLaporanKriminalitas",session.getTokenAuthorization());
                 listLaporanKriminalitas = JsonConvert.DeserializeObject<ObservableCollection<LaporanKriminalitas>>(responseData);
             }
             lvLaporan.ItemsSource = listLaporanKriminalitas;

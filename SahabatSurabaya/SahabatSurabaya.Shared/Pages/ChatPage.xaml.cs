@@ -32,11 +32,13 @@ namespace SahabatSurabaya
     {
         User userLogin;
         Session session;
+        HttpObject httpObject;
         ObservableCollection<DisplayHeaderChat> listDisplayHeaderChat;
         public ChatPage()
         {
             this.InitializeComponent();
             session = new Session();
+            httpObject = new HttpObject();
         }
 
         public void pageLoaded(object sender, RoutedEventArgs e)
@@ -48,47 +50,76 @@ namespace SahabatSurabaya
         private async void loadHeaderChat()
         {
             listDisplayHeaderChat = new ObservableCollection<DisplayHeaderChat>();
-            using (var client = new HttpClient())
+            string responseData = await httpObject.GetRequest("user/getHeaderChat/" + userLogin.id_user,session.getTokenAuthorization());
+            ObservableCollection<HeaderChat> tempHeaderChat = JsonConvert.DeserializeObject<ObservableCollection<HeaderChat>>(responseData);
+            for (int i = 0; i < tempHeaderChat.Count; i++)
             {
-                client.BaseAddress = new Uri(session.getApiURL());
-                client.DefaultRequestHeaders.Accept.Clear();
-                HttpResponseMessage response = await client.GetAsync("user/getHeaderChat/"+userLogin.id_user);
-                if (response.IsSuccessStatusCode)
+                int id_target_chat = 0;
+                string namaDisplay = "";
+                if (userLogin.id_user == tempHeaderChat[i].id_user_1)
                 {
-                    var responseData = response.Content.ReadAsStringAsync().Result;
-                    ObservableCollection<HeaderChat>tempHeaderChat = JsonConvert.DeserializeObject<ObservableCollection<HeaderChat>>(responseData);
-                    for (int i = 0; i < tempHeaderChat.Count; i++)
-                    {
-                        HttpResponseMessage response2 = await client.GetAsync("user/getLastMessage/" + tempHeaderChat[i].id_chat);
-                        if (response2.IsSuccessStatusCode)
-                        {
-                            int id_target_chat = 0;
-                            string namaDisplay = "";
-                            if (userLogin.id_user == tempHeaderChat[i].id_user_1)
-                            {
-                                namaDisplay = tempHeaderChat[i].nama_user_2;
-                                id_target_chat = tempHeaderChat[i].id_user_2;
-                            }
-                            else
-                            {
-                                namaDisplay = tempHeaderChat[i].nama_user_1;
-                                id_target_chat = tempHeaderChat[i].id_user_1;
-                            }
-                            DisplayHeaderChat displayHeaderChat=new DisplayHeaderChat(tempHeaderChat[i].id_chat,id_target_chat,namaDisplay,null);
-                            var jsonString = response2.Content.ReadAsStringAsync().Result;
-                            if (jsonString!="false")
-                            {
-                                JObject json = JObject.Parse(jsonString);
-                                displayHeaderChat.waktu_chat = DateTime.ParseExact(json["waktu_chat"].ToString(), "yyyy-MM-dd HH:mm:ss", null);
-                                displayHeaderChat.pesan_display = json["isi_chat"].ToString();
-                            }
-                            listDisplayHeaderChat.Add(displayHeaderChat);
-                        }
-                    }
-                    listDisplayHeaderChat = new ObservableCollection<DisplayHeaderChat>(listDisplayHeaderChat.OrderByDescending(k => k.waktu_chat));
-                    lvDaftarChat.ItemsSource = listDisplayHeaderChat;
+                    namaDisplay = tempHeaderChat[i].nama_user_2;
+                    id_target_chat = tempHeaderChat[i].id_user_2;
                 }
+                else
+                {
+                    namaDisplay = tempHeaderChat[i].nama_user_1;
+                    id_target_chat = tempHeaderChat[i].id_user_1;
+                }
+                responseData = await httpObject.GetRequest("user/getLastMessage/" + tempHeaderChat[i].id_chat, session.getTokenAuthorization());
+                JObject json = JObject.Parse(responseData);
+                DisplayHeaderChat displayHeaderChat = new DisplayHeaderChat(tempHeaderChat[i].id_chat, id_target_chat, namaDisplay, null);
+                if (json["status"].ToString() == "1")
+                {
+                    displayHeaderChat.waktu_chat = DateTime.ParseExact(json["data"]["waktu_chat"].ToString(), "yyyy-MM-dd HH:mm:ss", null);
+                    displayHeaderChat.pesan_display = json["data"]["isi_chat"].ToString();
+                }
+                listDisplayHeaderChat.Add(displayHeaderChat);
+
             }
+            listDisplayHeaderChat = new ObservableCollection<DisplayHeaderChat>(listDisplayHeaderChat.OrderByDescending(k => k.waktu_chat));
+            lvDaftarChat.ItemsSource = listDisplayHeaderChat;
+            //using (var client = new HttpClient())
+            //{
+            //    client.BaseAddress = new Uri(session.getApiURL());
+            //    client.DefaultRequestHeaders.Accept.Clear();
+            //    HttpResponseMessage response = await client.GetAsync("user/getHeaderChat/"+userLogin.id_user);
+            //    if (response.IsSuccessStatusCode)
+            //    {
+            //        var responseData = response.Content.ReadAsStringAsync().Result;
+            //        ObservableCollection<HeaderChat>tempHeaderChat = JsonConvert.DeserializeObject<ObservableCollection<HeaderChat>>(responseData);
+            //        for (int i = 0; i < tempHeaderChat.Count; i++)
+            //        {
+            //            HttpResponseMessage response2 = await client.GetAsync("user/getLastMessage/" + tempHeaderChat[i].id_chat);
+            //            if (response2.IsSuccessStatusCode)
+            //            {
+            //                int id_target_chat = 0;
+            //                string namaDisplay = "";
+            //                if (userLogin.id_user == tempHeaderChat[i].id_user_1)
+            //                {
+            //                    namaDisplay = tempHeaderChat[i].nama_user_2;
+            //                    id_target_chat = tempHeaderChat[i].id_user_2;
+            //                }
+            //                else
+            //                {
+            //                    namaDisplay = tempHeaderChat[i].nama_user_1;
+            //                    id_target_chat = tempHeaderChat[i].id_user_1;
+            //                }
+            //                DisplayHeaderChat displayHeaderChat=new DisplayHeaderChat(tempHeaderChat[i].id_chat,id_target_chat,namaDisplay,null);
+            //                var jsonString = response2.Content.ReadAsStringAsync().Result;
+            //                if (jsonString!="false")
+            //                {
+            //                    JObject json = JObject.Parse(jsonString);
+            //                    displayHeaderChat.waktu_chat = DateTime.ParseExact(json["waktu_chat"].ToString(), "yyyy-MM-dd HH:mm:ss", null);
+            //                    displayHeaderChat.pesan_display = json["isi_chat"].ToString();
+            //                }
+            //                listDisplayHeaderChat.Add(displayHeaderChat);
+            //            }
+            //        }
+            //        listDisplayHeaderChat = new ObservableCollection<DisplayHeaderChat>(listDisplayHeaderChat.OrderByDescending(k => k.waktu_chat));
+            //        lvDaftarChat.ItemsSource = listDisplayHeaderChat;
+            //    }
+            //}
         }
 
         private void goToChatPage(object sender,ItemClickEventArgs e)

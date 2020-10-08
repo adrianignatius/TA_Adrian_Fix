@@ -81,7 +81,7 @@ namespace SahabatSurabaya.Shared
         {
             if (listHistoryLaporanLostFound.Count == 0)
             {
-                string responseData = await httpObject.GetRequest("user/getHistoryLaporanLostFound/"+userLogin.id_user);
+                string responseData = await httpObject.GetRequest("user/getHistoryLaporanLostFound/"+userLogin.id_user,session.getTokenAuthorization());
                 listHistoryLaporanLostFound = JsonConvert.DeserializeObject<ObservableCollection<LaporanLostFound>>(responseData);
             }
             lvHistory.ItemsSource = listHistoryLaporanLostFound;
@@ -91,7 +91,7 @@ namespace SahabatSurabaya.Shared
         {
             if (listHistoryLaporanKriminalitas.Count == 0)
             {
-                string responseData = await httpObject.GetRequest("user/getHistoryLaporanKriminalitas/"+userLogin.id_user);
+                string responseData = await httpObject.GetRequest("user/getHistoryLaporanKriminalitas/"+userLogin.id_user,session.getTokenAuthorization());
                 listHistoryLaporanKriminalitas = JsonConvert.DeserializeObject<ObservableCollection<LaporanKriminalitas>>(responseData);
             }
             lvHistory.ItemsSource = listHistoryLaporanKriminalitas;

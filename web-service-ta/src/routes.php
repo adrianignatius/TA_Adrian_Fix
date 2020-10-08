@@ -278,17 +278,19 @@ return function (App $app) {
             return $response->withJson($result);
         });
         $app->get('/cc',function($request,$response){
-            return"asd";
+            $headers = $request->getHeader("Authorization");
+            return $headers[0];
         });
-    })->add(function ($request, $response, $next) {
-        $headers = $request->getHeader("Authorization");
-        if($headers!=null){
-            $response = $next($request, $response);
-            return $response;
-        }else{
-            return $response->withJson('No Token');
-        }
     });
+    // ->add(function ($request, $response, $next) {
+    //     $headers = $request->getHeader("Authorization");
+    //     if($headers!=null){
+    //         $response = $next($request, $response);
+    //         return $response;
+    //     }else{
+    //         return $response->withJson('No Token');
+    //     }
+    // });
 
     $app->group('/user', function () use ($app) {
         $app->put('/updateProfile',function ($request, $response){
@@ -840,14 +842,19 @@ return function (App $app) {
 
         $app->get('/getLastMessage/{id_chat}', function ($request, $response,$args) {   
             $id_chat=$args["id_chat"];
-            $sql = "SELECT d.id_chat,d.id_user_pengirim,d.id_user_penerima,d.isi_chat,d.waktu_chat,u1.nama_user as nama_user_pengirim,u2.nama_user as nama_user_penerima FROM detail_chat d,user u1,user u2 where d.id_chat=:id_chat and d.id_user_pengirim=u1.id_user and d.id_user_penerima=u2.id_user order by d.waktu_chat desc LIMIT 1";
+            $sql = "SELECT d.isi_chat,d.waktu_chat,u1.nama_user as nama_user_pengirim,u2.nama_user as nama_user_penerima FROM detail_chat d,user u1,user u2 where d.id_chat=:id_chat and d.id_user_pengirim=u1.id_user and d.id_user_penerima=u2.id_user order by d.waktu_chat desc LIMIT 1";
             $stmt = $this->db->prepare($sql);
             $data = [
                 ":id_chat" => $id_chat
             ];
             $stmt->execute($data);
             $result = $stmt->fetch();
-            return $response->withJson($result);
+            if($result==null){
+                return $response->withJson(["status"=>"400"]);
+            }else{
+                return $response->withJson(["status"=>"1","data"=>$result]);
+            }
+            
         });
 
         $app->post('/insertHeaderChat', function ($request, $response) {

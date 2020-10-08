@@ -42,7 +42,7 @@ namespace SahabatSurabaya.Shared
                     new KeyValuePair<string, string>("old_password", txtPasswordLama.Password),
                     new KeyValuePair<string, string>("new_password", txtPasswordBaru.Password)
                 });
-                string responseData = await httpObject.PutRequest("user/changePassword",content);
+                string responseData = await httpObject.PutRequest("user/changePassword",content,session.getTokenAuthorization());
                 JObject json = JObject.Parse(responseData);
                 var message = new MessageDialog(json["message"].ToString());
                 await message.ShowAsync();

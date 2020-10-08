@@ -58,7 +58,7 @@ namespace SahabatSurabaya
             string lng = location.Longitude.ToString().Replace(",", ".");
             string latlng = lat + "," + lng;
             string reqUri = "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + latlng + "&key=AIzaSyA9rHJZEGWe6rX4nAHTGXFxCubmw-F0BBw";
-            string responseData = await httpObject.GetRequest(reqUri);
+            string responseData = await httpObject.GetRequest(reqUri,session.getTokenAuthorization());
             JObject json = JObject.Parse(responseData);
             string address = json["results"][0]["formatted_address"].ToString();
             return address;
@@ -102,9 +102,9 @@ namespace SahabatSurabaya
             {
                 txtStatusUser.Text = "Free Account";
             }
-            string responseData = await httpObject.GetRequest("/getHeadlineLaporanKriminalitas");
+            string responseData = await httpObject.GetRequest("/getHeadlineLaporanKriminalitas",session.getTokenAuthorization());
             listLaporanKriminalitas = JsonConvert.DeserializeObject<ObservableCollection<LaporanKriminalitas>>(responseData);
-            responseData = await httpObject.GetRequest("/getHeadlineLaporanLostFound");
+            responseData = await httpObject.GetRequest("/getHeadlineLaporanLostFound",session.getTokenAuthorization());
             listLaporanLostFound = JsonConvert.DeserializeObject<ObservableCollection<LaporanLostFound>>(responseData);
 #if __ANDROID__
             lvHeadline.ItemsSource = listLaporanLostFound;
@@ -137,15 +137,16 @@ namespace SahabatSurabaya
 
         private async void sendEmergencyChat(User u, string address)
         {
-            string content = "Saya sedang dalam keadaan darurat! Lokasi terakhir saya di " + address;
-            string responseData=await httpObject.GetRequest("checkHeaderChat/" + userLogin.id_user + "/" + u.id_user);
+            string message = "Saya sedang dalam keadaan darurat! Lokasi terakhir saya di " + address;
+            string responseData=await httpObject.GetRequest("checkHeaderChat/" + userLogin.id_user + "/" + u.id_user,session.getTokenAuthorization());
             JObject json = JObject.Parse(responseData);
-            MultipartFormDataContent form = new MultipartFormDataContent();
-            form.Add(new StringContent(json["id_chat"].ToString()), "id_chat");
-            form.Add(new StringContent(userLogin.id_user.ToString()), "id_user_pengirim");
-            form.Add(new StringContent(u.id_user.ToString()), "id_user_penerima");
-            form.Add(new StringContent(content), "isi_chat");
-            await httpObject.PostRequest("insertDetailChat", form);
+            var content = new FormUrlEncodedContent(new[]{
+                new KeyValuePair<string, string>("id_chat", json["id_chat"].ToString()),
+                new KeyValuePair<string, string>("id_user_pengirim", userLogin.id_user.ToString()),
+                new KeyValuePair<string, string>("id_user_penerima", u.id_user.ToString()),
+                new KeyValuePair<string, string>("isi_chat", message),
+            });
+            await httpObject.PostRequestUrlEncodedWithAuthorization("insertDetailChat", content,session.getTokenAuthorization());
             //using (var client=new HttpClient())
             //{
             //    client.BaseAddress = new Uri(session.getApiURL());

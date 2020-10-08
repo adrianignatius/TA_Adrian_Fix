@@ -151,7 +151,7 @@ namespace SahabatSurabaya
             lng = location.Longitude.ToString().Replace(",", ".");
             string latlng = lat + "," + lng;
             string reqUri = "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + latlng + "&key=AIzaSyA9rHJZEGWe6rX4nAHTGXFxCubmw-F0BBw";
-            string responseData = await httpObject.GetRequest(reqUri);
+            string responseData = await httpObject.GetRequest(reqUri,session.getTokenAuthorization());
             JObject json = JObject.Parse(responseData);
             string address = json["results"][0]["formatted_address"].ToString();
             txtAutocompleteAddress.Text = address;
