@@ -39,6 +39,52 @@ return function (App $app) {
         return $response->withJson($result, 200);
     });
 
+    $app->post('/registerUser', function ($request, $response) {
+        $new_user = $request->getParsedBody();
+        $sql="SELECT COUNT(*) from user where telpon_user='".$new_user["telpon_user"]."'";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+        $telpon_kembar = $stmt->fetchColumn();
+        if($telpon_kembar==1){
+            return $response->withJson(["status"=>"400","message"=>"No. Handphone yang dimasukkan telah terpakai"]);
+        }else{
+            $geohash=new Geohash();
+            $alamat_available=$new_user["alamat_available"];
+            $lat_user=null;
+            $lng_user=null;
+            $lokasi_aktif_user=null; 
+            $geohash_lokasi_aktif_user=null;        
+            if($alamat_available=="1"){
+                $lat_user=$new_user["lat_user"];
+                $lng_user=$new_user["lng_user"];
+                $lokasi_aktif_user=$new_user["lokasi_aktif_user"];
+                $geohash_lokasi_aktif_user=$geohash->encode(floatval($lat_user), floatval($lng_user), 8);
+            }
+            $sql = "INSERT INTO user (telpon_user, password_user, nama_user, status_user, lat_user,lng_user,lokasi_aktif_user,geohash_lokasi_aktif_user,status_aktif_user) VALUE (:telpon_user, :password_user, :nama_user, :status_user, :lat_user,:lng_user,:lokasi_aktif_user,:geohash_lokasi_aktif_user,:status_aktif_user)";
+            $stmt = $this->db->prepare($sql);
+            $data = [
+                ":password_user"=>password_hash($new_user["password_user"], PASSWORD_BCRYPT),
+                ":nama_user" => $new_user["nama_user"],
+                ":telpon_user" => $new_user["telpon_user"],
+                ":status_user"=>0,
+                ":lat_user"=>$lat_user,
+                ":lng_user"=>$lng_user,
+                ":lokasi_aktif_user"=>$lokasi_aktif_user,
+                ":geohash_lokasi_aktif_user"=>$geohash_lokasi_aktif_user,
+                ":status_aktif_user"=>99
+            ];
+            if($stmt->execute($data)){
+                $sql="SELECT * FROM user WHERE id_user=:id_user";
+                $stmt = $this->db->prepare($sql);
+                $stmt->execute([":id_user" => $this->db->lastInsertId()]);
+                $user=$stmt->fetch();
+                return $response->withJson(["status" => "1","message"=>"Register akun berhasil!","data"=>$user]);
+            }else{
+                return $response->withJson(["status" => "99","message"=>"Register gagal, silahkan coba beberapa saat lagi"]);
+            }
+        }
+    });
+
     $app->post('/sessionSignIn', function ($request, $response) {
         $body=$request->getParsedBody();
         $result = Token::validate($body["token"], $_ENV['JWT_SECRET']);
@@ -560,48 +606,6 @@ return function (App $app) {
                 }
             }else{
                 return $response->withJson(["status"=>"400","message"=>"Gagal melakukan penagihan"]); 
-            }
-        });
-
-       $app->post('/registerUser', function ($request, $response) {
-            $new_user = $request->getParsedBody();
-            $sql="SELECT COUNT(*) from user where telpon_user='".$new_user["telpon_user"]."'";
-            $stmt = $this->db->prepare($sql);
-            $stmt->execute();
-            $telpon_kembar = $stmt->fetchColumn();
-            if($telpon_kembar==1){
-                return $response->withJson(["status"=>"400","message"=>"No. Handphone yang dimasukkan telah terpakai"]);
-            }else{
-                $geohash=new Geohash();
-                $alamat_available=$new_user["alamat_available"];
-                $lat_user=null;
-                $lng_user=null;
-                $lokasi_aktif_user=null; 
-                $geohash_lokasi_aktif_user=null;        
-                if($alamat_available=="1"){
-                    $lat_user=$new_user["lat_user"];
-                    $lng_user=$new_user["lng_user"];
-                    $lokasi_aktif_user=$new_user["lokasi_aktif_user"];
-                    $geohash_lokasi_aktif_user=$geohash->encode(floatval($lat_user), floatval($lng_user), 8);
-                }
-                $sql = "INSERT INTO user (telpon_user, password_user, nama_user, status_user, lat_user,lng_user,lokasi_aktif_user,geohash_lokasi_aktif_user,status_aktif_user) VALUE (:telpon_user, :password_user, :nama_user, :status_user, :lat_user,:lng_user,:lokasi_aktif_user,:geohash_lokasi_aktif_user,:status_aktif_user)";
-                $stmt = $this->db->prepare($sql);
-                $data = [
-                    ":password_user"=>password_hash($new_user["password_user"], PASSWORD_BCRYPT),
-                    ":nama_user" => $new_user["nama_user"],
-                    ":telpon_user" => $new_user["telpon_user"],
-                    ":status_user"=>0,
-                    ":lat_user"=>$lat_user,
-                    ":lng_user"=>$lng_user,
-                    ":lokasi_aktif_user"=>$lokasi_aktif_user,
-                    ":geohash_lokasi_aktif_user"=>$geohash_lokasi_aktif_user,
-                    ":status_aktif_user"=>99
-                ];
-                if($stmt->execute($data)){
-                    return $response->withJson(["status" => "1","message"=>"Register akun berhasil!","insertID"=>$this->db->lastInsertId()]);
-                }else{
-                    return $response->withJson(["status" => "99","message"=>"Register gagal, silahkan coba beberapa saat lagi"]);
-                }
             }
         });
 

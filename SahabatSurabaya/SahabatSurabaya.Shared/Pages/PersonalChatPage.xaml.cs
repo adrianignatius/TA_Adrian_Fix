@@ -48,14 +48,7 @@ namespace SahabatSurabaya
 
             connection.On<int,int,int,string,string,bool>("SendMessage", async (id_chat,id_user_pengirim,id_user_penerima,isi_chat,waktu_chat,isSender) =>
             {
-                if (id_user_pengirim == userLogin.id_user)
-                {
-                    isSender = true;
-                }
-                else
-                {
-                    isSender = false;
-                }
+                isSender = id_user_pengirim == userLogin.id_user ? true : false;
                 listChat.Add(new Chat(id_chat,id_user_pengirim,id_user_penerima,isi_chat,waktu_chat,isSender));
                 lvChat.ScrollIntoView(listChat[listChat.Count - 1]);
             });
@@ -76,47 +69,13 @@ namespace SahabatSurabaya
             listChat = JsonConvert.DeserializeObject<ObservableCollection<Chat>>(responseData);
             foreach (var item in listChat)
             {
-                if (item.id_user_pengirim == param.id_user_penerima)
-                {
-                    item.isSender = false;
-                }
-                else
-                {
-                    item.isSender = true;
-                }
+                item.isSender = item.id_user_pengirim == param.id_user_penerima ? false : true;
             }
             lvChat.ItemsSource = listChat;
             if (listChat.Count > 0)
             {
                 lvChat.ScrollIntoView(listChat[listChat.Count - 1]);
             }
-            //using (var client = new HttpClient())
-            //{
-            //    client.BaseAddress = new Uri(session.getApiURL());
-            //    client.DefaultRequestHeaders.Accept.Clear();
-            //    HttpResponseMessage response = await client.GetAsync("user/getAllChat/"+param.id_chat);
-            //    if (response.IsSuccessStatusCode)
-            //    {
-            //        var responseData = response.Content.ReadAsStringAsync().Result;
-            //        listChat = JsonConvert.DeserializeObject<ObservableCollection<Chat>>(responseData);
-            //        foreach(var item in listChat)
-            //        {
-            //            if (item.id_user_pengirim == param.id_user_penerima)
-            //            {
-            //                item.isSender = false;
-            //            }
-            //            else
-            //            {
-            //                item.isSender = true;
-            //            }
-            //        }
-            //        lvChat.ItemsSource = listChat;
-            //        if (listChat.Count > 0)
-            //        {
-            //            lvChat.ScrollIntoView(listChat[listChat.Count - 1]);
-            //        }
-            //    }
-            //}
         }
         private async void sendChat(object sender, RoutedEventArgs e)
         {
@@ -133,25 +92,10 @@ namespace SahabatSurabaya
                 JObject json = JObject.Parse(responseData);
                 if (json["status"].ToString() == "1")
                 {
+                    txtChatMessage.Text = "";
                     Chat chatSend = new Chat(param.id_chat, param.id_user_pengirim, param.id_user_penerima, chatMessage, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), true);
                     await connection.SendAsync("SendMessage",chatSend.id_chat,chatSend.id_user_pengirim,chatSend.id_user_penerima,chatSend.isi_chat,chatSend.waktu_chat,chatSend.isSender);
                 }
-                //using (var client = new HttpClient())
-                //{
-                //    client.BaseAddress = new Uri(session.getApiURL());
-                //    MultipartFormDataContent form = new MultipartFormDataContent();
-                //    form.Add(new StringContent(param.id_chat.ToString()), "id_chat");
-                //    form.Add(new StringContent(param.id_user_pengirim.ToString()), "id_user_pengirim");
-                //    form.Add(new StringContent(param.id_user_penerima.ToString()), "id_user_penerima");
-                //    form.Add(new StringContent(chatMessage), "isi_chat");
-                //    HttpResponseMessage response = await client.PostAsync("user/insertDetailChat", form);
-                //    if (response.IsSuccessStatusCode)
-                //    {
-                //        txtChatMessage.Text = "";
-                //        Chat chatSend = new Chat(param.id_chat, param.id_user_pengirim, param.id_user_penerima, chatMessage, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),true);
-                //        await connection.SendAsync("SendMessage",chatSend.id_chat,chatSend.id_user_pengirim,chatSend.id_user_penerima,chatSend.isi_chat,chatSend.waktu_chat,chatSend.isSender);
-                //    }
-                //}
             }     
         }
 
