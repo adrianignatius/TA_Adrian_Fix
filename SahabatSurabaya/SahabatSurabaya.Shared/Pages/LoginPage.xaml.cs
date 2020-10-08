@@ -9,6 +9,7 @@ using System.Net.Http.Headers;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Xamarin.Essentials;
 #if __ANDROID__
 using Com.OneSignal;
 using Com.OneSignal.Abstractions;
@@ -61,6 +62,7 @@ namespace SahabatSurabaya
                 {
                     string data = json["data"].ToString();
                     User userLogin = JsonConvert.DeserializeObject<User>(data);
+                    await SecureStorage.SetAsync("jwt_token", json["token"].ToString());
                     session.setUserLogin(userLogin);
                     if (userLogin.status_aktif_user == 0)
                     {

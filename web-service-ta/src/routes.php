@@ -5,6 +5,7 @@ use Slim\Http\Request;
 use Slim\Http\Response;
 use Slim\Http\UploadedFile;
 use Sk\Geohash\Geohash;
+use \Firebase\JWT\JWT;
 
 date_default_timezone_set("Asia/Jakarta");
 
@@ -27,6 +28,19 @@ function getKecamatan($lat,$lng){
 return function (App $app) {
     $container = $app->getContainer();
     $container['upload_directory'] = __DIR__ . '/uploads';
+    $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
+    $dotenv->load();
+    $app->get('/coba', function ($request, $response) {
+        // $key = "example_key";
+        $payload = array(
+            "iss" => "ta-istts-adrian",
+            "sub" => "http://example.com",
+            "iat" => time(),
+            "exp" => time()+60*60
+        );
+        $jwt = JWT::encode($payload, $_ENV['JWT_SECRET']);
+        return $jwt_secret;
+    });
 
     $app->get('/getAllKategoriLostFound', function ($request, $response) {
         $sql = "SELECT * FROM setting_kategori_lostfound";
@@ -384,7 +398,14 @@ return function (App $app) {
             $result = $stmt->fetch();
             if($result!=null){
                 if(password_verify($body["password_user"],$result["password_user"])){
-                    return $response->withJson(["status" => "200", "data" => $result]);
+                    $payload = array(
+                        "iss" => "slim-framework",
+                        "sub" => $result["id_user"],
+                        "iat" => time(),
+                        "exp" => time()+60*60
+                    );
+                    $jwt = JWT::encode($payload, $_ENV['JWT_SECRET']);
+                    return $response->withJson(["status" => "200", "data" => $result,"token"=>$jwt]);
                 }else{
                     return $response->withJson(["status" => "400", "message" =>"Password yang dimasukkan salah"]);
                 }
