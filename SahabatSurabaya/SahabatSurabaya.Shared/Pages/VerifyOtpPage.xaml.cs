@@ -72,16 +72,6 @@ namespace SahabatSurabaya
             JObject json = JObject.Parse(responseData);
             var message = new MessageDialog(json["message"].ToString());
             await message.ShowAsync();
-            //using (var client = new HttpClient())
-            //{
-            //   //client.BaseAddress = new Uri(session.getApiURL());
-            //   client.BaseAddress = new Uri("http://localhost:8080/");
-            //   client.DefaultRequestHeaders.Accept.Clear();
-            //   client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            //   MultipartFormDataContent form = new MultipartFormDataContent();
-            //   form.Add(new StringContent(userRegister.telpon_user), "number");
-            //   await client.PostAsync("user/sendOTP", form);
-            //}
         }
 
         private async void sendOTP(object sender, RoutedEventArgs e)
@@ -103,53 +93,21 @@ namespace SahabatSurabaya
 
         private async void confirmOTP(object sender,RoutedEventArgs e)
         {
-            if (txtOtp.Text.Length != 0)
-            {
+            if (txtOtp.Text.Length != 0){
                 var content = new FormUrlEncodedContent(new[]{
                     new KeyValuePair<string, string>("number", userRegister.telpon_user),
                     new KeyValuePair<string, string>("otp_code", txtOtp.Text)
                 });
                 string responseData = await httpObject.PostRequestUrlEncodedWithAuthorization("user/verifyOTP", content, session.getTokenAuthorization());
                 JObject json = JObject.Parse(responseData);
+                var message = new MessageDialog(json["message"].ToString());
+                await message.ShowAsync();
                 if (json["status"].ToString() == "1"){
-                    var message = new MessageDialog(json["message"].ToString());
-                    await message.ShowAsync();
                     this.Frame.Navigate(typeof(HomeNavigationPage));
                 }
-                else{
-                    var message = new MessageDialog(json["message"].ToString());
-                    await message.ShowAsync();
-                }
-                //using (var client = new HttpClient())
-                //{
-                //    client.BaseAddress = new Uri(session.getApiURL());
-                //    client.DefaultRequestHeaders.Accept.Clear();
-                //    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                //    MultipartFormDataContent form = new MultipartFormDataContent();
-                //    form.Add(new StringContent(userRegister.telpon_user), "number");
-                //    form.Add(new StringContent(txtOtp.Text), "otp_code");
-                //    HttpResponseMessage response = await client.PostAsync("user/verifyOTP", form);
-                //    if (response.IsSuccessStatusCode)
-                //    {
-                //        var responseData = response.Content.ReadAsStringAsync().Result;
-                //        JObject json = JObject.Parse(responseData);
-                //        if (json["status"].ToString() == "1")
-                //        {
-                //            var message = new MessageDialog(json["message"].ToString());
-                //            await message.ShowAsync();
-                //            this.Frame.Navigate(typeof(HomeNavigationPage));
-                //        }
-                //        else
-                //        {
-                //            var message = new MessageDialog(json["message"].ToString());
-                //            await message.ShowAsync();
-
-                //        }
-                //    }
-                //}
+                txtOtp.Text = "";
             }
-            else
-            {
+            else{
                 var message = new MessageDialog("Anda belum memasukkan kode");
                 await message.ShowAsync();
             }
