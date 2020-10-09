@@ -1,5 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
+using SahabatSurabaya.Shared;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -14,18 +16,19 @@ namespace SahabatSurabaya
         Session session;
         User userRegister;
         DispatcherTimer timer;
+        HttpObject httpObject;
         int countdown = 30;
         public VerifyOtpPage()
         {
             this.InitializeComponent();
             txtOtp.Focus(FocusState.Keyboard);
             session = new Session();
+            httpObject = new HttpObject();
             timer = new DispatcherTimer();
             timer.Interval = new TimeSpan(0, 0, 1);
             timer.Tick += Timer_Tick;
             updateTxtTimer();
             timer.Start();
-            
         }
         
         private void updateTxtTimer()
@@ -38,7 +41,6 @@ namespace SahabatSurabaya
             {
                 txtTimer.Text = "00:" + countdown;
             }
-            
         }
 
         private void Timer_Tick(object sender, object e)
@@ -63,16 +65,23 @@ namespace SahabatSurabaya
 
         private async void sendOTP()
         {
-            using (var client = new HttpClient())
-            {
-               //client.BaseAddress = new Uri(session.getApiURL());
-               client.BaseAddress = new Uri("http://localhost:8080/");
-               client.DefaultRequestHeaders.Accept.Clear();
-               client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-               MultipartFormDataContent form = new MultipartFormDataContent();
-               form.Add(new StringContent(userRegister.telpon_user), "number");
-               await client.PostAsync("user/sendOTP", form);
-            }
+            var content = new FormUrlEncodedContent(new[]{
+                new KeyValuePair<string, string>("number", userRegister.telpon_user)
+            });
+            string responseData = await httpObject.PostRequestUrlEncodedWithAuthorization("user/sendOTP", content, session.getTokenAuthorization());
+            JObject json = JObject.Parse(responseData);
+            var message = new MessageDialog(json["message"].ToString());
+            await message.ShowAsync();
+            //using (var client = new HttpClient())
+            //{
+            //   //client.BaseAddress = new Uri(session.getApiURL());
+            //   client.BaseAddress = new Uri("http://localhost:8080/");
+            //   client.DefaultRequestHeaders.Accept.Clear();
+            //   client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            //   MultipartFormDataContent form = new MultipartFormDataContent();
+            //   form.Add(new StringContent(userRegister.telpon_user), "number");
+            //   await client.PostAsync("user/sendOTP", form);
+            //}
         }
 
         private async void sendOTP(object sender, RoutedEventArgs e)
@@ -89,41 +98,55 @@ namespace SahabatSurabaya
                 txtTimer.Visibility = Visibility.Visible;
                 sendOTP();
                 updateTxtTimer();
-            }
-            
+            }     
         }
 
         private async void confirmOTP(object sender,RoutedEventArgs e)
         {
             if (txtOtp.Text.Length != 0)
             {
-                using (var client = new HttpClient())
-                {
-                    client.BaseAddress = new Uri(session.getApiURL());
-                    client.DefaultRequestHeaders.Accept.Clear();
-                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                    MultipartFormDataContent form = new MultipartFormDataContent();
-                    form.Add(new StringContent(userRegister.telpon_user), "number");
-                    form.Add(new StringContent(txtOtp.Text), "otp_code");
-                    HttpResponseMessage response = await client.PostAsync("user/verifyOTP", form);
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var responseData = response.Content.ReadAsStringAsync().Result;
-                        JObject json = JObject.Parse(responseData);
-                        if (json["status"].ToString() == "1")
-                        {
-                            var message = new MessageDialog(json["message"].ToString());
-                            await message.ShowAsync();
-                            this.Frame.Navigate(typeof(HomeNavigationPage));
-                        }
-                        else
-                        {
-                            var message = new MessageDialog(json["message"].ToString());
-                            await message.ShowAsync();
-
-                        }
-                    }
+                var content = new FormUrlEncodedContent(new[]{
+                    new KeyValuePair<string, string>("number", userRegister.telpon_user),
+                    new KeyValuePair<string, string>("otp_code", txtOtp.Text)
+                });
+                string responseData = await httpObject.PostRequestUrlEncodedWithAuthorization("user/verifyOTP", content, session.getTokenAuthorization());
+                JObject json = JObject.Parse(responseData);
+                if (json["status"].ToString() == "1"){
+                    var message = new MessageDialog(json["message"].ToString());
+                    await message.ShowAsync();
+                    this.Frame.Navigate(typeof(HomeNavigationPage));
                 }
+                else{
+                    var message = new MessageDialog(json["message"].ToString());
+                    await message.ShowAsync();
+                }
+                //using (var client = new HttpClient())
+                //{
+                //    client.BaseAddress = new Uri(session.getApiURL());
+                //    client.DefaultRequestHeaders.Accept.Clear();
+                //    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                //    MultipartFormDataContent form = new MultipartFormDataContent();
+                //    form.Add(new StringContent(userRegister.telpon_user), "number");
+                //    form.Add(new StringContent(txtOtp.Text), "otp_code");
+                //    HttpResponseMessage response = await client.PostAsync("user/verifyOTP", form);
+                //    if (response.IsSuccessStatusCode)
+                //    {
+                //        var responseData = response.Content.ReadAsStringAsync().Result;
+                //        JObject json = JObject.Parse(responseData);
+                //        if (json["status"].ToString() == "1")
+                //        {
+                //            var message = new MessageDialog(json["message"].ToString());
+                //            await message.ShowAsync();
+                //            this.Frame.Navigate(typeof(HomeNavigationPage));
+                //        }
+                //        else
+                //        {
+                //            var message = new MessageDialog(json["message"].ToString());
+                //            await message.ShowAsync();
+
+                //        }
+                //    }
+                //}
             }
             else
             {

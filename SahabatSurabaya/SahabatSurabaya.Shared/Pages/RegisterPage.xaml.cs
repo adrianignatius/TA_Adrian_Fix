@@ -139,77 +139,31 @@ namespace SahabatSurabaya
             {
                 if (txtPassword.Password == txtConfirmPassword.Password)
                 {
-                    var content = new Dictionary<string, string>();
-                    content.Add(txtFullName.Text, "nama_user");
-                    content.Add(txtPhone.Text, "telpon_user");
-                    content.Add(txtPassword.Password, "password_user");
+                    var formContent = new Dictionary<string, string>();
+                    formContent.Add("nama_user", txtFullName.Text);
+                    formContent.Add("telpon_user", txtPhone.Text);
+                    formContent.Add("password_user", txtPassword.Password);
                     if (txtAutocompleteAddress.Text.Length != 0){
-                        content.Add("1", "alamat_available");
-                        content.Add(txtAutocompleteAddress.Text, "lokasi_aktif_user");
-                        content.Add(lat, "lat_user");
-                        content.Add(lng, "lng_user");
+                        formContent.Add("alamat_available", "1");
+                        formContent.Add("lokasi_aktif_user", txtAutocompleteAddress.Text);
+                        formContent.Add("lat_user",lat);
+                        formContent.Add("lng_user",lng);
                     }
                     else{
-                        content.Add("0", "alamat_available");
+                        formContent.Add("alamat_available", "0");
                     }
-                    string responseData = await httpObject.PostRequestWithUrlEncoded("registerUser", new FormUrlEncodedContent(content));
+                    string responseData = await httpObject.PostRequestWithUrlEncoded("registerUser", new FormUrlEncodedContent(formContent));
                     JObject json = JObject.Parse(responseData);
-                    if (json["status"].ToString() == "1"){
+                    var message = new MessageDialog(json["message"].ToString());
+                    await message.ShowAsync();
+                    if (json["status"].ToString() == "1")
+                    {
                         string data = json["data"].ToString();
                         User userRegister = JsonConvert.DeserializeObject<User>(data);
                         session.setUserLogin(userRegister);
-                        var message = new MessageDialog(json["message"].ToString());
-                        await message.ShowAsync();
+                        session.setTokenAuthorization(json["token"].ToString());
                         this.Frame.Navigate(typeof(VerifyOtpPage));
                     }
-                    //using (var client = new HttpClient())
-                    //{
-                    //    client.BaseAddress = new Uri("http://localhost:8080/");
-                    //    //client.BaseAddress = new Uri(session.getApiURL());
-                    //    client.DefaultRequestHeaders.Accept.Clear();
-                    //    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                    //    MultipartFormDataContent form = new MultipartFormDataContent();
-                    //    form.Add(new StringContent(txtFullName.Text), "nama_user");
-                    //    form.Add(new StringContent(txtPhone.Text), "telpon_user");
-                    //    form.Add(new StringContent(txtPassword.Password), "password_user");
-                    //    if (txtAutocompleteAddress.Text.Length != 0)
-                    //    {
-                    //        form.Add(new StringContent("1"),"alamat_available");
-                    //        form.Add(new StringContent(txtAutocompleteAddress.Text), "lokasi_aktif_user");
-                    //        form.Add(new StringContent(lat), "lat_user");
-                    //        form.Add(new StringContent(lng), "lng_user");
-                    //    }
-                    //    else
-                    //    {
-                    //        form.Add(new StringContent("0"), "alamat_available");
-                    //    }
-
-                    //    HttpResponseMessage response = await client.PostAsync("user/registerUser", form);
-                    //    if (response.IsSuccessStatusCode)
-                    //    {
-                    //        var responseData = response.Content.ReadAsStringAsync().Result;
-                    //        JObject json = JObject.Parse(responseData);
-                    //        if (json["status"].ToString() == "1")
-                    //        {
-                    //            response = await client.GetAsync("user/getUser/" + json["insertID"].ToString());
-                    //            if (response.IsSuccessStatusCode)
-                    //            {
-                    //                responseData = response.Content.ReadAsStringAsync().Result;
-                    //                User userRegister = JsonConvert.DeserializeObject<User>(responseData);
-                    //                session.setUserLogin(userRegister);
-                    //                var message = new MessageDialog(json["message"].ToString());
-                    //                await message.ShowAsync();
-                    //                this.Frame.Navigate(typeof(VerifyOtpPage));
-                    //            }
-
-                    //        }
-                    //        else
-                    //        {
-                    //            var message = new MessageDialog(json["message"].ToString());
-                    //            await message.ShowAsync();
-                    //        }
-                    //    }
-                    //}
                 }
                 else
                 {

@@ -78,7 +78,14 @@ return function (App $app) {
                 $stmt = $this->db->prepare($sql);
                 $stmt->execute([":id_user" => $this->db->lastInsertId()]);
                 $user=$stmt->fetch();
-                return $response->withJson(["status" => "1","message"=>"Register akun berhasil!","data"=>$user]);
+                $payload = array(
+                    "iss" => "slim-framework",
+                    "sub" => $user["id_user"],
+                    "iat" => time(),
+                    "exp" => time()+86400*7
+                );
+                $token = Token::customPayload($payload, $_ENV['JWT_SECRET']);
+                return $response->withJson(["status" => "1","message"=>"Register akun berhasil!","data"=>$user,"token"=>$token]);
             }else{
                 return $response->withJson(["status" => "99","message"=>"Register gagal, silahkan coba beberapa saat lagi"]);
             }
@@ -410,9 +417,9 @@ return function (App $app) {
                 ":telpon_user"=>$body["number"]
             ];
             if($stmt->execute($data)){
-                return $response->withJson(["status_code" => "200"]);
+                return $response->withJson(["status" => "1","message"=>"Kode OTP telah dikirimkan ke nomor anda"]);
             }else{
-                return $response->withJson(["status_code" => "400"]);
+                return $response->withJson(["status" => "400","message"=>"Gagal mengirimkan kode OTP, silahkan coba beberapa saat lagi"]);
             }
         });
 
@@ -476,7 +483,7 @@ return function (App $app) {
                         "iss" => "slim-framework",
                         "sub" => $result["id_user"],
                         "iat" => time(),
-                        "exp" => time()+60*60
+                        "exp" => time()+86400*7
                     );
                     $token = Token::customPayload($payload, $_ENV['JWT_SECRET']);
                     return $response->withJson(["status" => "200", "data" => $result,"token"=>$token]);
