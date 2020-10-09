@@ -1,5 +1,5 @@
 ﻿<Page
-    x:Class="SahabatSurabaya.AllReportPage"
+    x:Class="SahabatSurabaya.Shared.Pages.AllReportPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:android="http://uno.ui/android"
@@ -28,14 +28,14 @@
             </Grid.RowDefinitions>
             <StackPanel Grid.Row="0" Orientation="Horizontal">
                 <Button Click="Back_Click" VerticalAlignment="Top" HorizontalAlignment="Left" Style="{StaticResource NavigationBackButtonNormalStyle}"></Button>
-                <TextBlock Text="Daftar semua laporan" Margin="12,4,0,0" FontSize="24" FontWeight="Bold" ></TextBlock>
+                <TextBlock Name="txtJudulHalaman" Text="Daftar semua laporan" Margin="12,4,0,0" FontSize="24" FontWeight="Bold" ></TextBlock>
             </StackPanel>
             <Grid Grid.Row="1" Margin="8">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition></ColumnDefinition>
                     <ColumnDefinition></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <Button FontSize="16" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" Click="changeSource" Tag="1" Name="btnSelectionLaporanLostFound" Margin="4,0,4,0"  Foreground="Green" Background="White" BorderBrush="Green" HorizontalAlignment="Stretch" Grid.Column="0" Content="Laporan &amp; Lost Found"></Button>
+                <Button FontSize="16" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" Click="changeSource" Tag="1" Name="btnSelectionLaporanLostFound" Margin="4,0,4,0"  Foreground="Green" Background="White" BorderBrush="Green" HorizontalAlignment="Stretch" Grid.Column="0" Content="Laporan Lost &amp; Found"></Button>
                 <Button FontSize="16" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" Click="changeSource" Tag="2"  Name="btnSelectionLaporanKriminalitas" Margin="4,0,4,0" Foreground="Green" Background="White" BorderBrush="Green" HorizontalAlignment="Stretch" Grid.Column="1" Content="Laporan Kriminalitas"></Button>
             </Grid>
             <ScrollViewer Grid.Row="2">

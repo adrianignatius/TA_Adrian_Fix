@@ -9,7 +9,7 @@ using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
-namespace SahabatSurabaya
+namespace SahabatSurabaya.Shared.Pages
 {
     public sealed partial class VerifyOtpPage : Page
     {

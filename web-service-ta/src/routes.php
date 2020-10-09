@@ -330,9 +330,14 @@ return function (App $app) {
             $result=$stmt->fetchAll();
             return $response->withJson($result);
         });
-        $app->get('/cc',function($request,$response){
-            $headers = $request->getHeader("Authorization");
-            return $headers[0];
+
+        $app->get('/getLaporanKriminalitas/{kecamatan}',function($request,$response,$args){
+            $kecamatan=$args["kecamatan"];
+            $sql="SELECT * FROM laporan_kriminalitas WHERE kecamatan LIKE '%$kecamatan%'";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([":kecamatan" => $kecamatan]);
+            $result=$stmt->fetchAll();
+            return $response->withJson($result);
         });
     });
     // ->add(function ($request, $response, $next) {

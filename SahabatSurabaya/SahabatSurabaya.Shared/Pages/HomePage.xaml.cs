@@ -19,7 +19,7 @@ using Com.OneSignal;
 using Com.OneSignal.Abstractions;
 #endif
 
-namespace SahabatSurabaya
+namespace SahabatSurabaya.Shared.Pages
 {
 
     public sealed partial class HomePage : Page

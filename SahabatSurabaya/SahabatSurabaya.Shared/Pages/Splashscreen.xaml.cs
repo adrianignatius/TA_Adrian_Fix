@@ -9,7 +9,7 @@ using Windows.UI.Xaml.Controls;
 using Xamarin.Essentials;
 
 
-namespace SahabatSurabaya.Shared
+namespace SahabatSurabaya.Shared.Pages
 {
     public sealed partial class Splashscreen : Page
     {
@@ -44,7 +44,12 @@ namespace SahabatSurabaya.Shared
                         User userLogin = JsonConvert.DeserializeObject<User>(data);
                         session.setUserLogin(userLogin);
                         session.setTokenAuthorization(secureStorage.ToString());
-                        this.Frame.Navigate(typeof(HomeNavigationPage));
+                        if (userLogin.status_user == 2){
+                            this.Frame.Navigate(typeof(HomeNavigationPageKepalaKeamanan));
+                        }
+                        else{
+                            this.Frame.Navigate(typeof(HomeNavigationPage));
+                        }
                     }
                     else
                     {

@@ -4,7 +4,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Xamarin.Essentials;
 
-namespace SahabatSurabaya
+namespace SahabatSurabaya.Shared.Pages
 {
 
     public sealed partial class HomeNavigationPage : Page

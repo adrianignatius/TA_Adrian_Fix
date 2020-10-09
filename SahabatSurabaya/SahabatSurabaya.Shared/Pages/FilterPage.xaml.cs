@@ -17,7 +17,7 @@ using Windows.UI.Xaml.Navigation;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
-namespace SahabatSurabaya.Shared
+namespace SahabatSurabaya.Shared.Pages
 {
 
     public sealed partial class FilterPage : Page

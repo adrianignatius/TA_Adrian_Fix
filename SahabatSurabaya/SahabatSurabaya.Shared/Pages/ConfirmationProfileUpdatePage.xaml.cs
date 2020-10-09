@@ -10,7 +10,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 
-namespace SahabatSurabaya
+namespace SahabatSurabaya.Shared.Pages
 {
     public sealed partial class ConfirmationProfileUpdatePage : Page
     {

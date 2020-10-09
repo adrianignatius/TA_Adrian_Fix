@@ -15,7 +15,7 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using Xamarin.Essentials;
 
-namespace SahabatSurabaya
+namespace SahabatSurabaya.Shared.Pages
 {
 
     public sealed partial class ReportDetailPage : Page

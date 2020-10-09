@@ -8,7 +8,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
 
-namespace SahabatSurabaya.Shared
+namespace SahabatSurabaya.Shared.Pages
 {
 
     public sealed partial class ChangePasswordPage : Page

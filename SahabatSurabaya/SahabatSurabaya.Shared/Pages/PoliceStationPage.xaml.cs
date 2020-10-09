@@ -10,7 +10,7 @@ using Xamarin.Essentials;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
-namespace SahabatSurabaya
+namespace SahabatSurabaya.Shared.Pages
 {
 
     public sealed partial class PoliceStationPage : Page

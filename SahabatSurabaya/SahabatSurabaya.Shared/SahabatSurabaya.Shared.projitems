@@ -69,6 +69,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Class\KomentarLaporan.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Class\LaporanKriminalitas.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Class\LaporanLostFound.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Pages\LaporanKepalaKeamananPage.xaml.cs">
+      <DependentUpon>LaporanKepalaKeamananPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Pages\LoginPage.xaml.cs">
       <DependentUpon>LoginPage.xaml</DependentUpon>
     </Compile>
@@ -159,6 +162,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="$(MSBuildThisFileDirectory)Pages\HomePage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Pages\LaporanKepalaKeamananPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

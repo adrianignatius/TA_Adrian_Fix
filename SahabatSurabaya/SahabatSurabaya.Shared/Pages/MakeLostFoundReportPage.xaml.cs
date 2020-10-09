@@ -13,7 +13,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 using Xamarin.Essentials;
 
-namespace SahabatSurabaya
+namespace SahabatSurabaya.Shared.Pages
 {
     public sealed partial class MakeLostFoundReportPage : Page
     {

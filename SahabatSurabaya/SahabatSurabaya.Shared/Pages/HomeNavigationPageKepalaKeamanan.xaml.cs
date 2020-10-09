@@ -12,10 +12,11 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using Xamarin.Essentials;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
-namespace SahabatSurabaya.Shared
+namespace SahabatSurabaya.Shared.Pages
 {
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
@@ -67,37 +68,12 @@ namespace SahabatSurabaya.Shared
                 case "home":
                     ContentFrame.Navigate(typeof(HomePage));
                     break;
-
-                case "MakeLostFoundReportPage":
-                    this.Frame.Navigate(typeof(MakeLostFoundReportPage));
+                case "laporanAreaPengawasanPage":
+                    ContentFrame.Navigate(typeof(AllReportPage));
                     break;
-
-                case "MakeCrimeReportPage":
-                    this.Frame.Navigate(typeof(MakeCrimeReportPage));
-                    break;
-
                 case "SignOut":
                     this.Frame.Navigate(typeof(LoginPage));
-                    break;
-
-                case "PoliceStationPage":
-                    ContentFrame.Navigate(typeof(PoliceStationPage));
-                    break;
-
-                case "ProfilePage":
-                    ContentFrame.Navigate(typeof(ProfilePage));
-                    break;
-
-                case "chatPage":
-                    ContentFrame.Navigate(typeof(ChatPage));
-                    break;
-
-                case "contactPage":
-                    ContentFrame.Navigate(typeof(ContactPage));
-                    break;
-
-                case "historyPage":
-                    ContentFrame.Navigate(typeof(HistoryPage));
+                    SecureStorage.Remove("jwt_token");
                     break;
             }
         }

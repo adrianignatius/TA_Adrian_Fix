@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using SahabatSurabaya.Shared.Pages;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -34,7 +35,7 @@ namespace SahabatSurabaya.Shared
             setListViewLostFound();
         }
 
-        public async void goToDetailPage(object sender, ItemClickEventArgs e)
+        public void goToDetailPage(object sender, ItemClickEventArgs e)
         {
             string tag = (sender as ListView).Tag.ToString();
             if (tag == "lvKriminalitas")

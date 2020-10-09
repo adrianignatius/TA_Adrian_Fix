@@ -10,13 +10,15 @@ using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Navigation;
 
-namespace SahabatSurabaya
+namespace SahabatSurabaya.Shared.Pages
 { 
     public sealed partial class AllReportPage : Page
     {
         Session session;
         HttpObject httpObject;
+        User userLogin;
         ObservableCollection<LaporanKriminalitas> listLaporanKriminalitas = new ObservableCollection<LaporanKriminalitas>();
         ObservableCollection<LaporanLostFound> listLaporanLostFound = new ObservableCollection<LaporanLostFound>();
         public AllReportPage()
@@ -24,6 +26,7 @@ namespace SahabatSurabaya
             this.InitializeComponent();
             session = new Session();
             httpObject = new HttpObject();
+            userLogin = session.getUserLogin();
         }
 
         private void Back_Click(object sender, RoutedEventArgs e)
@@ -43,9 +46,8 @@ namespace SahabatSurabaya
 
         private async void loadLaporanLostFound()
         {
-            if (listLaporanLostFound.Count == 0)
-            {
-                string responseData = await httpObject.GetRequest("getLaporanLostFound",session.getTokenAuthorization());
+            if (listLaporanLostFound.Count == 0){
+                string responseData = userLogin.status_user == 2 ? await httpObject.GetRequest("getLaporanLostFound", session.getTokenAuthorization()) : await httpObject.GetRequest("kepalaKeamanan/getLaporanLostFound/" + userLogin.kecamatan_user,session.getTokenAuthorization());
                 listLaporanLostFound = JsonConvert.DeserializeObject<ObservableCollection<LaporanLostFound>>(responseData);
             }
             lvLaporan.ItemsSource = listLaporanLostFound;
@@ -53,9 +55,8 @@ namespace SahabatSurabaya
 
         private async void loadLaporanKriminalitas()
         {
-            if (listLaporanKriminalitas.Count == 0)
-            {
-                string responseData = await httpObject.GetRequest("getLaporanKriminalitas",session.getTokenAuthorization());
+            if (listLaporanKriminalitas.Count == 0){
+                string responseData = userLogin.status_user == 2 ? await httpObject.GetRequest("getLaporanKriminalitas", session.getTokenAuthorization()) : await httpObject.GetRequest("kepalaKeamanan/getLaporanKriminalitas/" + userLogin.kecamatan_user, session.getTokenAuthorization());
                 listLaporanKriminalitas = JsonConvert.DeserializeObject<ObservableCollection<LaporanKriminalitas>>(responseData);
             }
             lvLaporan.ItemsSource = listLaporanKriminalitas;
@@ -79,13 +80,14 @@ namespace SahabatSurabaya
 
         private void pageLoaded(object sender, RoutedEventArgs e)
         {
+            if (userLogin.status_user == 2){
+                txtJudulHalaman.Text = "Daftar laporan di area kecamatan " + userLogin.kecamatan_user;
+            }
             string param = session.getAllReportParam();
-            if (param == "kriminalitas")
-            {
+            if (param == "kriminalitas"){
                 setListViewKriminalitas();
             }
-            else
-            {
+            else{
                 setListViewLostFound();
             }
         }
@@ -133,6 +135,11 @@ namespace SahabatSurabaya
             {
                 setListViewKriminalitas();
             }
+        }
+
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
         }
     }
 }
