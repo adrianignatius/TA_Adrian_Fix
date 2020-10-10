@@ -255,6 +255,7 @@
     <Content Include="$(MSBuildThisFileDirectory)Assets\icon\watch-icon.png" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\LockScreenLogo.scale-200.png" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\payment-illustration.jpg" />
+    <Content Include="$(MSBuildThisFileDirectory)Assets\puzzle-illustration.jpg" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\signout.png" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\SplashScreen.scale-200.png" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\Square150x150Logo.scale-200.png" />

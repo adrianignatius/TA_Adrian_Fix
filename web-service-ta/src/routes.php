@@ -145,10 +145,11 @@ return function (App $app) {
     //     return $response->withJson($result);
     // });
     $app->get('/getHeadlineLaporanKriminalitas', function ($request, $response) {
-        $sql = "SELECT lk.id_laporan,lk.judul_laporan,lk.deskripsi_kejadian,lk.tanggal_laporan,lk.waktu_laporan,lk.alamat_laporan,lk.lat_laporan,lk.lng_laporan,lk.id_user_pelapor,u.nama_user AS nama_user_pelapor, COUNT(kl.id_laporan) AS jumlah_komentar,lk.thumbnail_gambar AS thumbnail_gambar FROM user u 
-                JOIN laporan_kriminalitas lk ON lk.id_user_pelapor=u.id_user 
-                LEFT JOIN komentar_laporan kl ON lk.id_laporan=kl.id_laporan 
-                GROUP BY lk.id_laporan ORDER BY lk.tanggal_laporan DESC, lk.waktu_laporan DESC LIMIT 5";
+        $sql = "SELECT lk.id_laporan,lk.judul_laporan,skk.nama_kategori AS jenis_kejadian,lk.deskripsi_kejadian,lk.tanggal_laporan,lk.waktu_laporan,lk.alamat_laporan,lk.lat_laporan,lk.lng_laporan,lk.id_user_pelapor,u.nama_user AS nama_user_pelapor, COUNT(kl.id_laporan) AS jumlah_komentar,lk.thumbnail_gambar AS thumbnail_gambar FROM user u 
+            JOIN laporan_kriminalitas lk ON lk.id_user_pelapor=u.id_user 
+            LEFT JOIN komentar_laporan kl ON lk.id_laporan=kl.id_laporan
+            JOIN setting_kategori_kriminalitas skk on skk.id_kategori=lk.id_kategori_kejadian
+            GROUP BY lk.id_laporan ORDER BY lk.tanggal_laporan DESC, lk.waktu_laporan DESC LIMIT 5";
         $stmt = $this->db->prepare($sql);
         $stmt->execute();
         $result = $stmt->fetchAll();
@@ -948,12 +949,12 @@ return function (App $app) {
             });
     });
         
-        $app->post('/insertLaporanLostFound', function(Request $request, Response $response,$args) {
+        $app->post('/insertLaporanLostFound', function(Request $request, Response $response) {
             $new_laporan = $request->getParsedBody();
-            $datetime = DateTime::createFromFormat('d/m/Y', $new_laporan["tanggal_laporan"]);
-            $day=$datetime->format('d');
-            $month=$datetime->format('m');
-            $year=$datetime->format('Y');
+            $day=date('d');
+            $month=date('m');
+            $year=date('Y');
+            $time=date('H:i');
             $formatDate=$year.$month.$day;
             $id_laporan="LF".$day.$month.$year;
             $geohash=new Geohash();
@@ -962,14 +963,10 @@ return function (App $app) {
             $stmt->execute();
             $result = $stmt->fetchColumn();           
             $uploadedFiles = $request->getUploadedFiles();
-            $id_laporan=$id_laporan.str_pad($result,5,"0",STR_PAD_LEFT);    
-            $filename="no-image.png";
-            if($uploadedFiles!=null){
-                $uploadedFile = $uploadedFiles['image'];
-                $extension = pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION);
-                $filename=$id_laporan.".".$extension;
-            }
-            $kecamatan=getKecamatan($new_laporan["lat_laporan"],$new_laporan["lng_laporan"]);
+            $id_laporan=$id_laporan.str_pad($result,5,"0",STR_PAD_LEFT);  
+            $uploadedFile = $uploadedFiles['image'];
+            $extension = pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION);
+            $filename=$id_laporan.".".$extension;
             $sql = "INSERT INTO laporan_lostfound_barang VALUES(:id_laporan,:judul_laporan,:jenis_laporan,:id_kategori_barang,:tanggal_laporan,:waktu_laporan,:alamat_laporan,:lat_laporan,:lng_laporan,:deskripsi_barang,:id_user_pelapor,:status_laporan,:geohash_alamat_laporan,:id_kecamatan,:thumbnail_gambar) ";
             $stmt = $this->db->prepare($sql);
             $data = [
@@ -977,16 +974,16 @@ return function (App $app) {
                 ":judul_laporan"=>$new_laporan["judul_laporan"],
                 ":jenis_laporan" => $new_laporan["jenis_laporan"],
                 ":id_kategori_barang"=> $new_laporan["id_kategori_barang"],
-                ":alamat_laporan"=>$new_laporan["alamat_laporan"],
                 ":tanggal_laporan"=>$formatDate,
-                ":waktu_laporan"=>$new_laporan["waktu_laporan"],
+                ":waktu_laporan"=>$time,
+                ":alamat_laporan"=>$new_laporan["alamat_laporan"],
                 ":lat_laporan"=>$new_laporan["lat_laporan"],
                 ":lng_laporan"=>$new_laporan["lng_laporan"],
                 ":deskripsi_barang"=>$new_laporan["deskripsi_barang"],
                 ":id_user_pelapor"=>$new_laporan["id_user_pelapor"],
                 ":status_laporan"=>0,
                 ":geohash_alamat_laporan"=> $geohash->encode(floatval($new_laporan["lat_laporan"]), floatval($new_laporan["lng_laporan"]), 8),
-                "::id_kecamatan"=>$new_laporan["id_kecamatan"],
+                ":id_kecamatan"=>$new_laporan["id_kecamatan"],
                 ":thumbnail_gambar"=>$filename
             ];
             if($stmt->execute($data)){
@@ -1003,9 +1000,10 @@ return function (App $app) {
         $app->post('/insertLaporanKriminalitas', function(Request $request, Response $response,$args) {
             $new_laporan = $request->getParsedBody();
             $datetime = DateTime::createFromFormat('d/m/Y', $new_laporan["tanggal_laporan"]);
-            $day=$datetime->format('d');
-            $month=$datetime->format('m');
-            $year=$datetime->format('Y');
+            $day=date('d');
+            $month=date('m');
+            $year=date('Y');
+            $time=date('H:i');
             $formatDate=$year.$month.$day;
             $id_laporan="CR".$day.$month.$year;
             $geohash=new Geohash();
@@ -1015,17 +1013,13 @@ return function (App $app) {
             $result = $stmt->fetchColumn();     
             $uploadedFiles = $request->getUploadedFiles();
             $id_laporan=$id_laporan.str_pad($result,5,"0",STR_PAD_LEFT);    
-            $filename="default.png";
+            $filename="no-image.png";
             if($uploadedFiles!=null){
                 $uploadedFile = $uploadedFiles['image'];
                 $extension = pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION);
                 $filename=$id_laporan.".".$extension;
             }      
             $kecamatan=getKecamatan($new_laporan["lat_laporan"],$new_laporan["lng_laporan"]);
-            $sql="SELECT id_kecamatan FROM kecamatan where nama_kecamatan LIKE '%$kecamatan%'";
-            $stmt=$this->db->prepare($sql);
-            $stmt->execute();
-            $id_kecamatan = $stmt->fetchColumn();
             $sql = "INSERT INTO laporan_kriminalitas VALUES(:id_laporan,:judul_laporan,:id_kategori_kejadian,:deskripsi_kejadian,:tanggal_laporan,:waktu_laporan,:alamat_laporan,:lat_laporan,:lng_laporan,:id_user_pelapor,:status_laporan,:geohash_alamat_laporan,:id_kecamatan,:thumbnail_gambar) ";
             $stmt = $this->db->prepare($sql);
             $data = [
@@ -1034,14 +1028,14 @@ return function (App $app) {
                 ":id_kategori_kejadian" => $new_laporan["id_kategori_kejadian"],
                 ":deskripsi_kejadian"=>$new_laporan["deskripsi_kejadian"],
                 ":tanggal_laporan"=>$formatDate,
-                ":waktu_laporan"=>$new_laporan["waktu_laporan"],
+                ":waktu_laporan"=>$time,
                 ":alamat_laporan"=>$new_laporan["alamat_laporan"],
                 ":lat_laporan"=>$new_laporan["lat_laporan"],
                 ":lng_laporan"=>$new_laporan["lng_laporan"],
                 ":id_user_pelapor"=>$new_laporan["id_user_pelapor"],
                 ":status_laporan"=>0,
                 ":geohash_alamat_laporan"=> $geohash->encode(floatval($new_laporan["lat_laporan"]), floatval($new_laporan["lng_laporan"]), 8),
-                "::id_kecamatan"=>$new_laporan["id_kecamatan"],
+                ":id_kecamatan"=>$new_laporan["id_kecamatan"],
                 ":thumbnail_gambar"=>$filename
             ];
             if($stmt->execute($data)){

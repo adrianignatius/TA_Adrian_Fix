@@ -100,11 +100,11 @@ namespace SahabatSurabaya.Shared.Pages
         {
             MultipartFormDataContent form = new MultipartFormDataContent();
             form.Add(new StringContent(param.judul_laporan), "judul_laporan");
-            form.Add(new StringContent(param.tanggal_laporan.ToString()), "tanggal_laporan");
-            form.Add(new StringContent(param.waktu_laporan.ToString()), "waktu_laporan");
+            form.Add(new StringContent(param.tanggal_laporan), "tanggal_laporan");
+            form.Add(new StringContent(param.waktu_laporan), "waktu_laporan");
             form.Add(new StringContent(param.alamat_laporan), "alamat_laporan");
-            form.Add(new StringContent(param.lat_laporan.ToString()), "lat_laporan");
-            form.Add(new StringContent(param.lng_laporan.ToString()), "lng_laporan");
+            form.Add(new StringContent(param.lat_laporan), "lat_laporan");
+            form.Add(new StringContent(param.lng_laporan), "lng_laporan");
             form.Add(new StringContent(userLogin.id_user.ToString()), "id_user_pelapor");
             form.Add(new StringContent(param.id_kecamatan.ToString()), "id_kecamatan");
             var responseData = "";

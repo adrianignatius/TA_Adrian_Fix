@@ -34,13 +34,12 @@
                 </VisualState>
                 <VisualState x:Name="Desktop">
                     <VisualState.StateTriggers>
-                        <AdaptiveTrigger MinWindowWidth="760"></AdaptiveTrigger>
+                        <AdaptiveTrigger MinWindowWidth="1080"></AdaptiveTrigger>
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
-                        <Setter Target="appIconBg.Height" Value="0"></Setter>
-                        <Setter Target="textBlockSignIn.FontSize" Value="45"></Setter>
-                        <Setter Target="imageAppIcon.Width" Value="350"></Setter>
-                        <Setter Target="imageAppIcon.Height" Value="450"></Setter>
+                        <Setter Target="rootPanel.VerticalAlignment" Value="Centers"></Setter>
+                        <Setter Target="appIconBg.Visibility" Value="Collapsed"></Setter>
+                        <Setter Target="textBlockSignIn.FontSize" Value="36"></Setter>
                         <Setter Target="rootPanel.Margin" Value="20"></Setter>
                         <Setter Target="column1.Width" Value="2*"></Setter>
                         <Setter Target="column2.Width" Value="3*"></Setter>
@@ -61,7 +60,7 @@
             
             <StackPanel x:Name="rootPanel" Grid.Column="0" Margin="60" Orientation="Vertical">
                 <Image Name="appIconBg" Source="/Assets/app-logobesar.png" Width="180" Height="180"></Image>
-                <TextBlock FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" x:Name="textBlockSignIn" Foreground="Black" FontSize="40" FontWeight="ExtraBold">Sign In</TextBlock>
+                <TextBlock FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" Margin="30,0,30,0" x:Name="textBlockSignIn" Foreground="Black" FontSize="40" FontWeight="ExtraBold">Sign In</TextBlock>
                 <TextBlock FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" TextWrapping="Wrap" Margin="30,10,0,20" Foreground="Black" FontSize="15" >Don't have an account? <Hyperlink Click="goToRegister">Create your account here</Hyperlink></TextBlock>
                 <TextBlock FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" Name="textBlockEmail" Foreground="Black" Margin="30,0,30,0" FontSize="30">No Handphone</TextBlock>
                 <TextBox FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" MaxLength="13" BeforeTextChanging="validateInput" Name="txtNoHandphone" Padding="8" Foreground="Black" Margin="30,10,30,0" FontSize="20" Height="50"></TextBox>
@@ -70,15 +69,21 @@
                 <Button FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" Click="login"  Foreground="AntiqueWhite" x:Name="btnLogin" Background="DarkGreen" FontWeight="SemiBold" Padding="15" Content="Login" HorizontalAlignment="Stretch" Margin="30,35,30,0" FontSize="30" />
                 <ProgressRing Margin="0,40,0,0" Width="50" Height="50" Visibility="Collapsed" Name="progressRing"></ProgressRing>
             </StackPanel>
-            <Grid Name="gridGambar" Grid.Column="1">
+            <StackPanel Grid.Column="1">
+                <TextBlock FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" Foreground="Black" FontSize="40" FontWeight="ExtraBold">Sign In to Suroboyo Maju</TextBlock>
+                <Grid>
+                    <Image MaxWidth="800" MaxHeight="600" Source="/Assets/puzzle-illustration.jpg"></Image>
+                </Grid>
+            </StackPanel>
+            <!--<Grid Name="gridGambar" Grid.Column="1">
                 <Grid.Background>
                     <ImageBrush x:Name="gridBg"  Opacity="0.7" Stretch="Fill" ImageSource="/Assets/bg.jpg"></ImageBrush>
                 </Grid.Background>
                 <StackPanel>
-                    <Image Name="imageAppIcon" Source="/Assets/appicon.png" Width="500" Height="500" HorizontalAlignment="Center"></Image>
+                    <Image Name="imageAppIcon" Source="/Assets/app-logobesar.png" Width="500" Height="500" HorizontalAlignment="Center"></Image>
                     <TextBlock x:Name="textBlockDescApp" FontWeight="SemiBold" Foreground="Black" HorizontalAlignment="Stretch" Margin="20,-40,20,0" FontSize="30" TextAlignment="Center"   Text="A platform that connects people to share lost &amp; found information and also crime activity around you." TextWrapping="Wrap"></TextBlock>
                 </StackPanel>
-            </Grid>
+            </Grid>-->
         </Grid>
     </Grid>
 </Page>
