@@ -73,7 +73,7 @@ namespace SahabatSurabaya.Shared
         private async void loadLaporanLostFound()
         {
             if (listHistoryLaporanLostFound.Count == 0){
-                string responseData = await httpObject.GetRequest("user/getHistoryLaporanLostFound/"+userLogin.id_user,session.getTokenAuthorization());
+                string responseData = await httpObject.GetRequestWithAuthorization("user/getHistoryLaporanLostFound/"+userLogin.id_user,session.getTokenAuthorization());
                 listHistoryLaporanLostFound = JsonConvert.DeserializeObject<ObservableCollection<LaporanLostFound>>(responseData);
             }
             if (listHistoryLaporanLostFound.Count == 0){
@@ -86,7 +86,7 @@ namespace SahabatSurabaya.Shared
         private async void loadLaporanKriminalitas()
         {
             if (listHistoryLaporanKriminalitas.Count == 0){
-                string responseData = await httpObject.GetRequest("user/getHistoryLaporanKriminalitas/"+userLogin.id_user,session.getTokenAuthorization());
+                string responseData = await httpObject.GetRequestWithAuthorization("user/getHistoryLaporanKriminalitas/"+userLogin.id_user,session.getTokenAuthorization());
                 listHistoryLaporanKriminalitas = JsonConvert.DeserializeObject<ObservableCollection<LaporanKriminalitas>>(responseData);
             }
             if (listHistoryLaporanLostFound.Count == 0){

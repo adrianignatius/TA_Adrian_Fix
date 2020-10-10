@@ -65,7 +65,7 @@ namespace SahabatSurabaya.Shared.Pages
         
         private async void loadChat()
         {
-            string responseData = await httpObject.GetRequest("user/getAllChat/" + param.id_chat,session.getTokenAuthorization());
+            string responseData = await httpObject.GetRequestWithAuthorization("user/getAllChat/" + param.id_chat,session.getTokenAuthorization());
             listChat = JsonConvert.DeserializeObject<ObservableCollection<Chat>>(responseData);
             foreach (var item in listChat)
             {

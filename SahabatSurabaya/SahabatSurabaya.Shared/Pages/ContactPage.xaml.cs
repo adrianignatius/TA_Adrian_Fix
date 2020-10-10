@@ -55,7 +55,7 @@ namespace SahabatSurabaya.Shared.Pages
 
         private async void updateListContact()
         {
-            string responseData = await httpObject.GetRequest("user/getEmergencyContact/" + userLogin.id_user,session.getTokenAuthorization());
+            string responseData = await httpObject.GetRequestWithAuthorization("user/getEmergencyContact/" + userLogin.id_user,session.getTokenAuthorization());
             listEmergencyContact = JsonConvert.DeserializeObject<ObservableCollection<User>>(responseData);
             lvEmergencyContact.ItemsSource = listEmergencyContact;
             //using (var client = new HttpClient())
@@ -75,7 +75,7 @@ namespace SahabatSurabaya.Shared.Pages
 
         private async void updateListSentPendingContactRequest()
         {
-            string responseData = await httpObject.GetRequest("user/getSentPendingContactRequest/" + userLogin.id_user,session.getTokenAuthorization());
+            string responseData = await httpObject.GetRequestWithAuthorization("user/getSentPendingContactRequest/" + userLogin.id_user,session.getTokenAuthorization());
             listSentPendingContactRequest = JsonConvert.DeserializeObject<ObservableCollection<User>>(responseData);
             lvSentPendingContact.ItemsSource = listSentPendingContactRequest;
             //using (var client = new HttpClient())
@@ -95,7 +95,7 @@ namespace SahabatSurabaya.Shared.Pages
 
         private async void updateListPendingContactRequest()
         {
-            string responseData = await httpObject.GetRequest("user/getPendingContactRequest/" + userLogin.id_user,session.getTokenAuthorization());
+            string responseData = await httpObject.GetRequestWithAuthorization("user/getPendingContactRequest/" + userLogin.id_user,session.getTokenAuthorization());
             listPendingContactRequest = JsonConvert.DeserializeObject<ObservableCollection<PendingContact>>(responseData);
             lvPendingContactRequest.ItemsSource = listPendingContactRequest;
             //using (var client = new HttpClient())

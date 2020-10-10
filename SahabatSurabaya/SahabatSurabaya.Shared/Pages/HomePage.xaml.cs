@@ -58,7 +58,7 @@ namespace SahabatSurabaya.Shared.Pages
             string lng = location.Longitude.ToString().Replace(",", ".");
             string latlng = lat + "," + lng;
             string reqUri = "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + latlng + "&key=AIzaSyA9rHJZEGWe6rX4nAHTGXFxCubmw-F0BBw";
-            string responseData = await httpObject.GetRequest(reqUri,session.getTokenAuthorization());
+            string responseData = await httpObject.GetRequest(reqUri);
             JObject json = JObject.Parse(responseData);
             string address = json["results"][0]["formatted_address"].ToString();
             return address;
@@ -102,9 +102,9 @@ namespace SahabatSurabaya.Shared.Pages
             {
                 txtStatusUser.Text = "Free Account";
             }
-            string responseData = await httpObject.GetRequest("/getHeadlineLaporanKriminalitas",session.getTokenAuthorization());
+            string responseData = await httpObject.GetRequestWithAuthorization("/getHeadlineLaporanKriminalitas",session.getTokenAuthorization());
             listLaporanKriminalitas = JsonConvert.DeserializeObject<ObservableCollection<LaporanKriminalitas>>(responseData);
-            responseData = await httpObject.GetRequest("/getHeadlineLaporanLostFound",session.getTokenAuthorization());
+            responseData = await httpObject.GetRequestWithAuthorization("/getHeadlineLaporanLostFound",session.getTokenAuthorization());
             listLaporanLostFound = JsonConvert.DeserializeObject<ObservableCollection<LaporanLostFound>>(responseData);
 #if __ANDROID__
             lvHeadline.ItemsSource = listLaporanLostFound;
@@ -138,7 +138,7 @@ namespace SahabatSurabaya.Shared.Pages
         private async void sendEmergencyChat(User u, string address)
         {
             string message = "Saya sedang dalam keadaan darurat! Lokasi terakhir saya di " + address;
-            string responseData=await httpObject.GetRequest("checkHeaderChat/" + userLogin.id_user + "/" + u.id_user,session.getTokenAuthorization());
+            string responseData=await httpObject.GetRequestWithAuthorization("checkHeaderChat/" + userLogin.id_user + "/" + u.id_user,session.getTokenAuthorization());
             JObject json = JObject.Parse(responseData);
             var content = new FormUrlEncodedContent(new[]{
                 new KeyValuePair<string, string>("id_chat", json["id_chat"].ToString()),

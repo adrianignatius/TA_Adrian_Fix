@@ -36,7 +36,7 @@ namespace SahabatSurabaya.Shared.Pages
                 }); 
             }
             string origins = location.Latitude.ToString().Replace(",",".") + "," + location.Longitude.ToString().Replace(",", ".");
-            string responseData = await httpObject.GetRequest("getAllKantorPolisi", session.getTokenAuthorization());
+            string responseData = await httpObject.GetRequestWithAuthorization("getAllKantorPolisi", session.getTokenAuthorization());
             string destinations = "";
             listKantorPolisi = JsonConvert.DeserializeObject<ObservableCollection<KantorPolisi>>(responseData);
             for (int i = 0; i < listKantorPolisi.Count; i++)
@@ -45,7 +45,7 @@ namespace SahabatSurabaya.Shared.Pages
             }
             destinations.Remove(destinations.Length - 1, 1);
             string reqUri = "https://maps.googleapis.com/maps/api/distancematrix/json?units=metrics&origins=" + origins + "&destinations=" + destinations + "&key=AIzaSyA9rHJZEGWe6rX4nAHTGXFxCubmw-F0BBw";
-            responseData = await httpObject.GetRequest(reqUri,session.getTokenAuthorization());
+            responseData = await httpObject.GetRequest(reqUri);
             JObject json = JObject.Parse(responseData);
             var token = JToken.Parse(responseData)["rows"][0]["elements"].ToList().Count;
             for (int i = 0; i < token; i++)

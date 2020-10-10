@@ -50,7 +50,7 @@ namespace SahabatSurabaya.Shared.Pages
         private async void loadHeaderChat()
         {
             listDisplayHeaderChat = new ObservableCollection<DisplayHeaderChat>();
-            string responseData = await httpObject.GetRequest("user/getHeaderChat/" + userLogin.id_user,session.getTokenAuthorization());
+            string responseData = await httpObject.GetRequestWithAuthorization("user/getHeaderChat/" + userLogin.id_user,session.getTokenAuthorization());
             ObservableCollection<HeaderChat> tempHeaderChat = JsonConvert.DeserializeObject<ObservableCollection<HeaderChat>>(responseData);
             for (int i = 0; i < tempHeaderChat.Count; i++)
             {
@@ -66,7 +66,7 @@ namespace SahabatSurabaya.Shared.Pages
                     namaDisplay = tempHeaderChat[i].nama_user_1;
                     id_target_chat = tempHeaderChat[i].id_user_1;
                 }
-                responseData = await httpObject.GetRequest("user/getLastMessage/" + tempHeaderChat[i].id_chat, session.getTokenAuthorization());
+                responseData = await httpObject.GetRequestWithAuthorization("user/getLastMessage/" + tempHeaderChat[i].id_chat, session.getTokenAuthorization());
                 JObject json = JObject.Parse(responseData);
                 DisplayHeaderChat displayHeaderChat = new DisplayHeaderChat(tempHeaderChat[i].id_chat, id_target_chat, namaDisplay, null);
                 if (json["status"].ToString() == "1")

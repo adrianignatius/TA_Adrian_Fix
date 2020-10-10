@@ -38,7 +38,7 @@ namespace SahabatSurabaya.Shared.Pages
 
         private async void pageLoaded(object sender,RoutedEventArgs e)
         {
-            string responseData = await httpObject.GetRequest("admin/getKecamatan",session.getTokenAuthorization());
+            string responseData = await httpObject.GetRequestWithAuthorization("admin/getKecamatan",session.getTokenAuthorization());
             listKecamatan = JsonConvert.DeserializeObject<ObservableCollection<Kecamatan>>(responseData);
             gvKecamatan.ItemsSource = listKecamatan;
         }

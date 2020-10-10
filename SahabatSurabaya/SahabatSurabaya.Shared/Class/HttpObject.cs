@@ -11,15 +11,46 @@ namespace SahabatSurabaya.Shared
     class HttpObject
     {
         public readonly static string API_URL = "http://adrian-webservice.ta-istts.com/";
-        public readonly static string URL_DEBUG = "http://localhost:8080/"; 
-        public async Task<string> GetRequest(string url,string token)
+        public readonly static string URL_DEBUG = "http://localhost:8080/";
+
+
+        public async Task<string> GetRequestWithAuthorization(string url, string token)
+        {
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(API_URL);
+                //client.BaseAddress = new Uri(URL_DEBUG);
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Add("Authorization", token);
+                try
+                {
+                    HttpResponseMessage response = await client.GetAsync(url);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var responseData = response.Content.ReadAsStringAsync().Result;
+                        return responseData;
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
+                catch
+                {
+                    var message = new MessageDialog("Koneksi Error");
+                    await message.ShowAsync();
+                    return null;
+                }
+            }
+        }
+
+        public async Task<string> GetRequest(string url)
         {
             using (var client=new HttpClient())
             {
                 client.BaseAddress = new Uri(API_URL);
                 //client.BaseAddress = new Uri(URL_DEBUG);
                 client.DefaultRequestHeaders.Accept.Clear();
-                client.DefaultRequestHeaders.Add("Authorization", token);
                 try
                 {
                     HttpResponseMessage response = await client.GetAsync(url);

@@ -105,15 +105,14 @@ namespace SahabatSurabaya.Shared.Pages
             form.Add(new StringContent(param.alamat_laporan), "alamat_laporan");
             form.Add(new StringContent(param.lat_laporan.ToString()), "lat_laporan");
             form.Add(new StringContent(param.lng_laporan.ToString()), "lng_laporan");
-            form.Add(new StringContent("0"), "status_laporan");
             form.Add(new StringContent(userLogin.id_user.ToString()), "id_user_pelapor");
+            form.Add(new StringContent(param.id_kecamatan.ToString()), "id_kecamatan");
             var responseData = "";
             if (param.tag_laporan == "kriminalitas")
             {
                 form.Add(new StringContent(param.display_combobox), "jenis_kejadian");
                 form.Add(new StringContent(param.deskripsi_laporan), "deskripsi_kejadian");
-                if (param.image_laporan != null)
-                {
+                if (param.image_laporan != null){
                     form.Add(new StreamContent(new MemoryStream(param.image_laporan.image)), "image", "image.jpg");
                 }
                 responseData = await httpObject.PostRequest("insertLaporanKriminalitas", form);

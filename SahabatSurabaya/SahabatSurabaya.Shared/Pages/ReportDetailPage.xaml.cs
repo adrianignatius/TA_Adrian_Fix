@@ -35,7 +35,7 @@ namespace SahabatSurabaya.Shared.Pages
 
         private async void checkKonfirmasiLaporan()
         {
-            string responseData = await httpObject.GetRequest("user/checkKonfirmasiLaporan?id_laporan=" + param.id_laporan + "&id_user=" + userLogin.id_user,session.getTokenAuthorization());
+            string responseData = await httpObject.GetRequestWithAuthorization("user/checkKonfirmasiLaporan?id_laporan=" + param.id_laporan + "&id_user=" + userLogin.id_user,session.getTokenAuthorization());
             JObject json = JObject.Parse(responseData);
             if (json["count"].ToString() == "0")
             {
@@ -138,7 +138,7 @@ namespace SahabatSurabaya.Shared.Pages
 
         public async void loadKomentarLaporan()
         {
-            string responseData = await httpObject.GetRequest("getKomentarLaporan/" + param.id_laporan,session.getTokenAuthorization());
+            string responseData = await httpObject.GetRequestWithAuthorization("getKomentarLaporan/" + param.id_laporan,session.getTokenAuthorization());
             listKomentar = JsonConvert.DeserializeObject<ObservableCollection<KomentarLaporan>>(responseData);
             lvKomentarLaporan.ItemsSource = listKomentar;
         }
@@ -153,7 +153,7 @@ namespace SahabatSurabaya.Shared.Pages
         }
         private async void goToChatPage(object sender, RoutedEventArgs e)
         {
-            string responseData = await httpObject.GetRequest("user/checkHeaderChat?id_user_1=" + userLogin.id_user + "&id_user_2=" + param.id_user_pelapor,session.getTokenAuthorization());
+            string responseData = await httpObject.GetRequestWithAuthorization("user/checkHeaderChat?id_user_1=" + userLogin.id_user + "&id_user_2=" + param.id_user_pelapor,session.getTokenAuthorization());
             JObject json = JObject.Parse(responseData);
             ChatPageParams chatParam = new ChatPageParams(Convert.ToInt32(json["id_chat"].ToString()), userLogin.id_user, param.id_user_pelapor, param.nama_user_pelapor);
             session.setChatPageParams(chatParam);
