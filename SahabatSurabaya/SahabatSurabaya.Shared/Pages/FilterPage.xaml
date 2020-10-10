@@ -56,7 +56,7 @@
                                         <GridView Name="gvKecamatan">
                                             <GridView.ItemTemplate>
                                                 <DataTemplate>
-                                                    <CheckBox Unchecked="kecamatanUnchecked" Checked="kecamatanChecked" Content="{Binding nama_kecamatan}" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" FontSize="14" ></CheckBox>
+                                                    <CheckBox Tag="{Binding id_kecamatan}" Unchecked="kecamatanUnchecked" Checked="kecamatanChecked" Content="{Binding nama_kecamatan}" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" FontSize="14" ></CheckBox>
                                                 </DataTemplate>
                                             </GridView.ItemTemplate>
                                             <GridView.ItemsPanel>

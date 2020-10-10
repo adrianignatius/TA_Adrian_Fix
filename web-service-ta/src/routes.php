@@ -244,6 +244,14 @@ return function (App $app) {
         $result = $stmt->fetchAll();
         return $response->withJson($result, 200);
     });
+
+    $app->get('/getKecamatan',function ($request,$response){
+        $sql="SELECT * FROM kecamatan";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+        $result = $stmt->fetchAll();
+        return $response->withJson($result);
+    });
     
     $app->group('/admin', function() use($app){
         $app->get('/getAllUser', function ($request, $response) {
@@ -251,17 +259,9 @@ return function (App $app) {
             $stmt = $this->db->prepare($sql);
             $stmt->execute();
             $result = $stmt->fetchAll();
-            return $response->withJson($result, 200);
+            return $response->withJson($result);
         });
-        
-        $app->get('/getKecamatan',function ($request,$response){
-            $sql="SELECT * FROM kecamatan";
-            $stmt = $this->db->prepare($sql);
-            $stmt->execute();
-            $result = $stmt->fetchAll();
-            return $response->withJson($result, 200);
-        });
-        
+    
         $app->get('/getLaporanLostFoundVerify',function ($request,$response){
             $sql="SELECT id_laporan,judul_laporan,jenis_laporan,jenis_barang,tanggal_laporan,waktu_laporan,alamat_laporan,kecamatan FROM laporan_lostfound_barang";
             $stmt = $this->db->prepare($sql);

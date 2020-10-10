@@ -8,6 +8,7 @@ using System.Runtime.InteropServices.ComTypes;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -24,7 +25,7 @@ namespace SahabatSurabaya.Shared.Pages
     public sealed partial class FilterPage : Page
     {
         ObservableCollection<Kecamatan> listKecamatan;
-        List<string> listKecamatanSelected;
+        List<Kecamatan> listKecamatanSelected;
         Session session;
         HttpObject httpObject;
         public FilterPage()
@@ -33,12 +34,12 @@ namespace SahabatSurabaya.Shared.Pages
             session = new Session();
             httpObject = new HttpObject();
             listKecamatan = new ObservableCollection<Kecamatan>();
-            listKecamatanSelected = new List<string>();
+            listKecamatanSelected = new List<Kecamatan>();
         }
 
         private async void pageLoaded(object sender,RoutedEventArgs e)
         {
-            string responseData = await httpObject.GetRequestWithAuthorization("admin/getKecamatan",session.getTokenAuthorization());
+            string responseData = await httpObject.GetRequest("getKecamatan");
             listKecamatan = JsonConvert.DeserializeObject<ObservableCollection<Kecamatan>>(responseData);
             gvKecamatan.ItemsSource = listKecamatan;
         }
@@ -78,13 +79,14 @@ namespace SahabatSurabaya.Shared.Pages
         private void kecamatanUnchecked(object sender, RoutedEventArgs e)
         {
             string kecamatan = (sender as CheckBox).Content.ToString();
-            listKecamatanSelected.Remove(kecamatan);
+            //listKecamatanSelected.Remove(kecamatan);
         }
 
         private void kecamatanChecked(object sender,RoutedEventArgs e)
         {
-            string kecamatan = (sender as CheckBox).Content.ToString() ;
-            listKecamatanSelected.Add(kecamatan);
+            int id_kecamatan = Convert.ToInt32((sender as CheckBox).Tag.ToString());
+            Kecamatan selected = listKecamatan.Single(i => i.id_kecamatan == id_kecamatan);
+            var message = new MessageDialog(selected.nama_kecamatan.ToString());
         }
     }
 }
