@@ -66,7 +66,7 @@ namespace SahabatSurabaya.Shared.Pages
         {
             if (listLaporanKriminalitas.Count == 0){
                 string responseData = userLogin.status_user == 2 ? await httpObject.GetRequestWithAuthorization("kepalaKeamanan/getLaporanKriminalitas/" + userLogin.kecamatan_user, session.getTokenAuthorization()) : await httpObject.GetRequestWithAuthorization("getLaporanKriminalitas", session.getTokenAuthorization());
-                    listLaporanKriminalitas = JsonConvert.DeserializeObject<ObservableCollection<LaporanKriminalitas>>(responseData);
+                listLaporanKriminalitas = JsonConvert.DeserializeObject<ObservableCollection<LaporanKriminalitas>>(responseData);
             }
             if (listLaporanKriminalitas.Count == 0){
                 stackEmpty.Visibility = Visibility.Visible;
