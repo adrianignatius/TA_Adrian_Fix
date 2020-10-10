@@ -47,8 +47,12 @@ namespace SahabatSurabaya.Shared.Pages
         private async void loadLaporanLostFound()
         {
             if (listLaporanLostFound.Count == 0){
-                string responseData = userLogin.status_user == 2 ? await httpObject.GetRequest("getLaporanLostFound", session.getTokenAuthorization()) : await httpObject.GetRequest("kepalaKeamanan/getLaporanLostFound/" + userLogin.kecamatan_user,session.getTokenAuthorization());
+                string responseData = userLogin.status_user == 2 ? await httpObject.GetRequest("kepalaKeamanan/getLaporanLostFound/" + userLogin.kecamatan_user, session.getTokenAuthorization()) : await httpObject.GetRequest("getLaporanLostFound", session.getTokenAuthorization());
                 listLaporanLostFound = JsonConvert.DeserializeObject<ObservableCollection<LaporanLostFound>>(responseData);
+            }
+            if (listLaporanLostFound.Count == 0){
+                stackEmpty.Visibility = Visibility.Visible;
+                svListView.Visibility = Visibility.Collapsed;
             }
             lvLaporan.ItemsSource = listLaporanLostFound;
         }
@@ -56,8 +60,12 @@ namespace SahabatSurabaya.Shared.Pages
         private async void loadLaporanKriminalitas()
         {
             if (listLaporanKriminalitas.Count == 0){
-                string responseData = userLogin.status_user == 2 ? await httpObject.GetRequest("getLaporanKriminalitas", session.getTokenAuthorization()) : await httpObject.GetRequest("kepalaKeamanan/getLaporanKriminalitas/" + userLogin.kecamatan_user, session.getTokenAuthorization());
+                string responseData = userLogin.status_user == 2 ? await httpObject.GetRequest("kepalaKeamanan/getLaporanKriminalitas/" + userLogin.kecamatan_user, session.getTokenAuthorization()) : await httpObject.GetRequest("getLaporanKriminalitas", session.getTokenAuthorization());
                 listLaporanKriminalitas = JsonConvert.DeserializeObject<ObservableCollection<LaporanKriminalitas>>(responseData);
+            }
+            if (listLaporanKriminalitas.Count == 0){
+                stackEmpty.Visibility = Visibility.Visible;
+                svListView.Visibility = Visibility.Collapsed;
             }
             lvLaporan.ItemsSource = listLaporanKriminalitas;
         }

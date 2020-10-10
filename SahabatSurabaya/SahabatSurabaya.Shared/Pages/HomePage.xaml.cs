@@ -190,7 +190,7 @@ namespace SahabatSurabaya.Shared.Pages
 
         private async void sendNotification()
         {
-            string responseData=await httpObject.GetRequest("user/getEmergencyContact/"+userLogin.id_user);
+            string responseData=await httpObject.GetRequest("user/getEmergencyContact/"+userLogin.id_user,session.getTokenAuthorization());
             listEmergencyContact = JsonConvert.DeserializeObject<ObservableCollection<User>>(responseData);
             if(listEmergencyContact.Count<1){
                 var message = new MessageDialog("Tidak ada kontak darurat yang terdaftar");

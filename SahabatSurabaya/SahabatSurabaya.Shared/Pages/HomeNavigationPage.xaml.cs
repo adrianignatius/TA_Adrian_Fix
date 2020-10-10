@@ -91,7 +91,7 @@ namespace SahabatSurabaya.Shared.Pages
                     break;
 
                 case "historyPage":
-                    ContentFrame.Navigate(typeof(HistoryPage));
+                    this.Frame.Navigate(typeof(HistoryPage));
                     break;
             }
         }

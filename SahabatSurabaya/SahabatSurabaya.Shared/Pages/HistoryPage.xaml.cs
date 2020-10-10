@@ -72,20 +72,26 @@ namespace SahabatSurabaya.Shared
 
         private async void loadLaporanLostFound()
         {
-            if (listHistoryLaporanLostFound.Count == 0)
-            {
+            if (listHistoryLaporanLostFound.Count == 0){
                 string responseData = await httpObject.GetRequest("user/getHistoryLaporanLostFound/"+userLogin.id_user,session.getTokenAuthorization());
                 listHistoryLaporanLostFound = JsonConvert.DeserializeObject<ObservableCollection<LaporanLostFound>>(responseData);
+            }
+            if (listHistoryLaporanLostFound.Count == 0){
+                stackEmpty.Visibility = Visibility.Visible;
+                stackListView.Visibility = Visibility.Collapsed;
             }
             lvHistory.ItemsSource = listHistoryLaporanLostFound;
         }
 
         private async void loadLaporanKriminalitas()
         {
-            if (listHistoryLaporanKriminalitas.Count == 0)
-            {
+            if (listHistoryLaporanKriminalitas.Count == 0){
                 string responseData = await httpObject.GetRequest("user/getHistoryLaporanKriminalitas/"+userLogin.id_user,session.getTokenAuthorization());
                 listHistoryLaporanKriminalitas = JsonConvert.DeserializeObject<ObservableCollection<LaporanKriminalitas>>(responseData);
+            }
+            if (listHistoryLaporanLostFound.Count == 0){
+                stackEmpty.Visibility = Visibility.Visible;
+                stackListView.Visibility = Visibility.Collapsed;
             }
             lvHistory.ItemsSource = listHistoryLaporanKriminalitas;
         }
@@ -101,6 +107,21 @@ namespace SahabatSurabaya.Shared
             {
                 setListViewKriminalitas();
             }
+        }
+
+        private void Back_Click(object sender, RoutedEventArgs e)
+        {
+            On_BackRequested();
+        }
+
+        private bool On_BackRequested()
+        {
+            if (this.Frame.CanGoBack)
+            {
+                this.Frame.GoBack();
+                return true;
+            }
+            return false;
         }
 
     }

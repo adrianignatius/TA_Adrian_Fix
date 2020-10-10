@@ -26,10 +26,14 @@
                 <RowDefinition Height="auto"></RowDefinition>
                 <RowDefinition Height="*"></RowDefinition>
             </Grid.RowDefinitions>
-            <StackPanel Grid.Row="0" Orientation="Horizontal">
-                <Button Click="Back_Click" VerticalAlignment="Top" HorizontalAlignment="Left" Style="{StaticResource NavigationBackButtonNormalStyle}"></Button>
-                <TextBlock Name="txtJudulHalaman" Text="Daftar semua laporan" Margin="12,4,0,0" FontSize="24" FontWeight="Bold" ></TextBlock>
-            </StackPanel>
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="0" Click="Back_Click" VerticalAlignment="Top" HorizontalAlignment="Left" Style="{StaticResource NavigationBackButtonNormalStyle}"></Button>
+                <TextBlock Grid.Column="1" Name="txtJudulHalaman" Text="Daftar semua laporan" TextWrapping="WrapWholeWords" Margin="12,4,0,0" FontSize="24" FontWeight="Bold" ></TextBlock>
+            </Grid>
             <Grid Grid.Row="1" Margin="8">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition></ColumnDefinition>
@@ -38,8 +42,13 @@
                 <Button FontSize="16" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" Click="changeSource" Tag="1" Name="btnSelectionLaporanLostFound" Margin="4,0,4,0"  Foreground="Green" Background="White" BorderBrush="Green" HorizontalAlignment="Stretch" Grid.Column="0" Content="Laporan Lost &amp; Found"></Button>
                 <Button FontSize="16" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" Click="changeSource" Tag="2"  Name="btnSelectionLaporanKriminalitas" Margin="4,0,4,0" Foreground="Green" Background="White" BorderBrush="Green" HorizontalAlignment="Stretch" Grid.Column="1" Content="Laporan Kriminalitas"></Button>
             </Grid>
-            <ScrollViewer Grid.Row="2">
-                <StackPanel Orientation="Vertical">
+            <StackPanel Visibility="Collapsed" Name="stackEmpty" Margin="0,80,0,0" Grid.Row="2">
+                <Image MaxWidth="400" Height="420" MaxHeight="420" Stretch="UniformToFill" VerticalAlignment="Center" Source="/Assets/empty-illustration.jpg"></Image>
+                <TextBlock Foreground="Gray" FontWeight="Bold" TextAlignment="Center" TextWrapping="WrapWholeWords" FontSize="20" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" Text="Anda belum pernah membuat laporan"></TextBlock>
+                <TextBlock Foreground="Gray" FontWeight="Light" TextAlignment="Center" TextWrapping="WrapWholeWords" FontSize="16" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" Text="Ayo ikut berkontribusi untuk lingkungan sekitar!"></TextBlock>
+            </StackPanel>
+            <ScrollViewer Name="svListView" Grid.Row="2">
+                <StackPanel Margin="8" Orientation="Vertical">
                     <ListView Name="lvLaporan" SelectionMode="None" IsItemClickEnabled="True" ItemClick="goToDetailPage" Margin="0,16,0,0" >
                         <ListView.ItemTemplate>
                             <DataTemplate x:Name="ImageOverlayDataTemplate">

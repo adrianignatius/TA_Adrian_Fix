@@ -15,11 +15,25 @@ namespace SahabatSurabaya.Shared.Pages
     {
         HttpObject httpObject;
         Session session;
+        DispatcherTimer timer;
+        int time = 0;
         public Splashscreen()
         {
             this.InitializeComponent();
             httpObject = new HttpObject();
             session = new Session();
+            timer = new DispatcherTimer();
+            timer.Interval = new TimeSpan(0, 0, 1);
+            timer.Tick += Timer_Tick;
+        }
+
+        private void Timer_Tick(object sender, object e)
+        {
+            time++;
+            if (time == 2){
+                timer.Stop();
+                this.Frame.Navigate(typeof(LoginPage));
+            }
         }
 
         private async void pageLoaded(object Sender,RoutedEventArgs e)
@@ -29,7 +43,7 @@ namespace SahabatSurabaya.Shared.Pages
                 var secureStorage = await SecureStorage.GetAsync("jwt_token");
                 if (secureStorage == null)
                 {
-                    this.Frame.Navigate(typeof(LoginPage));
+                    timer.Start();
                 }
                 else
                 {

@@ -229,6 +229,9 @@
     <Content Include="$(MSBuildThisFileDirectory)Assets\app-logo\logo.scale-400.png" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\avatar-profile.png" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\bg.jpg" />
+    <Content Include="$(MSBuildThisFileDirectory)Assets\chat-illustration.jpg" />
+    <Content Include="$(MSBuildThisFileDirectory)Assets\community-illustration.jpg" />
+    <Content Include="$(MSBuildThisFileDirectory)Assets\empty-illustration.jpg" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\icon\crime-icon.png" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\icon\lostfound-icon.png" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\icon\wallet-icon.png" />
@@ -250,7 +253,7 @@
     <Content Include="$(MSBuildThisFileDirectory)Assets\icon\violence-icon.png" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\icon\watch-icon.png" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\LockScreenLogo.scale-200.png" />
-    <Content Include="$(MSBuildThisFileDirectory)Assets\payment-illustration.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Assets\payment-illustration.jpg" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\signout.png" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\SplashScreen.scale-200.png" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\Square150x150Logo.scale-200.png" />
