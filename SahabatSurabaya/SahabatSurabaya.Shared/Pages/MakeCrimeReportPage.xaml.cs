@@ -186,13 +186,12 @@ namespace SahabatSurabaya.Shared.Pages
                     string descKejadian = txtDescKejadian.Text;
                     string valueKategoriKejadian = cbJenisKejadian.SelectedValue.ToString();
                     string alamatLaporan = txtAutocompleteAddress.Text;
-                    string displayJeniskejadian = listSetingKategoriKriminalitas[cbJenisKejadian.SelectedIndex].nama_kategori.ToString();
                     string tglLaporan = DateTime.Now.ToString("dd/MM/yyyy");
                     string waktuLaporan = DateTime.Now.ToString("HH:mm:ss");
                     int index = cbJenisKejadian.SelectedIndex;
-                    string namaFileGambar = listSetingKategoriKriminalitas[cbJenisKejadian.SelectedIndex].file_gambar_kategori;
+                    SettingKategori kategoriSelected = listSetingKategoriKriminalitas[cbJenisKejadian.SelectedIndex];
                     int id_kecamatan = Convert.ToInt32(json["id_kecamatan"].ToString());
-                    ConfirmReportParams param = new ConfirmReportParams("kriminalitas", judulLaporan, null, descKejadian, lat, lng, alamatLaporan, id_kecamatan, tglLaporan, waktuLaporan, displayJeniskejadian, index, imageLaporan, namaFileGambar);
+                    ConfirmReportParams param = new ConfirmReportParams("kriminalitas", judulLaporan, null, descKejadian, lat, lng, alamatLaporan, id_kecamatan, tglLaporan, waktuLaporan, kategoriSelected, index, imageLaporan);
                     session.setConfirmreportParam(param);
                     this.Frame.Navigate(typeof(ConfirmReportPage));
                 }

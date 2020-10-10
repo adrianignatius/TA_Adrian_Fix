@@ -64,14 +64,6 @@ return function (App $app) {
         }
     });
 
-    $app->get('/getAllKategoriLostFound', function ($request, $response) {
-        $sql = "SELECT * FROM setting_kategori_lostfound";
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute();
-        $result = $stmt->fetchAll();
-        return $response->withJson($result, 200);
-    });
-
     $app->post('/registerUser', function ($request, $response) {
         $new_user = $request->getParsedBody();
         $sql="SELECT COUNT(*) from user where telpon_user='".$new_user["telpon_user"]."'";
@@ -152,6 +144,16 @@ return function (App $app) {
     //     $result = $stmt->fetchAll();
     //     return $response->withJson($result);
     // });
+    $app->get('/getHeadlineLaporanKriminalitas', function ($request, $response) {
+        $sql = "SELECT lk.id_laporan,lk.judul_laporan,lk.deskripsi_kejadian,lk.tanggal_laporan,lk.waktu_laporan,lk.alamat_laporan,lk.lat_laporan,lk.lng_laporan,lk.id_user_pelapor,u.nama_user AS nama_user_pelapor, COUNT(kl.id_laporan) AS jumlah_komentar,lk.thumbnail_gambar AS thumbnail_gambar FROM user u 
+                JOIN laporan_kriminalitas lk ON lk.id_user_pelapor=u.id_user 
+                LEFT JOIN komentar_laporan kl ON lk.id_laporan=kl.id_laporan 
+                GROUP BY lk.id_laporan ORDER BY lk.tanggal_laporan DESC, lk.waktu_laporan DESC LIMIT 5";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+        $result = $stmt->fetchAll();
+        return $response->withJson($result);
+    });
 
     $app->get('/getHeadlineLaporanLostFound', function ($request, $response) {
         $sql = "SELECT lf.id_laporan,lf.judul_laporan,lf.jenis_laporan,lf.tanggal_laporan,lf.waktu_laporan,lf.alamat_laporan,lf.lat_laporan,lf.lng_laporan,lf.deskripsi_barang,lf.deskripsi_barang,lf.id_user_pelapor,u.nama_user AS nama_user_pelapor,count(kl.id_laporan) AS jumlah_komentar,lf.thumbnail_gambar AS thumbnail_gambar FROM laporan_lostfound_barang lf 
@@ -224,26 +226,6 @@ return function (App $app) {
     //     $result = $stmt->fetchAll();
     //     return $response->withJson($result);
     // });
-
-    $app->get('/getHeadlineLaporanKriminalitas', function ($request, $response) {
-        $sql = "SELECT lk.id_laporan,lk.judul_laporan,lk.deskripsi_kejadian,lk.tanggal_laporan,lk.waktu_laporan,lk.alamat_laporan,lk.lat_laporan,lk.lng_laporan,lk.id_user_pelapor,u.nama_user AS nama_user_pelapor, COUNT(kl.id_laporan) AS jumlah_komentar,lk.thumbnail_gambar AS thumbnail_gambar FROM user u 
-                JOIN laporan_kriminalitas lk ON lk.id_user_pelapor=u.id_user 
-                LEFT JOIN komentar_laporan kl ON lk.id_laporan=kl.id_laporan 
-                GROUP BY lk.id_laporan ORDER BY lk.tanggal_laporan DESC, lk.waktu_laporan DESC LIMIT 5";
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute();
-        $result = $stmt->fetchAll();
-        return $response->withJson($result);
-    });
-    
-    $app->get('/getAllKategoriCrime', function ($request, $response) {
-        $sql = "SELECT * FROM setting_kategori_kriminalitas";
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute();
-        $result = $stmt->fetchAll();
-        return $response->withJson($result, 200);
-    }); 
-    
 
     $app->get('/getAllKantorPolisi', function ($request, $response) {   
         $sql = "SELECT * FROM kantor_polisi";
