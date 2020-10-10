@@ -44,6 +44,11 @@ namespace SahabatSurabaya.Shared.Pages
             return false;
         }
 
+        private void goToFilterPage(object sender,RoutedEventArgs e)
+        {
+            this.Frame.Navigate(typeof(FilterPage));
+        }
+
         private async void loadLaporanLostFound()
         {
             if (listLaporanLostFound.Count == 0){

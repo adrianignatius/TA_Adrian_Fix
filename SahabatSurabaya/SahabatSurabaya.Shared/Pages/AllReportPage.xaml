@@ -49,6 +49,7 @@
             </StackPanel>
             <ScrollViewer Name="svListView" Grid.Row="2">
                 <StackPanel Margin="8" Orientation="Vertical">
+                    <Button Click="goToFilterPage" Content="Filter" Foreground="White" Background="Green" CornerRadius="10" HorizontalAlignment="Right" ></Button>
                     <ListView Name="lvLaporan" SelectionMode="None" IsItemClickEnabled="True" ItemClick="goToDetailPage" Margin="0,16,0,0" >
                         <ListView.ItemTemplate>
                             <DataTemplate x:Name="ImageOverlayDataTemplate">

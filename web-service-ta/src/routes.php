@@ -23,13 +23,39 @@ function getKecamatan($lat,$lng){
     $curl_response = curl_exec($ch);  
     $json = json_decode(utf8_encode($curl_response), true);
     curl_close($ch);
-    return $json["results"][0]["address_components"][0]["short_name"];
+    $kecamatan=$json["results"][0]["address_components"][0]["short_name"];
+    return $kecamatan;
+    //return $json["results"][0]["address_components"][0]["short_name"];
 }
 return function (App $app) {
     $container = $app->getContainer();
     $container['upload_directory'] = __DIR__ . '/uploads';
     $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
     $dotenv->load();
+
+    $app->get('/coba', function ($request, $response) {
+        $kecamatan=getKecamatan("-7.276690","112.646742");
+        $sql="SELECT id_kecamatan FROM kecamatan where nama_kecamatan LIKE '%$kecamatan%'";
+        $stmt=$this->db->prepare($sql);
+        $stmt->execute();
+        $result = $stmt->fetchColumn();
+        return $result;
+    });
+
+    $app->get('/checkKecamatanAvailable', function ($request, $response) {
+        $lat = $request->getQueryParam('lat');
+        $lng = $request->getQueryParam('lng');
+        $kecamatan=getKecamatan($lat,$lng);
+        $sql="SELECT id_kecamatan FROM kecamatan where nama_kecamatan LIKE '%$kecamatan%'";
+        $stmt=$this->db->prepare($sql);
+        $stmt->execute();
+        $id_kecamatan = $stmt->fetchColumn();
+        if($id_kecamatan==null){
+            return $response->withJson(["status"=>"400","message"=>"Aplikasi ini hanya menjangkau area Surabaya saja"]);
+        }else{
+            return $response->withJson(["status"=>"1","id_kecamatan"=>$id_kecamatan]);
+        }
+    });
 
     $app->get('/getAllKategoriLostFound', function ($request, $response) {
         $sql = "SELECT * FROM setting_kategori_lostfound";
@@ -144,6 +170,29 @@ return function (App $app) {
         return $response->withJson($result);
     });
 
+    $app->get('/getLaporanLostFoundWithFilter', function ($request, $response) {
+        $body=$request->getParsedBody();
+        $jenis_laporan=$body["jenis_laporan"];
+        $tanggal_awal=$body["tanggal_awal"];
+        $tanggal_akhir=$body["tanggal_akhir"];
+        $array_barang=$body["array_barang"];
+        $array_kecamatan=$body["array_kecamatan"]; 
+        $sql = "SELECT lf.id_laporan,lf.judul_laporan,lf.jenis_laporan,lf.tanggal_laporan,lf.waktu_laporan,lf.alamat_laporan,lf.lat_laporan,lf.lng_laporan,lf.deskripsi_barang,lf.deskripsi_barang,lf.id_user_pelapor,u.nama_user AS nama_user_pelapor,count(kl.id_laporan) AS jumlah_komentar,lf.thumbnail_gambar AS thumbnail_gambar FROM laporan_lostfound_barang lf 
+                JOIN user u ON lf.id_user_pelapor=u.id_user 
+                LEFT JOIN komentar_laporan kl ON lf.id_laporan=kl.id_laporan
+                WHERE lf.jenis_laporan=:jenis_laporan AND lf.kecamatan IN (:array_kecamatan)
+                GROUP BY lf.id_laporan 
+                ORDER BY lf.tanggal_laporan DESC, lf.waktu_laporan DESC";
+        $stmt = $this->db->prepare($sql);
+        $data=[
+            ":jenis_laporan"=>$jenis_laporan,
+            ":array_kecamatan"=>$array_kecamatan
+        ];
+        $stmt->execute($data);
+        $result = $stmt->fetchAll();
+        return $response->withJson($result);
+    });
+
     $app->get('/getLaporanKriminalitas', function ($request, $response) {
         $sql = "SELECT lk.id_laporan,lk.judul_laporan,lk.jenis_kejadian,lk.deskripsi_kejadian,lk.tanggal_laporan,lk.waktu_laporan,lk.alamat_laporan,lk.lat_laporan,lk.lng_laporan,lk.id_user_pelapor,u.nama_user AS nama_user_pelapor, COUNT(kl.id_laporan) AS jumlah_komentar,lk.thumbnail_gambar AS thumbnail_gambar FROM user u 
                 JOIN laporan_kriminalitas lk ON lk.id_user_pelapor=u.id_user 
@@ -247,7 +296,7 @@ return function (App $app) {
             return $response->withJson($result, 200);
         });
         
-        $app->get('/getKepalaKeamanan   ',function ($request,$response){
+        $app->get('/getKepalaKeamanan',function ($request,$response){
             $sql="SELECT * FROM user where status_user=2";
             $stmt = $this->db->prepare($sql);
             $stmt->execute();
@@ -296,7 +345,7 @@ return function (App $app) {
 
         $app->post('/addKepalaKeamanan',function ($request,$response){
             $body=$request->getParsedBody();
-            $sql="SELECT COUNT(*) from user where telpon_user=:telpon_user";
+            $sql="SELECT COUNT(*) FROM user WHERE telpon_user=:telpon_user";
             $stmt = $this->db->prepare($sql);
             $stmt->execute([":telpon_user" => $body["telpon_user"]]);
             $result=$stmt->fetchColumn();
@@ -931,6 +980,10 @@ return function (App $app) {
                 $filename=$id_laporan.".".$extension;
             }
             $kecamatan=getKecamatan($new_laporan["lat_laporan"],$new_laporan["lng_laporan"]);
+            $sql="SELECT id_kecamatan FROM kecamatan where nama_kecamatan LIKE '%$kecamatan%'";
+            $stmt=$this->db->prepare($sql);
+            $stmt->execute();
+            $id_kecamatan = $stmt->fetchColumn();
             $sql = "INSERT INTO laporan_lostfound_barang VALUES(:id_laporan,:judul_laporan,:jenis_laporan,:jenis_barang,:tanggal_laporan,:waktu_laporan,:alamat_laporan,:lat_laporan,:lng_laporan,:deskripsi_barang,:id_user_pelapor,:status_laporan,:geohash_alamat_laporan,:kecamatan,:thumbnail_gambar) ";
             $stmt = $this->db->prepare($sql);
             $data = [
@@ -947,7 +1000,7 @@ return function (App $app) {
                 ":id_user_pelapor"=>$new_laporan["id_user_pelapor"],
                 ":status_laporan"=>0,
                 ":geohash_alamat_laporan"=> $geohash->encode(floatval($new_laporan["lat_laporan"]), floatval($new_laporan["lng_laporan"]), 8),
-                ":kecamatan"=>$kecamatan,
+                ":kecamatan"=>$id_kecamatan,
                 ":thumbnail_gambar"=>$filename
             ];
             if($stmt->execute($data)){
@@ -983,6 +1036,10 @@ return function (App $app) {
                 $filename=$id_laporan.".".$extension;
             }      
             $kecamatan=getKecamatan($new_laporan["lat_laporan"],$new_laporan["lng_laporan"]);
+            $sql="SELECT id_kecamatan FROM kecamatan where nama_kecamatan LIKE '%$kecamatan%'";
+            $stmt=$this->db->prepare($sql);
+            $stmt->execute();
+            $id_kecamatan = $stmt->fetchColumn();
             $sql = "INSERT INTO laporan_kriminalitas VALUES(:id_laporan,:judul_laporan,:jenis_kejadian,:deskripsi_kejadian,:tanggal_laporan,:waktu_laporan,:alamat_laporan,:lat_laporan,:lng_laporan,:id_user_pelapor,:status_laporan,:geohash_alamat_laporan,:kecamatan,:thumbnail_gambar) ";
             $stmt = $this->db->prepare($sql);
             $data = [
@@ -998,7 +1055,7 @@ return function (App $app) {
                 ":id_user_pelapor"=>$new_laporan["id_user_pelapor"],
                 ":status_laporan"=>0,
                 ":geohash_alamat_laporan"=> $geohash->encode(floatval($new_laporan["lat_laporan"]), floatval($new_laporan["lng_laporan"]), 8),
-                ":kecamatan"=>$kecamatan,
+                ":kecamatan"=>$id_kecamatan,
                 ":thumbnail_gambar"=>$filename
             ];
             if($stmt->execute($data)){

@@ -14,7 +14,7 @@
         <Grid Margin="20">
             <StackPanel>
                 <TextBlock FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" Text="Daftar Chat" FontSize="24" FontWeight="ExtraBold"></TextBlock>
-                <StackPanel Name="stackEmpty" Visibility="Visible" Margin="0,80,0,0" Grid.Row="2">
+                <StackPanel Name="stackEmpty" Visibility="Collapsed" Margin="0,80,0,0" Grid.Row="2">
                     <Image MaxWidth="500" Height="400" MaxHeight="400" Stretch="UniformToFill" VerticalAlignment="Center" Source="/Assets/chat-illustration.jpg"></Image>
                     <TextBlock Foreground="Gray" FontWeight="Bold" TextAlignment="Center" TextWrapping="WrapWholeWords" FontSize="20" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" Text="Tidak ada pesan masuk"></TextBlock>
                     <TextBlock Foreground="Gray" FontWeight="Light" TextAlignment="Center" TextWrapping="WrapWholeWords" FontSize="16" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" Text="Ayo mulai percakapan dengan orang lain sekarang!"></TextBlock>

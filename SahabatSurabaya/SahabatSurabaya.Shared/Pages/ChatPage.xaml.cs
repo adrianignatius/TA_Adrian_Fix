@@ -78,7 +78,13 @@ namespace SahabatSurabaya.Shared.Pages
 
             }
             listDisplayHeaderChat = new ObservableCollection<DisplayHeaderChat>(listDisplayHeaderChat.OrderByDescending(k => k.waktu_chat));
-            lvDaftarChat.ItemsSource = listDisplayHeaderChat;
+            if (listDisplayHeaderChat.Count == 0){
+                stackEmpty.Visibility = Visibility.Visible;
+                lvDaftarChat.Visibility = Visibility.Collapsed;
+            }
+            else{
+                lvDaftarChat.ItemsSource = listDisplayHeaderChat;
+            }
         }
 
         private void goToChatPage(object sender,ItemClickEventArgs e)

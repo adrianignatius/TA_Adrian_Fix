@@ -198,18 +198,27 @@ namespace SahabatSurabaya.Shared.Pages
             }
             else
             {
-                string judulLaporan = txtJudulLaporan.Text;
-                string descKejadian = txtDescKejadian.Text;
-                string valueKategoriKejadian = cbJenisKejadian.SelectedValue.ToString();
-                string alamatLaporan = txtAutocompleteAddress.Text;
-                string displayJeniskejadian = listSetingKategoriKriminalitas[cbJenisKejadian.SelectedIndex].nama_kategori.ToString();
-                string tglLaporan = DateTime.Now.ToString("dd/MM/yyyy");
-                string waktuLaporan = DateTime.Now.ToString("HH:mm:ss");
-                int index = cbJenisKejadian.SelectedIndex;
-                string namaFileGambar = listSetingKategoriKriminalitas[cbJenisKejadian.SelectedIndex].file_gambar_kategori;
-                ConfirmReportParams param = new ConfirmReportParams("kriminalitas", judulLaporan, null, descKejadian, lat, lng, alamatLaporan, tglLaporan, waktuLaporan, displayJeniskejadian,index, imageLaporan, namaFileGambar);
-                session.setConfirmreportParam(param);
-                this.Frame.Navigate(typeof(ConfirmReportPage));
+                string responseData = await httpObject.GetRequest("checkKecamatanAvailable?lat="+lat+"&lng="+lng, session.getTokenAuthorization());
+                JObject json = JObject.Parse(responseData);
+                if (json["status"].ToString() == "1"){
+                    string judulLaporan = txtJudulLaporan.Text;
+                    string descKejadian = txtDescKejadian.Text;
+                    string valueKategoriKejadian = cbJenisKejadian.SelectedValue.ToString();
+                    string alamatLaporan = txtAutocompleteAddress.Text;
+                    string displayJeniskejadian = listSetingKategoriKriminalitas[cbJenisKejadian.SelectedIndex].nama_kategori.ToString();
+                    string tglLaporan = DateTime.Now.ToString("dd/MM/yyyy");
+                    string waktuLaporan = DateTime.Now.ToString("HH:mm:ss");
+                    int index = cbJenisKejadian.SelectedIndex;
+                    string namaFileGambar = listSetingKategoriKriminalitas[cbJenisKejadian.SelectedIndex].file_gambar_kategori;
+                    ConfirmReportParams param = new ConfirmReportParams("kriminalitas", judulLaporan, null, descKejadian, lat, lng, alamatLaporan, tglLaporan, waktuLaporan, displayJeniskejadian, index, imageLaporan, namaFileGambar);
+                    session.setConfirmreportParam(param);
+                    this.Frame.Navigate(typeof(ConfirmReportPage));
+                }
+                else{
+                    var message = new MessageDialog(json["message"].ToString());
+                    await message.ShowAsync();
+                }
+                
             }     
         }
 
