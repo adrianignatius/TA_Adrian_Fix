@@ -980,7 +980,7 @@ return function (App $app) {
                 $filename=$id_laporan.".".$extension;
             }
             $kecamatan=getKecamatan($new_laporan["lat_laporan"],$new_laporan["lng_laporan"]);
-            $sql = "INSERT INTO laporan_lostfound_barang VALUES(:id_laporan,:judul_laporan,:jenis_laporan,:jenis_barang,:tanggal_laporan,:waktu_laporan,:alamat_laporan,:lat_laporan,:lng_laporan,:deskripsi_barang,:id_user_pelapor,:status_laporan,:geohash_alamat_laporan,:kecamatan,:thumbnail_gambar) ";
+            $sql = "INSERT INTO laporan_lostfound_barang VALUES(:id_laporan,:judul_laporan,:jenis_laporan,:jenis_barang,:tanggal_laporan,:waktu_laporan,:alamat_laporan,:lat_laporan,:lng_laporan,:deskripsi_barang,:id_user_pelapor,:status_laporan,:geohash_alamat_laporan,:id_kecamatan,:thumbnail_gambar) ";
             $stmt = $this->db->prepare($sql);
             $data = [
                 ":id_laporan" => $id_laporan,
@@ -996,7 +996,7 @@ return function (App $app) {
                 ":id_user_pelapor"=>$new_laporan["id_user_pelapor"],
                 ":status_laporan"=>0,
                 ":geohash_alamat_laporan"=> $geohash->encode(floatval($new_laporan["lat_laporan"]), floatval($new_laporan["lng_laporan"]), 8),
-                ":kecamatan"=>$new_laporan["id_kecamatan"],
+                "::id_kecamatan"=>$new_laporan["id_kecamatan"],
                 ":thumbnail_gambar"=>$filename
             ];
             if($stmt->execute($data)){
@@ -1036,7 +1036,7 @@ return function (App $app) {
             $stmt=$this->db->prepare($sql);
             $stmt->execute();
             $id_kecamatan = $stmt->fetchColumn();
-            $sql = "INSERT INTO laporan_kriminalitas VALUES(:id_laporan,:judul_laporan,:jenis_kejadian,:deskripsi_kejadian,:tanggal_laporan,:waktu_laporan,:alamat_laporan,:lat_laporan,:lng_laporan,:id_user_pelapor,:status_laporan,:geohash_alamat_laporan,:kecamatan,:thumbnail_gambar) ";
+            $sql = "INSERT INTO laporan_kriminalitas VALUES(:id_laporan,:judul_laporan,:jenis_kejadian,:deskripsi_kejadian,:tanggal_laporan,:waktu_laporan,:alamat_laporan,:lat_laporan,:lng_laporan,:id_user_pelapor,:status_laporan,:geohash_alamat_laporan,:id_kecamatan,:thumbnail_gambar) ";
             $stmt = $this->db->prepare($sql);
             $data = [
                 ":id_laporan" => $id_laporan,
@@ -1051,7 +1051,7 @@ return function (App $app) {
                 ":id_user_pelapor"=>$new_laporan["id_user_pelapor"],
                 ":status_laporan"=>0,
                 ":geohash_alamat_laporan"=> $geohash->encode(floatval($new_laporan["lat_laporan"]), floatval($new_laporan["lng_laporan"]), 8),
-                ":kecamatan"=>$new_laporan["id_kecamatan"],
+                "::id_kecamatan"=>$new_laporan["id_kecamatan"],
                 ":thumbnail_gambar"=>$filename
             ];
             if($stmt->execute($data)){
