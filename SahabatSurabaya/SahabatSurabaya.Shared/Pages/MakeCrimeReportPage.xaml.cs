@@ -33,13 +33,12 @@ namespace SahabatSurabaya.Shared.Pages
         Session session;
         HttpObject httpObject;
         UploadedImage imageLaporan;
-        List<SettingKategori> listSetingKategoriKriminalitas;
+        ObservableCollection<SettingKategori> listSetingKategoriKriminalitas;
         ObservableCollection<AutocompleteAddress> listAutoCompleteAddress;
         User userLogin;
         public MakeCrimeReportPage()
         {
             this.InitializeComponent();
-            listSetingKategoriKriminalitas = new List<SettingKategori>();
             listAutoCompleteAddress = new ObservableCollection<AutocompleteAddress>();
             session = new Session();
             dispatcherTimer = new DispatcherTimer();
@@ -128,17 +127,19 @@ namespace SahabatSurabaya.Shared.Pages
             tick = 0;
         }
 
-        private void setComboBoxKategoriKriminalitas()
+        private async void setComboBoxKategoriKriminalitas()
         {
-            listSetingKategoriKriminalitas.Add(new SettingKategori("Penculikkan", "kidnap-icon.jpg"));
-            listSetingKategoriKriminalitas.Add(new SettingKategori("Pencurian", "robbery-icon.png"));
-            listSetingKategoriKriminalitas.Add(new SettingKategori("Perusakkan Fasilitas Umum", "vandalism-icon.png"));
-            listSetingKategoriKriminalitas.Add(new SettingKategori("Tabrak Lari", "hitandrun-icon.png"));
-            listSetingKategoriKriminalitas.Add(new SettingKategori("Kekerasan", "violence-icon.png"));
-            listSetingKategoriKriminalitas.Add(new SettingKategori("Aktifitas Mencurigakan", "suspicious-activity.jpg"));
+            string responseData = await httpObject.GetRequest("getKategoriKriminalitas");
+            //listSetingKategoriKriminalitas = JsonConvert.DeserializeObject<ObservableCollection<SettingKategori>>(responseData);
+            //listSetingKategoriKriminalitas.Add(new SettingKategori("Penculikkan", "kidnap-icon.jpg"));
+            //listSetingKategoriKriminalitas.Add(new SettingKategori("Pencurian", "robbery-icon.png"));
+            //listSetingKategoriKriminalitas.Add(new SettingKategori("Perusakkan Fasilitas Umum", "vandalism-icon.png"));
+            //listSetingKategoriKriminalitas.Add(new SettingKategori("Tabrak Lari", "hitandrun-icon.png"));
+            //listSetingKategoriKriminalitas.Add(new SettingKategori("Kekerasan", "violence-icon.png"));
+            //listSetingKategoriKriminalitas.Add(new SettingKategori("Aktifitas Mencurigakan", "suspicious-activity.jpg"));
             cbJenisKejadian.ItemsSource = listSetingKategoriKriminalitas;
             cbJenisKejadian.DisplayMemberPath = "nama_kategori";
-            cbJenisKejadian.SelectedValuePath = "nama_kategori";
+            cbJenisKejadian.SelectedValuePath = "id_kategori";
         }
         public void CrimeReportPageLoaded(object sender,RoutedEventArgs e)
         {

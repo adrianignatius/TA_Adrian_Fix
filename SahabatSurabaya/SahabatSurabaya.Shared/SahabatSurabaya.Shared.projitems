@@ -15,6 +15,7 @@
     </ApplicationDefinition>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Class\FilterParams.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Pages\AllReportPage.xaml.cs">
       <DependentUpon>AllReportPage.xaml</DependentUpon>
     </Compile>

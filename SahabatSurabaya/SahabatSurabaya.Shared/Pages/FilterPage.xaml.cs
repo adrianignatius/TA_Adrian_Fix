@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -61,7 +62,9 @@ namespace SahabatSurabaya.Shared.Pages
 
         private void setFilter(object sender,RoutedEventArgs e)
         {
-
+            JObject json = new JObject();
+            List<string> asd = new List<string>();
+            json.Add("array_kecamatan", asd);
         }
 
         private void flyoutDone(object sender,RoutedEventArgs e)
@@ -71,22 +74,23 @@ namespace SahabatSurabaya.Shared.Pages
             string kecamatan = "";
             for (int i = 0; i < count; i++)
             {
-                kecamatan += listKecamatanSelected[i] + ",";
+                kecamatan += listKecamatanSelected[i].nama_kecamatan + ",";
             }
-            txtStackKecamatan.Text = kecamatan.Substring(0,kecamatan.Length-1);
+            txtStackKecamatan.Text = kecamatan.Substring(0, kecamatan.Length - 1);
         }
 
         private void kecamatanUnchecked(object sender, RoutedEventArgs e)
         {
-            string kecamatan = (sender as CheckBox).Content.ToString();
-            //listKecamatanSelected.Remove(kecamatan);
+            int id_kecamatan = Convert.ToInt32((sender as CheckBox).Tag.ToString());
+            Kecamatan selected = listKecamatan.Single(i => i.id_kecamatan == id_kecamatan);
+            listKecamatanSelected.Remove(selected);
         }
 
         private void kecamatanChecked(object sender,RoutedEventArgs e)
         {
             int id_kecamatan = Convert.ToInt32((sender as CheckBox).Tag.ToString());
             Kecamatan selected = listKecamatan.Single(i => i.id_kecamatan == id_kecamatan);
-            var message = new MessageDialog(selected.nama_kecamatan.ToString());
+            listKecamatanSelected.Add(selected);
         }
     }
 }
