@@ -13,6 +13,8 @@ namespace SahabatSurabaya
 
         public int jenis_laporan { get; set; }
 
+        public string jenis_barang { get; set; }
+
         public string tanggal_laporan { get; set; }
         
         public string waktu_laporan { get; set; }
@@ -34,11 +36,12 @@ namespace SahabatSurabaya
 
         public int status_laporan { get; set; }
 
-        public LaporanLostFound(string id_laporan, string judul_laporan, int jenis_laporan, string tanggal_laporan, string waktu_laporan, string alamat_laporan, string lat_laporan, string lng_laporan, string deskripsi_barang, int id_user_pelapor, string nama_user_pelapor, int jumlah_komentar,string thumbnail_gambar,int status_laporan)
+        public LaporanLostFound(string id_laporan, string judul_laporan, int jenis_laporan, string jenis_barang, string tanggal_laporan, string waktu_laporan, string alamat_laporan, string lat_laporan, string lng_laporan, string deskripsi_barang, int id_user_pelapor, string nama_user_pelapor, int jumlah_komentar, string thumbnail_gambar, int status_laporan)
         {
             this.id_laporan = id_laporan;
             this.judul_laporan = judul_laporan;
             this.jenis_laporan = jenis_laporan;
+            this.jenis_barang = jenis_barang;
             this.tanggal_laporan = tanggal_laporan;
             this.waktu_laporan = waktu_laporan;
             this.alamat_laporan = alamat_laporan;

@@ -255,15 +255,7 @@ namespace SahabatSurabaya.Shared.Pages
             else if (tag == "lvLostfound")
             {
                 LaporanLostFound selected = (LaporanLostFound)e.ClickedItem;
-                string jenis_laporan = "";
-                if (selected.jenis_laporan == 0)
-                {
-                    jenis_laporan = "Penemuan barang";
-                }
-                else
-                {
-                    jenis_laporan = "Kehilangan barang";
-                }
+                string jenis_laporan = selected.jenis_laporan == 0 ? "Penemuan " + selected.jenis_barang : "Kehilangan " + selected.jenis_barang;
                 ReportDetailPageParams param = new ReportDetailPageParams(selected.id_user_pelapor, selected.nama_user_pelapor, selected.id_laporan, selected.alamat_laporan, selected.tanggal_laporan, selected.waktu_laporan, selected.judul_laporan,jenis_laporan, selected.deskripsi_barang, selected.lat_laporan, selected.lng_laporan, "lostfound",selected.thumbnail_gambar,selected.status_laporan);
                 session.setReportDetailPageParams(param);
             }

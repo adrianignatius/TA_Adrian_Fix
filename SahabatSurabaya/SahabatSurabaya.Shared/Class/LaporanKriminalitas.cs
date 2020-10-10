@@ -34,7 +34,7 @@ namespace SahabatSurabaya
 
         public int status_laporan { get; set; }
 
-        public LaporanKriminalitas(string id_laporan, string judul_laporan, string jenis_kejadian, string deskripsi_kejadian, string tanggal_laporan, string waktu_laporan, string alamat_laporan, string lat_laporan, string lng_laporan, int id_user_pelapor, string nama_user_pelapor, int jumlah_komentar,string thumbnail_gambar, int status_laporan)
+        public LaporanKriminalitas(string id_laporan, string judul_laporan, string jenis_kejadian, string deskripsi_kejadian, string tanggal_laporan, string waktu_laporan, string alamat_laporan, string lat_laporan, string lng_laporan, int id_user_pelapor, string nama_user_pelapor, int jumlah_komentar, string thumbnail_gambar, int status_laporans)
         {
             this.id_laporan = id_laporan;
             this.judul_laporan = judul_laporan;
