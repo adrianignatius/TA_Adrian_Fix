@@ -226,7 +226,7 @@ return function (App $app) {
     // });
 
     $app->get('/getHeadlineLaporanKriminalitas', function ($request, $response) {
-        $sql = "SELECT lk.id_laporan,lk.judul_laporan,lk.jenis_kejadian,lk.deskripsi_kejadian,lk.tanggal_laporan,lk.waktu_laporan,lk.alamat_laporan,lk.lat_laporan,lk.lng_laporan,lk.id_user_pelapor,u.nama_user AS nama_user_pelapor, COUNT(kl.id_laporan) AS jumlah_komentar,lk.thumbnail_gambar AS thumbnail_gambar FROM user u 
+        $sql = "SELECT lk.id_laporan,lk.judul_laporan,lk.deskripsi_kejadian,lk.tanggal_laporan,lk.waktu_laporan,lk.alamat_laporan,lk.lat_laporan,lk.lng_laporan,lk.id_user_pelapor,u.nama_user AS nama_user_pelapor, COUNT(kl.id_laporan) AS jumlah_komentar,lk.thumbnail_gambar AS thumbnail_gambar FROM user u 
                 JOIN laporan_kriminalitas lk ON lk.id_user_pelapor=u.id_user 
                 LEFT JOIN komentar_laporan kl ON lk.id_laporan=kl.id_laporan 
                 GROUP BY lk.id_laporan ORDER BY lk.tanggal_laporan DESC, lk.waktu_laporan DESC LIMIT 5";
@@ -988,13 +988,13 @@ return function (App $app) {
                 $filename=$id_laporan.".".$extension;
             }
             $kecamatan=getKecamatan($new_laporan["lat_laporan"],$new_laporan["lng_laporan"]);
-            $sql = "INSERT INTO laporan_lostfound_barang VALUES(:id_laporan,:judul_laporan,:jenis_laporan,:jenis_barang,:tanggal_laporan,:waktu_laporan,:alamat_laporan,:lat_laporan,:lng_laporan,:deskripsi_barang,:id_user_pelapor,:status_laporan,:geohash_alamat_laporan,:id_kecamatan,:thumbnail_gambar) ";
+            $sql = "INSERT INTO laporan_lostfound_barang VALUES(:id_laporan,:judul_laporan,:jenis_laporan,:id_kategori_barang,:tanggal_laporan,:waktu_laporan,:alamat_laporan,:lat_laporan,:lng_laporan,:deskripsi_barang,:id_user_pelapor,:status_laporan,:geohash_alamat_laporan,:id_kecamatan,:thumbnail_gambar) ";
             $stmt = $this->db->prepare($sql);
             $data = [
                 ":id_laporan" => $id_laporan,
                 ":judul_laporan"=>$new_laporan["judul_laporan"],
                 ":jenis_laporan" => $new_laporan["jenis_laporan"],
-                ":jenis_barang"=> $new_laporan["jenis_barang"],
+                ":id_kategori_barang"=> $new_laporan["id_kategori_barang"],
                 ":alamat_laporan"=>$new_laporan["alamat_laporan"],
                 ":tanggal_laporan"=>$formatDate,
                 ":waktu_laporan"=>$new_laporan["waktu_laporan"],
@@ -1044,12 +1044,12 @@ return function (App $app) {
             $stmt=$this->db->prepare($sql);
             $stmt->execute();
             $id_kecamatan = $stmt->fetchColumn();
-            $sql = "INSERT INTO laporan_kriminalitas VALUES(:id_laporan,:judul_laporan,:jenis_kejadian,:deskripsi_kejadian,:tanggal_laporan,:waktu_laporan,:alamat_laporan,:lat_laporan,:lng_laporan,:id_user_pelapor,:status_laporan,:geohash_alamat_laporan,:id_kecamatan,:thumbnail_gambar) ";
+            $sql = "INSERT INTO laporan_kriminalitas VALUES(:id_laporan,:judul_laporan,:id_kategori_kejadian,:deskripsi_kejadian,:tanggal_laporan,:waktu_laporan,:alamat_laporan,:lat_laporan,:lng_laporan,:id_user_pelapor,:status_laporan,:geohash_alamat_laporan,:id_kecamatan,:thumbnail_gambar) ";
             $stmt = $this->db->prepare($sql);
             $data = [
                 ":id_laporan" => $id_laporan,
                 ":judul_laporan"=>$new_laporan["judul_laporan"],
-                ":jenis_kejadian" => $new_laporan["jenis_kejadian"],
+                ":id_kategori_kejadian" => $new_laporan["id_kategori_kejadian"],
                 ":deskripsi_kejadian"=>$new_laporan["deskripsi_kejadian"],
                 ":tanggal_laporan"=>$formatDate,
                 ":waktu_laporan"=>$new_laporan["waktu_laporan"],

@@ -25,12 +25,11 @@ namespace SahabatSurabaya.Shared.Pages
         UploadedImage imageLaporan;
         HttpObject httpObject;
         ObservableCollection<AutocompleteAddress> listAutoCompleteAddress;
-        List<SettingKategori> listSettingKategoriLostFound;
+        ObservableCollection<SettingKategori> listSettingKategoriLostFound;
         Session session;
         public MakeLostFoundReportPage()
         {
             this.InitializeComponent();
-            listSettingKategoriLostFound = new List<SettingKategori>();
             listAutoCompleteAddress = new ObservableCollection<AutocompleteAddress>();
             session = new Session();
             httpObject = new HttpObject();
@@ -94,18 +93,13 @@ namespace SahabatSurabaya.Shared.Pages
             }
         }
 
-        private void setComboBoxKategoriLostFound()
+        private async void setComboBoxKategoriLostFound()
         {
-            listSettingKategoriLostFound.Add(new SettingKategori("Handphone", "handphone-icon.png"));
-            listSettingKategoriLostFound.Add(new SettingKategori("Tas", "bag-icon.png"));
-            listSettingKategoriLostFound.Add(new SettingKategori("Jam Tangan", "watch-icon.png"));
-            listSettingKategoriLostFound.Add(new SettingKategori("Perhiasan", "jewerly-icon.png"));
-            listSettingKategoriLostFound.Add(new SettingKategori("Sepatu", "shoes-icon.png"));
-            listSettingKategoriLostFound.Add(new SettingKategori("Hewan Peliharaan", "pet-icon.png"));
-            listSettingKategoriLostFound.Add(new SettingKategori("Dompet", "wallet-icon.png"));
+            string responseData = await httpObject.GetRequest("getKategoriLostFound");
+            listSettingKategoriLostFound = JsonConvert.DeserializeObject<ObservableCollection<SettingKategori>>(responseData);
             cbJenisBarang.ItemsSource = listSettingKategoriLostFound;
             cbJenisBarang.DisplayMemberPath = "nama_kategori";
-            cbJenisBarang.SelectedValuePath = "nama_kategori";
+            cbJenisBarang.SelectedValuePath = "id_kategori";
         }
 
         private void txtAutocompleteAddressTextChanged(object sender, TextChangedEventArgs e)
@@ -168,13 +162,13 @@ namespace SahabatSurabaya.Shared.Pages
                         string judulLaporan = txtJudulLaporan.Text;
                         string descLaporan = txtDescBarang.Text;
                         string alamatLaporan = txtAutocompleteAddress.Text;
-                        string displayJenisBarang = listSettingKategoriLostFound[cbJenisBarang.SelectedIndex].nama_kategori.ToString();
+                        SettingKategori kategoriSelected = listSettingKategoriLostFound[cbJenisBarang.SelectedIndex];
                         string tglLaporan = DateTime.Now.ToString("dd/MM/yyyy");
                         string waktuLaporan = DateTime.Now.ToString("HH:mm:ss");
                         int index = cbJenisBarang.SelectedIndex;
                         int id_kecamatan = Convert.ToInt32(json["id_kecamatan"].ToString());
                         string namaFileGambar = listSettingKategoriLostFound[cbJenisBarang.SelectedIndex].file_gambar_kategori;
-                        ConfirmReportParams param = new ConfirmReportParams("lostfound", judulLaporan, jenisLaporan.ToString(), descLaporan, lat, lng, alamatLaporan, id_kecamatan, tglLaporan, waktuLaporan, displayJenisBarang, index, imageLaporan, namaFileGambar);
+                        ConfirmReportParams param = new ConfirmReportParams("lostfound", judulLaporan, jenisLaporan.ToString(), descLaporan, lat, lng, alamatLaporan, id_kecamatan, tglLaporan, waktuLaporan, kategoriSelected, index, imageLaporan);
                         session.setConfirmreportParam(param);
                         this.Frame.Navigate(typeof(ConfirmReportPage));
                     }

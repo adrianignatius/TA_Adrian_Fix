@@ -62,9 +62,7 @@ namespace SahabatSurabaya.Shared.Pages
 
         private void setFilter(object sender,RoutedEventArgs e)
         {
-            JObject json = new JObject();
-            List<string> asd = new List<string>();
-            json.Add("array_kecamatan", asd);
+           
         }
 
         private void flyoutDone(object sender,RoutedEventArgs e)

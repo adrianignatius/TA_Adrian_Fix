@@ -44,8 +44,8 @@ namespace SahabatSurabaya.Shared.Pages
             this.Frame.BackStack.RemoveAt(this.Frame.BackStack.Count - 1);
             userLogin = session.getUserLogin();
             param = session.getConfirmReportParams();
-            imageIcon.Source = new BitmapImage(new Uri(url + param.nama_file_gambar));
-            txtJenisLaporan.Text = param.display_combobox;
+            imageIcon.Source = new BitmapImage(new Uri(url + param.kategori_selected.file_gambar_kategori));
+            txtJenisLaporan.Text = param.kategori_selected.nama_kategori;
             txtTanggalLaporan.Text = param.tanggal_laporan;
             txtJudulLaporan.Text = param.judul_laporan;
             txtDeskripsiLaporan.Text = param.deskripsi_laporan;
@@ -110,7 +110,7 @@ namespace SahabatSurabaya.Shared.Pages
             var responseData = "";
             if (param.tag_laporan == "kriminalitas")
             {
-                form.Add(new StringContent(param.display_combobox), "jenis_kejadian");
+                form.Add(new StringContent(param.kategori_selected.id_kategori.ToString()), "id_kategori_kejadian");
                 form.Add(new StringContent(param.deskripsi_laporan), "deskripsi_kejadian");
                 if (param.image_laporan != null){
                     form.Add(new StreamContent(new MemoryStream(param.image_laporan.image)), "image", "image.jpg");
@@ -119,7 +119,7 @@ namespace SahabatSurabaya.Shared.Pages
             }
             else
             {
-                form.Add(new StringContent(param.display_combobox.ToString()), "jenis_barang");
+                form.Add(new StringContent(param.kategori_selected.id_kategori.ToString()), "id_kategori_barang");
                 form.Add(new StringContent(param.jenis_laporan.ToString()), "jenis_laporan");
                 form.Add(new StringContent(param.deskripsi_laporan), "deskripsi_barang");
                 form.Add(new StreamContent(new MemoryStream(param.image_laporan.image)), "image", "image.jpg");

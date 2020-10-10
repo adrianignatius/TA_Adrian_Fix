@@ -130,13 +130,7 @@ namespace SahabatSurabaya.Shared.Pages
         private async void setComboBoxKategoriKriminalitas()
         {
             string responseData = await httpObject.GetRequest("getKategoriKriminalitas");
-            //listSetingKategoriKriminalitas = JsonConvert.DeserializeObject<ObservableCollection<SettingKategori>>(responseData);
-            //listSetingKategoriKriminalitas.Add(new SettingKategori("Penculikkan", "kidnap-icon.jpg"));
-            //listSetingKategoriKriminalitas.Add(new SettingKategori("Pencurian", "robbery-icon.png"));
-            //listSetingKategoriKriminalitas.Add(new SettingKategori("Perusakkan Fasilitas Umum", "vandalism-icon.png"));
-            //listSetingKategoriKriminalitas.Add(new SettingKategori("Tabrak Lari", "hitandrun-icon.png"));
-            //listSetingKategoriKriminalitas.Add(new SettingKategori("Kekerasan", "violence-icon.png"));
-            //listSetingKategoriKriminalitas.Add(new SettingKategori("Aktifitas Mencurigakan", "suspicious-activity.jpg"));
+            listSetingKategoriKriminalitas = JsonConvert.DeserializeObject<ObservableCollection<SettingKategori>>(responseData);
             cbJenisKejadian.ItemsSource = listSetingKategoriKriminalitas;
             cbJenisKejadian.DisplayMemberPath = "nama_kategori";
             cbJenisKejadian.SelectedValuePath = "id_kategori";
