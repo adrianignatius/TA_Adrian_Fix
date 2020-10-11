@@ -25,7 +25,6 @@ function getKecamatan($lat,$lng){
     curl_close($ch);
     $kecamatan=$json["results"][0]["address_components"][0]["short_name"];
     return $kecamatan;
-    //return $json["results"][0]["address_components"][0]["short_name"];
 }
 
 function sendOneSignalNotification($number,$content,$heading){
@@ -49,6 +48,18 @@ function sendOneSignalNotification($number,$content,$heading){
     $res = curl_exec($ch);
     curl_close($ch);
 }
+
+// function sendNotificationToKepalaKeamanan($array_kepala_keamanan){
+//     $content = array(
+//         "en" => $message
+//     );
+//     $heading = array(
+//         "en" => "Ada laporan baru di daerah pengawasan anda!"
+//     );
+//     foreach($array_kepala_keamanan as $kepala_keamanan){
+        
+//     }
+// }
 return function (App $app) {
     $container = $app->getContainer();
     $container['upload_directory'] = __DIR__ . '/uploads';
@@ -280,7 +291,7 @@ return function (App $app) {
                 $stmt= $this->db->prepare($sql);
                 $stmt->execute(["id_laporan"=>$id_laporan]);
                 $laporan=$stmt->fetch();
-                $sql="SELECT telpon_user,status_user FROM user WHERE calcDistance(lat_user,lng_user,:lat_laporan,:lng_laporan)<=3000";
+                $sql="SELECT telpon_user FROM user WHERE calcDistance(lat_user,lng_user,:lat_laporan,:lng_laporan)<=3000";
                 $stmt= $this->db->prepare($sql);
                 $data=[
                     ":lat_laporan"=>$laporan["lat_laporan"],
@@ -312,29 +323,26 @@ return function (App $app) {
             $stmt = $this->db->prepare($sql);
             $stmt->execute(["id_laporan"=>$id_laporan]);
             if($stmt->execute()){
-                $sql="SELECT lk.lat_laporan,lk.lng_laporan,,lk.alamat_laporan,skk.nama_kategori AS jenis_kejadian FROM laporan_kriminalitas lk,setting_kategori_kriminalitas skk WHERE lk.id_laporan=:id_laporan AND lk.id_kategori_kejadian=skk.id_kategori;";
+                $sql="SELECT lk.lat_laporan,lk.lng_laporan,lk.alamat_laporan,skk.nama_kategori AS jenis_kejadian,lk.id_kecamatan FROM laporan_kriminalitas lk,setting_kategori_kriminalitas skk WHERE lk.id_laporan=:id_laporan AND lk.id_kategori_kejadian=skk.id_kategori;";
                 $stmt= $this->db->prepare($sql);
                 $stmt->execute(["id_laporan"=>$id_laporan]);
                 $laporan=$stmt->fetch();
-                $sql="SELECT telpon_user,status_user FROM user WHERE calcDistance(lat_user,lng_user,:lat_laporan,:lng_laporan)<=3000";
+                $sql="SELECT telpon_user FROM user WHERE id_kecamatan_user=:id_kecamatan_user";
                 $stmt= $this->db->prepare($sql);
-                $data=[
-                    ":lat_laporan"=>$laporan["lat_laporan"],
-                    ":lng_laporan"=>$laporan["lng_laporan"]
-                ];
-                $stmt->execute($data);
+                $stmt->execute([":id_kecamatan_user"=>$laporan["id_kecamatan"]]);
                 $result=$stmt->fetchAll();
-                $message="Ada user yang telah membuat laporan tentang ".$laporan["jenis_kejadian"]." di ".$laporan["alamat_laporan"];
+                $message="Ada user yang telah membuat laporan tentang ".$laporan["jenis_kejadian"]." di area pengawasanmu. Lokasi kejadian di ".$laporan["alamat_laporan"];
                 $content = array(
                     "en" => $message
                 );
                 $heading = array(
-                    "en" => "Cek laporan " .$display_jenis_laporan." barang baru didaerahmu!"
+                    "en" => "Cek laporan baru di area pengawasan anda!"
                 );
-                foreach($result as $user){
-                    sendOneSignalNotification($user["telpon_user"],$content,$heading);
-                }
-                return $response->withJson(["status"=>"1","message"=>"Laporan berhasil dikonfirmasi"]);
+                return $response->withJson($result);
+                // foreach($result as $user){
+                //     sendOneSignalNotification($user["telpon_user"],$content,$heading);
+                // }
+                //return $response->withJson(["status"=>"1","message"=>"Laporan berhasil dikonfirmasi"]);
             }else{
                 return $response->withJson(["status"=>"400","message"=>"Laporan gagal dikonfirmasi"]);
             }
@@ -834,7 +842,7 @@ return function (App $app) {
 
         $app->put('/acceptContactRequest/{id_daftar_kontak}', function ($request, $response,$args) {
             $id_daftar_kontak=$args["id_daftar_kontak"];
-            $sql="UPDATE daftar_kontak_darurat set status_relasi=1 where id_daftar_kontak=".$id_daftar_kontak;
+            $sql="UPDATE daftar_kontak_darurat SET status_relasi=1 where id_daftar_kontak=".$id_daftar_kontak;
             $stmt = $this->db->prepare($sql);
             if($stmt->execute()){
                 return $response->withJson(["status"=>"1","message"=>"Kontak berhasil ditambahkan"]);

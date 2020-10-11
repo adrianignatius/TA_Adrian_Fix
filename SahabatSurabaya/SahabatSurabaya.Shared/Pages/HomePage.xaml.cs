@@ -125,16 +125,6 @@ namespace SahabatSurabaya.Shared.Pages
 #endif 
         }
 
-        private void emergencyAction(object sender, HoldingRoutedEventArgs e)
-        {
-#if __ANDROID__
-            if(e.HoldingState==HoldingState.Completed){
-                sendNotification();
-            }
-#endif
-        }
-
-
         private async void sendEmergencyChat(User u, string address)
         {
             string message = "Saya sedang dalam keadaan darurat! Lokasi terakhir saya di " + address;
@@ -188,9 +178,14 @@ namespace SahabatSurabaya.Shared.Pages
             }
         }
 
+        private void emergencyAction(object sender, RoutedEventArgs e)
+        {
+            sendNotification();
+        }
+
         private async void sendNotification()
         {
-            string responseData=await httpObject.GetRequest("user/getEmergencyContact/"+userLogin.id_user,session.getTokenAuthorization());
+            string responseData=await httpObject.GetRequestWithAuthorization("user/getEmergencyContact/"+userLogin.id_user,session.getTokenAuthorization());
             listEmergencyContact = JsonConvert.DeserializeObject<ObservableCollection<User>>(responseData);
             if(listEmergencyContact.Count<1){
                 var message = new MessageDialog("Tidak ada kontak darurat yang terdaftar");
@@ -201,7 +196,7 @@ namespace SahabatSurabaya.Shared.Pages
             {
                 string address = await getUserAddress();
                 string heading=userLogin.nama_user+" sedang dalam keadaan darurat!";
-                string messageContent="Salah satu kontakmu, "+userLogin.nama_user+" sedang dalam keadaan darurat. Lokasi terakhirnya adalah "+address;
+                string messageContent="Salah satu kontakmu, "+userLogin.nama_user+" sedang dalam keadaan darurat. Lokasi terakhirnya ada di "+address;
                 foreach (User user in listEmergencyContact)
                 {
             
