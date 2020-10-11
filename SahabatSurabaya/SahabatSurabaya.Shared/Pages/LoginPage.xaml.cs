@@ -98,50 +98,6 @@ namespace SahabatSurabaya.Shared.Pages
                     var dialog = new MessageDialog(json["message"].ToString());
                     await dialog.ShowAsync();
                 }
-
-                //                using (var client = new HttpClient())
-                //                {
-                //                    client.BaseAddress = new Uri("http://localhost:8080/");
-                //                    //client.BaseAddress = new Uri(session.getApiURL());
-                //                    client.DefaultRequestHeaders.Accept.Clear();
-                //                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                //                    MultipartFormDataContent form = new MultipartFormDataContent();
-                //                    form.Add(new StringContent(txtNoHandphone.Text), "telpon_user");
-                //                    form.Add(new StringContent(txtPassword.Password), "password_user");
-                //                    HttpResponseMessage response = await client.PostAsync("user/checkLogin", form);
-                //                    if (response.IsSuccessStatusCode)
-                //                    {
-                //                        var responseData = response.Content.ReadAsStringAsync().Result;
-                //                        JObject json = JObject.Parse(responseData);
-                //                        string statusCode = json["status"].ToString();
-                //                        if (statusCode == "200")
-                //                        {
-                //                            string data = json["data"].ToString();
-                //                            User userLogin= JsonConvert.DeserializeObject<User>(data);
-                //                            session.setUserLogin(userLogin);
-                //                            if (userLogin.status_user == 99)
-                //                            {
-                //                                this.Frame.Navigate(typeof(VerifyOtpPage));
-                //                            }
-                //                            else if(userLogin.status_user==2){
-                //                                this.Frame.Navigate(typeof(HomeNavigationPageKepalaKeamanan));
-                //                            }
-                //                            else
-                //                            {
-                //                                this.Frame.Navigate(typeof(HomeNavigationPage));
-                //                            }                          
-                //#if __ANDROID__
-                //                              OneSignal.Current.SendTags(new Dictionary<string, string>() { {"no_handphone", userLogin.telpon_user}, {"tipe_user", userLogin.status_user.ToString()} });               
-                //#endif
-                //                        }
-                //                        else
-                //                        {
-                //                            var dialog = new MessageDialog(json["message"].ToString());
-                //                            await dialog.ShowAsync();
-                //                        }
-                //                    }
-
-                //                }
             }
         }
     }

@@ -212,8 +212,8 @@ namespace SahabatSurabaya.Shared.Pages
                         new KeyValuePair<string, string>("content", messageContent)
                     });
                     await httpObject.PostRequestWithUrlEncoded("user/sendEmergencyNotification", content);
-                    //response = await client.PostAsync("user/sendEmergencyNotification", content);
-                    sendEmergencyChat(user, address);
+                        //response = await client.PostAsync("user/sendEmergencyNotification", content);
+                        sendEmergencyChat(user, address);
                 }
                 var message = new MessageDialog("Pesan darurat telah dikirimkan ke semua kontak darurat anda");
                 await message.ShowAsync();

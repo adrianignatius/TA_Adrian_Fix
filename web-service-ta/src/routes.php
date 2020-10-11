@@ -27,6 +27,28 @@ function getKecamatan($lat,$lng){
     return $kecamatan;
     //return $json["results"][0]["address_components"][0]["short_name"];
 }
+
+function sendOneSignalNotification($number,$content,$heading){
+    $curl = curl_init();
+    $fields = array(
+        'app_id' => "6fd226ba-1d41-4c7b-9f8b-a973a8fd436b",
+        'filters' => array(array("field" => "tag", "key" => "no_handphone", "relation" => "=", "value" => $number)),
+        'contents' => $content,
+        'headings' => $heading
+    );
+    $fields = json_encode($fields);
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, "https://onesignal.com/api/v1/notifications");
+    curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json; charset=utf-8',
+                                            'Authorization: Basic MDUyNjhlOGEtNDQ4NC00YTYwLWIxYmYtMDZjYTc2OGUwNDc4'));
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+    curl_setopt($ch, CURLOPT_HEADER, FALSE);
+    curl_setopt($ch, CURLOPT_POST, TRUE);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $fields);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+    $res = curl_exec($ch);
+    curl_close($ch);
+}
 return function (App $app) {
     $container = $app->getContainer();
     $container['upload_directory'] = __DIR__ . '/uploads';
@@ -248,6 +270,76 @@ return function (App $app) {
     });
     
     $app->group('/admin', function() use($app){
+        $app->put('/verifikasiLaporanLostFound/{id_laporan}',function ($request,$response,$args){
+            $id_laporan=$args["id_laporan"];
+            $sql="UPDATE laporan_lostfound_barang SET status_laporan=1 WHERE id_laporan=:id_laporan";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute(["id_laporan"=>$id_laporan]);
+            if($stmt->execute()){
+                $sql="SELECT lf.lat_laporan,lf.lng_laporan,lf.jenis_laporan,lf.alamat_laporan,skl.nama_kategori AS jenis_barang FROM laporan_lostfound_barang lf,setting_kategori_lostfound skl WHERE lf.id_laporan=:id_laporan AND lf.id_kategori_barang=skl.id_kategori;";
+                $stmt= $this->db->prepare($sql);
+                $stmt->execute(["id_laporan"=>$id_laporan]);
+                $laporan=$stmt->fetch();
+                $sql="SELECT telpon_user,status_user FROM user WHERE calcDistance(lat_user,lng_user,:lat_laporan,:lng_laporan)<=3000";
+                $stmt= $this->db->prepare($sql);
+                $data=[
+                    ":lat_laporan"=>$laporan["lat_laporan"],
+                    ":lng_laporan"=>$laporan["lng_laporan"]
+                ];
+                $stmt->execute($data);
+                $result=$stmt->fetchAll();
+                $display_jenis_laporan= $laporan["jenis_laporan"]==0 ? "penemuan" : "kehilangan";
+                $message="Ada user yang telah melaporkan ".$display_jenis_laporan." ".$laporan["jenis_barang"]." di ".$laporan["alamat_laporan"];
+                $message=$laporan["jenis_laporan"] == 0 ? $message : $message.". Segera hubungi user yang bersangkutan apabila anda mempunyai informasi mengenai laporan tersebut.";
+                $content = array(
+                    "en" => $message
+                );
+                $heading = array(
+                    "en" => "Cek laporan " .$display_jenis_laporan." barang baru didaerahmu!"
+                );
+                foreach($result as $user){
+                    sendOneSignalNotification($user["telpon_user"],$content,$heading);
+                }
+                return $response->withJson(["status"=>"1","message"=>"Laporan berhasil dikonfirmasi"]);
+            }else{
+                return $response->withJson(["status"=>"400","message"=>"Laporan gagal dikonfirmasi"]);
+            }
+        });
+
+        $app->put('/verifikasiLaporanKriminalitas/{id_laporan}',function ($request,$response,$args){
+            $id_laporan=$args["id_laporan"];
+            $sql="UPDATE laporan_kriminalitas SET status_laporan=1 WHERE id_laporan=:id_laporan";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute(["id_laporan"=>$id_laporan]);
+            if($stmt->execute()){
+                $sql="SELECT lk.lat_laporan,lk.lng_laporan,,lk.alamat_laporan,skk.nama_kategori AS jenis_kejadian FROM laporan_kriminalitas lk,setting_kategori_kriminalitas skk WHERE lk.id_laporan=:id_laporan AND lk.id_kategori_kejadian=skk.id_kategori;";
+                $stmt= $this->db->prepare($sql);
+                $stmt->execute(["id_laporan"=>$id_laporan]);
+                $laporan=$stmt->fetch();
+                $sql="SELECT telpon_user,status_user FROM user WHERE calcDistance(lat_user,lng_user,:lat_laporan,:lng_laporan)<=3000";
+                $stmt= $this->db->prepare($sql);
+                $data=[
+                    ":lat_laporan"=>$laporan["lat_laporan"],
+                    ":lng_laporan"=>$laporan["lng_laporan"]
+                ];
+                $stmt->execute($data);
+                $result=$stmt->fetchAll();
+                $message="Ada user yang telah membuat laporan tentang ".$laporan["jenis_kejadian"]." di ".$laporan["alamat_laporan"];
+                $content = array(
+                    "en" => $message
+                );
+                $heading = array(
+                    "en" => "Cek laporan " .$display_jenis_laporan." barang baru didaerahmu!"
+                );
+                foreach($result as $user){
+                    sendOneSignalNotification($user["telpon_user"],$content,$heading);
+                }
+                return $response->withJson(["status"=>"1","message"=>"Laporan berhasil dikonfirmasi"]);
+            }else{
+                return $response->withJson(["status"=>"400","message"=>"Laporan gagal dikonfirmasi"]);
+            }
+        });
+
         $app->get('/getAllUser', function ($request, $response) {
             $sql = "SELECT id_user,telpon_user,nama_user,status_user,status_aktif_user FROM user where status_user!=2";
             $stmt = $this->db->prepare($sql);

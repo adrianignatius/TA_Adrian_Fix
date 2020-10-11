@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Com.OneSignal;
+using Newtonsoft.Json.Linq;
 using SahabatSurabaya.Shared;
 using System;
 using System.Collections.Generic;
@@ -103,6 +104,9 @@ namespace SahabatSurabaya.Shared.Pages
                 var message = new MessageDialog(json["message"].ToString());
                 await message.ShowAsync();
                 if (json["status"].ToString() == "1"){
+#if __ANDROID__
+                        OneSignal.Current.SendTags(new Dictionary<string, string>() { {"no_handphone", userLogin.telpon_user}, {"tipe_user", userLogin.status_user.ToString()} });               
+#endif
                     this.Frame.Navigate(typeof(HomeNavigationPage));
                 }
                 txtOtp.Text = "";

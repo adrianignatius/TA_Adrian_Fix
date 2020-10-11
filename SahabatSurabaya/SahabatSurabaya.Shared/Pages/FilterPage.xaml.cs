@@ -66,7 +66,12 @@ namespace SahabatSurabaya.Shared.Pages
                     var message = new MessageDialog("Tanggal awal tidak boleh lebih kecil dari tanggal akhir");
                     await message.ShowAsync();
                 }
-                FilterParams param=new FilterParams(tanggal_awal.ToString("yyyy-MM-dd"), tanggal_akhir.ToString("yyyy-MM-dd"),listIdBarangSelected,listkeca)
+                List<int> listIdKecamatanSelected = new List<int>();
+                for (int i = 0; i < listKecamatanSelected.Count; i++){
+                    listIdKecamatanSelected.Add(listKecamatanSelected[i].id_kecamatan);
+                }
+                FilterParams param = new FilterParams(tanggal_awal.ToString("yyyy-MM-dd"), tanggal_akhir.ToString("yyyy-MM-dd"), listIdBarangSelected, listIdKecamatanSelected);
+
             }
         }
 
