@@ -16,8 +16,8 @@
             <Grid Margin="30,40,30,30">
                 <StackPanel Orientation="Vertical">
                     <TextBlock FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" FontSize="20" Text="Range Tanggal"></TextBlock>
-                    <DatePicker Margin="0,12,0,0" Header="Tanggal awal" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" HorizontalAlignment="Stretch"></DatePicker>
-                    <DatePicker Margin="0,12,0,0" Header="Tanggal akhir" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" HorizontalAlignment="Stretch" Grid.Column="2"></DatePicker>
+                    <DatePicker Name="dtTanggalAwal" Margin="0,12,0,0" Header="Tanggal awal" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" HorizontalAlignment="Stretch"></DatePicker>
+                    <DatePicker Name="dtTanggalAkhir" Margin="0,12,0,0" Header="Tanggal akhir" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" HorizontalAlignment="Stretch" Grid.Column="2"></DatePicker>
                     <TextBlock Margin="0,8,0,0" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" FontSize="20" Text="Jenis Laporan"></TextBlock>
                     <Grid Margin="0,4,0,0">
                         <Grid.ColumnDefinitions>
@@ -39,13 +39,13 @@
                             <ColumnDefinition></ColumnDefinition>
                             <ColumnDefinition></ColumnDefinition>
                         </Grid.ColumnDefinitions>
-                        <CheckBox Grid.Row="0" Grid.Column="0" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" FontSize="14" >Tas</CheckBox>
-                        <CheckBox Grid.Row="0" Grid.Column="1" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" FontSize="14" >Handphone</CheckBox>
-                        <CheckBox Grid.Row="1" Grid.Column="0" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" FontSize="14" >Jam Tangan</CheckBox>
-                        <CheckBox Grid.Row="1" Grid.Column="1" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" FontSize="14" >Perhiasan</CheckBox>
-                        <CheckBox Grid.Row="2" Grid.Column="0" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" FontSize="14" >Sepatu</CheckBox>
-                        <CheckBox Grid.Row="2" Grid.Column="1" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" FontSize="14" >Hewan Peliharaan</CheckBox>
-                        <CheckBox Grid.Row="3" Grid.Column="0" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" FontSize="14" >Dompet</CheckBox>
+                        <CheckBox Checked="jenisBarangChecked" Unchecked="jenisBarangUnchecked" Tag="1" Grid.Row="0" Grid.Column="0" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" FontSize="14" >Handphone</CheckBox>
+                        <CheckBox Checked="jenisBarangChecked" Unchecked="jenisBarangUnchecked" Tag="2" Grid.Row="0" Grid.Column="1" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" FontSize="14" >Tas</CheckBox>
+                        <CheckBox Checked="jenisBarangChecked" Unchecked="jenisBarangUnchecked" Tag="3" Grid.Row="1" Grid.Column="0" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" FontSize="14" >Jam Tangan</CheckBox>
+                        <CheckBox Checked="jenisBarangChecked" Unchecked="jenisBarangUnchecked" Tag="4" Grid.Row="1" Grid.Column="1" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" FontSize="14" >Perhiasan</CheckBox>
+                        <CheckBox Checked="jenisBarangChecked" Unchecked="jenisBarangUnchecked" Tag="5" Grid.Row="2" Grid.Column="0" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" FontSize="14" >Sepatu</CheckBox>
+                        <CheckBox Checked="jenisBarangChecked" Unchecked="jenisBarangUnchecked" Tag="6" Grid.Row="2" Grid.Column="1" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" FontSize="14" >Hewan Peliharaan</CheckBox>
+                        <CheckBox Checked="jenisBarangChecked" Unchecked="jenisBarangUnchecked" Tag="7" Grid.Row="3" Grid.Column="0" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" FontSize="14" >Dompet</CheckBox>
                     </Grid>
                     <StackPanel Margin="0,8,0,0" Orientation="Horizontal">
                         <TextBlock  FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" FontSize="20" Text="Kecamatan"></TextBlock>

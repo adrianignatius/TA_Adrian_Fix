@@ -1,22 +1,12 @@
 ﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using SahabatSurabaya.Shared.Class;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices.ComTypes;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -27,6 +17,7 @@ namespace SahabatSurabaya.Shared.Pages
     {
         ObservableCollection<Kecamatan> listKecamatan;
         List<Kecamatan> listKecamatanSelected;
+        List<int> listIdBarangSelected;
         Session session;
         HttpObject httpObject;
         public FilterPage()
@@ -35,6 +26,7 @@ namespace SahabatSurabaya.Shared.Pages
             session = new Session();
             httpObject = new HttpObject();
             listKecamatan = new ObservableCollection<Kecamatan>();
+            listIdBarangSelected = new List<int>();
             listKecamatanSelected = new List<Kecamatan>();
         }
 
@@ -43,6 +35,10 @@ namespace SahabatSurabaya.Shared.Pages
             string responseData = await httpObject.GetRequest("getKecamatan");
             listKecamatan = JsonConvert.DeserializeObject<ObservableCollection<Kecamatan>>(responseData);
             gvKecamatan.ItemsSource = listKecamatan;
+            dtTanggalAwal.MaxYear = new DateTime(2023, 12, 31);
+            dtTanggalAwal.MinYear = new DateTime(2020, 1, 31);
+            dtTanggalAkhir.MaxYear = new DateTime(2023, 12, 31);
+            dtTanggalAkhir.MinYear = new DateTime(2020, 1, 31);
         }
 
         private void Back_Click(object sender, RoutedEventArgs e)
@@ -60,21 +56,44 @@ namespace SahabatSurabaya.Shared.Pages
             return false;
         }
 
-        private void setFilter(object sender,RoutedEventArgs e)
+        private async void setFilter(object sender,RoutedEventArgs e)
         {
-           
+            if(dtTanggalAwal.SelectedDate==null || dtTanggalAkhir.SelectedDate == null)
+            {
+                DateTime tanggal_awal = dtTanggalAwal.Date.DateTime;
+                DateTime tanggal_akhir = dtTanggalAkhir.Date.DateTime;
+                if (DateTime.Compare(tanggal_awal, tanggal_akhir) > 0){
+                    var message = new MessageDialog("Tanggal awal tidak boleh lebih kecil dari tanggal akhir");
+                    await message.ShowAsync();
+                }
+                FilterParams param=new FilterParams(tanggal_awal.ToString("yyyy-MM-dd"), tanggal_akhir.ToString("yyyy-MM-dd"),listIdBarangSelected,listkeca)
+            }
         }
 
         private void flyoutDone(object sender,RoutedEventArgs e)
         {
             flyoutKecamatan.Hide();
-            int count = listKecamatanSelected.Count;
-            string kecamatan = "";
-            for (int i = 0; i < count; i++)
+            if (listKecamatanSelected.Count > 0)
             {
-                kecamatan += listKecamatanSelected[i].nama_kecamatan + ",";
+                string kecamatan = "";
+                for (int i = 0; i < listKecamatanSelected.Count; i++)
+                {
+                    kecamatan += listKecamatanSelected[i].nama_kecamatan + ",";
+                }
+                txtStackKecamatan.Text = kecamatan.Substring(0, kecamatan.Length - 1);
             }
-            txtStackKecamatan.Text = kecamatan.Substring(0, kecamatan.Length - 1);
+        }
+
+        private void jenisBarangChecked(object sender, RoutedEventArgs e)
+        {
+            int id_barang = Convert.ToInt32((sender as CheckBox).Tag.ToString());
+            listIdBarangSelected.Add(id_barang);
+        }
+
+        private void jenisBarangUnchecked(object sender, RoutedEventArgs e)
+        {
+            int id_barang = Convert.ToInt32((sender as CheckBox).Tag.ToString());
+            listIdBarangSelected.Remove(id_barang);
         }
 
         private void kecamatanUnchecked(object sender, RoutedEventArgs e)
