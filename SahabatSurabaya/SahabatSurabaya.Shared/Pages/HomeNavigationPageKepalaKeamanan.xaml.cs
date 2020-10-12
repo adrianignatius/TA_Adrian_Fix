@@ -69,7 +69,7 @@ namespace SahabatSurabaya.Shared.Pages
                     ContentFrame.Navigate(typeof(HomePage));
                     break;
                 case "laporanAreaPengawasanPage":
-                    ContentFrame.Navigate(typeof(AllReportPage));
+                    ContentFrame.Navigate(typeof(AllCrimeReportPage));
                     break;
                 case "SignOut":
                     this.Frame.Navigate(typeof(LoginPage));
