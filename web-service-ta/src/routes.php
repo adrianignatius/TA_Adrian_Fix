@@ -463,18 +463,18 @@ return function (App $app) {
     $app->group('/kepalaKeamanan',function() use($app){
         $app->get('/getLaporanLostFound/{id_kecamatan}',function($request,$response,$args){
             $id_kecamatan=$args["id_kecamatan"];
-            $sql="SELECT * FROM laporan_lostfound_barang WHERE id_kecamatan LIKE '%$id_kecamatan%'";
+            $sql="SELECT * FROM laporan_lostfound_barang WHERE id_kecamatan=:id_kecamatan";
             $stmt = $this->db->prepare($sql);
-            $stmt->execute();
+            $stmt->execute([":id_kecamatan"=>$id_kecamatan]);
             $result=$stmt->fetchAll();
             return $response->withJson($result);
         });
 
         $app->get('/getLaporanKriminalitas/{id_kecamatan}',function($request,$response,$args){
             $id_kecamatan=$args["id_kecamatan"];
-            $sql="SELECT * FROM laporan_kriminalitas WHERE id_kecamatan LIKE '%$kecamatan%'";
+            $sql="SELECT * FROM laporan_kriminalitas WHERE id_kecamatan=:id_kecamatan";
             $stmt = $this->db->prepare($sql);
-            $stmt->execute([":kecamatan" => $kecamatan]);
+            $stmt->execute([":id_kecamatan"=>$id_kecamatan]);
             $result=$stmt->fetchAll();
             return $response->withJson($result);
         });
