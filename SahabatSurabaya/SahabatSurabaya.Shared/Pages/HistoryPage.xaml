@@ -47,7 +47,7 @@
                 <TextBlock Foreground="Gray" FontWeight="Light" TextAlignment="Center" TextWrapping="WrapWholeWords" FontSize="16" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" Text="Ayo ikut berkontribusi untuk lingkungan sekitar!"></TextBlock>
             </StackPanel>
             <StackPanel Name="stackListView" Grid.Row="2">
-                <ListView SelectionMode="None" IsItemClickEnabled="True" ItemClick="goToDetailPage" Name="lvHistory" Margin="8">
+                <ListView ScrollViewer.VerticalScrollMode="Enabled" SelectionMode="None" IsItemClickEnabled="True" ItemClick="goToDetailPage" Name="lvHistory" Margin="8">
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <Border Margin="0,4,0,4" CornerRadius="10" BorderBrush="Gray" BorderThickness="1">
