@@ -4,7 +4,7 @@ using System.Text;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Data;
 
-namespace SahabatSurabaya.Shared
+namespace SahabatSurabaya.Shared.Helper
 {
     public class ChatAlignmentConverter: IValueConverter
     {

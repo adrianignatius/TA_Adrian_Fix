@@ -38,9 +38,6 @@ namespace SahabatSurabaya.Shared.Pages
             listEmergencyContact = new ObservableCollection<User>();
             httpObject = new HttpObject();
             session = new Session();
-#if NETFX_CORE
-            btnEmergency.Visibility=Visibility.Collapsed;
-#endif
         }
 
         private async Task<string> getUserAddress()
@@ -62,30 +59,21 @@ namespace SahabatSurabaya.Shared.Pages
             JObject json = JObject.Parse(responseData);
             string address = json["results"][0]["formatted_address"].ToString();
             return address;
-            //using (var client = new HttpClient())
-            //{
-            //    string latlng = lat + "," + lng;
-            //    string reqUri = "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + latlng + "&key=AIzaSyA9rHJZEGWe6rX4nAHTGXFxCubmw-F0BBw";
-            //    HttpResponseMessage response = await client.GetAsync(reqUri);
-            //    if (response.IsSuccessStatusCode)
-            //    {
-            //        var jsonString = response.Content.ReadAsStringAsync().Result;
-            //        JObject json = JObject.Parse(jsonString);
-            //        string address = json["results"][0]["formatted_address"].ToString();
-            //        return address;
-            //    }
-            //    else
-            //    {
-            //        return null;
-            //    }
-            //}
         }
 
         private void goToAllReportPage(object sender,RoutedEventArgs e)
         {
             string tag = (sender as TextBlock).Tag.ToString();
-            session.setAllReportParam(tag);
-            this.Frame.Navigate(typeof(AllReportPage));
+            if (tag == "kriminalitas")
+            {
+                this.Frame.Navigate(typeof(AllLostFoundReportPage));
+            }
+            else
+            {
+                this.Frame.Navigate(typeof(AllCrimeReportPage));
+            }
+            //session.setAllReportParam(tag);
+            //this.Frame.Navigate(typeof(AllReportPage));
         }
 
         

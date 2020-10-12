@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using SahabatSurabaya.Shared;
+using SahabatSurabaya.Shared.Class;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -19,8 +20,8 @@ namespace SahabatSurabaya.Shared.Pages
         Session session;
         HttpObject httpObject;
         User userLogin;
-        ObservableCollection<LaporanKriminalitas> listLaporanKriminalitas = new ObservableCollection<LaporanKriminalitas>();
         ObservableCollection<LaporanLostFound> listLaporanLostFound = new ObservableCollection<LaporanLostFound>();
+        ObservableCollection<LaporanKriminalitas> listLaporanKriminalitas = new ObservableCollection<LaporanKriminalitas>();
         public AllReportPage()
         {
             this.InitializeComponent();
@@ -52,7 +53,8 @@ namespace SahabatSurabaya.Shared.Pages
         private async void loadLaporanLostFound()
         {
             if (listLaporanLostFound.Count == 0){
-                string responseData = userLogin.status_user == 2 ? await httpObject.GetRequestWithAuthorization("kepalaKeamanan/getLaporanLostFound/" + userLogin.kecamatan_user, session.getTokenAuthorization()) : await httpObject.GetRequestWithAuthorization("getLaporanLostFound", session.getTokenAuthorization());
+                string responseData = await httpObject.GetRequestWithAuthorization("kepalaKeamanan/getLaporanLostFound/" + userLogin.kecamatan_user, session.getTokenAuthorization());
+                //string responseData = userLogin.status_user == 2 ? await httpObject.GetRequestWithAuthorization("kepalaKeamanan/getLaporanLostFound/" + userLogin.kecamatan_user, session.getTokenAuthorization()) : await httpObject.GetRequestWithAuthorization("getLaporanLostFound", session.getTokenAuthorization());
                 listLaporanLostFound = JsonConvert.DeserializeObject<ObservableCollection<LaporanLostFound>>(responseData);
             }
             if (listLaporanLostFound.Count == 0){
@@ -65,7 +67,8 @@ namespace SahabatSurabaya.Shared.Pages
         private async void loadLaporanKriminalitas()
         {
             if (listLaporanKriminalitas.Count == 0){
-                string responseData = userLogin.status_user == 2 ? await httpObject.GetRequestWithAuthorization("kepalaKeamanan/getLaporanKriminalitas/" + userLogin.kecamatan_user, session.getTokenAuthorization()) : await httpObject.GetRequestWithAuthorization("getLaporanKriminalitas", session.getTokenAuthorization());
+                string responseData = await httpObject.GetRequestWithAuthorization("kepalaKeamanan/getLaporanKriminalitas/" + userLogin.kecamatan_user, session.getTokenAuthorization());
+                //string responseData = userLogin.status_user == 2 ? await httpObject.GetRequestWithAuthorization("kepalaKeamanan/getLaporanKriminalitas/" + userLogin.kecamatan_user, session.getTokenAuthorization()) : await httpObject.GetRequestWithAuthorization("getLaporanKriminalitas", session.getTokenAuthorization());
                 listLaporanKriminalitas = JsonConvert.DeserializeObject<ObservableCollection<LaporanKriminalitas>>(responseData);
             }
             if (listLaporanKriminalitas.Count == 0){
@@ -93,9 +96,7 @@ namespace SahabatSurabaya.Shared.Pages
 
         private void pageLoaded(object sender, RoutedEventArgs e)
         {
-            if (userLogin.status_user == 2){
-                txtJudulHalaman.Text = "Daftar laporan di area kecamatan " + userLogin.kecamatan_user;
-            }
+            txtJudulHalaman.Text = "Daftar laporan di area kecamatan " + userLogin.kecamatan_user;
             string param = session.getAllReportParam();
             if (param == "kriminalitas"){
                 setListViewKriminalitas();
@@ -142,9 +143,25 @@ namespace SahabatSurabaya.Shared.Pages
             }
         }
 
-        protected override void OnNavigatedTo(NavigationEventArgs e)
+        protected async override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
+            var entry = this.Frame.BackStack.LastOrDefault();
+            if (entry.SourcePageType == typeof(FilterPage))
+            {
+                FilterParams param = e.Parameter as FilterParams;
+                if (param.status_cari == 0)
+                {
+                    var message = new MessageDialog("batal");
+                    await message.ShowAsync();
+                }
+                else
+                {
+                    var message = new MessageDialog("cari");
+                    await message.ShowAsync();
+                }
+                this.Frame.BackStack.RemoveAt(this.Frame.BackStackDepth - 1);
+            }
         }
     }
 }

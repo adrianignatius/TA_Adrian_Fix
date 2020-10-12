@@ -2,7 +2,7 @@
     x:Class="SahabatSurabaya.Shared.Pages.HomePage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:SahabatSurabaya.Shared"
+    xmlns:local="using:SahabatSurabaya.Shared.Helper"
     xmlns:android="http://uno.ui/android"
     xmlns:win="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:not_android="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -66,7 +66,7 @@
                         <TextBlock Name="txtStatusUser" Text="asd" FontSize="14" FontWeight="SemiLight" Foreground="White"/>
                     </StackPanel>
                     <StackPanel VerticalAlignment="Bottom" HorizontalAlignment="Right" Grid.Column="2" Orientation="Horizontal">
-                        <Button android:Visibilty="Visible" win:Visibility="Collapsed"  Name="btnEmergency" HorizontalAlignment="Right" Click="emergencyAction" Foreground="White" Background="Red" CornerRadius="10" Content="Emergency"></Button>
+                        <android:Button Name="btnEmergency" HorizontalAlignment="Right" Click="emergencyAction" Foreground="White" Background="Red" CornerRadius="10" Content="Emergency"></android:Button>
                     </StackPanel>
                 </Grid>
             </Border>

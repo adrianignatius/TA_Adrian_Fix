@@ -215,28 +215,23 @@ return function (App $app) {
         return $response->withJson($result);
     });
 
-    $app->get('/getLaporanLostFoundWithFilter', function ($request, $response) {
+    $app->post('/getLaporanLostFoundWithFilter', function ($request, $response) {
         $body=$request->getParsedBody();
-        $jenis_laporan=$body["jenis_laporan"];
-        $tanggal_awal=$body["tanggal_awal"];
+        $jenis_laporan=implode(",",$body["list_jenis_laporan"]);
+        $tanggal_akhir=$body["tanggal_awal"];
         $tanggal_akhir=$body["tanggal_akhir"];
-        $array_barang=$body["array_barang"];
-        $array_kecamatan=$body["array_kecamatan"]; 
-        $numArray = array_map('intval', jenis_laporan);
-    //     $sql = "SELECT lf.id_laporan,lf.judul_laporan,lf.jenis_laporan,lf.tanggal_laporan,lf.waktu_laporan,lf.alamat_laporan,lf.lat_laporan,lf.lng_laporan,lf.deskripsi_barang,lf.deskripsi_barang,lf.id_user_pelapor,u.nama_user AS nama_user_pelapor,count(kl.id_laporan) AS jumlah_komentar,lf.thumbnail_gambar AS thumbnail_gambar FROM laporan_lostfound_barang lf 
-    //             JOIN user u ON lf.id_user_pelapor=u.id_user 
-    //             LEFT JOIN komentar_laporan kl ON lf.id_laporan=kl.id_laporan
-    //             WHERE lf.jenis_laporan IN (:id_laporan) AND lf.id_kecamatan IN (:array_kecamatan)
-    //             GROUP BY lf.id_laporan 
-    //             ORDER BY lf.tanggal_laporan DESC, lf.waktu_laporan DESC";
-    //     $stmt = $this->db->prepare($sql);
-    //     $data=[
-    //         ":jenis_laporan"=>$jenis_laporan,
-    //         ":array_kecamatan"=>$array_kecamatan
-    //     ];
-    //     $stmt->execute($data);
-    //     $result = $stmt->fetchAll();
-    //     return $response->withJson($result);
+        $array_barang=implode(",",$body["list_id_barang"]);
+        $array_kecamatan=implode(",",$body["list_id_kecamatan"]);
+        $sql = "SELECT lf.id_laporan,lf.judul_laporan,lf.jenis_laporan,lf.tanggal_laporan,lf.waktu_laporan,lf.alamat_laporan,lf.lat_laporan,lf.lng_laporan,lf.deskripsi_barang,lf.deskripsi_barang,lf.id_user_pelapor,u.nama_user AS nama_user_pelapor,count(kl.id_laporan) AS jumlah_komentar,lf.thumbnail_gambar AS thumbnail_gambar FROM laporan_lostfound_barang lf 
+                JOIN user u ON lf.id_user_pelapor=u.id_user 
+                LEFT JOIN komentar_laporan kl ON lf.id_laporan=kl.id_laporan
+                WHERE lf.jenis_laporan IN ($jenis_laporan) AND lf.id_kategori_barang IN ($array_barang) AND lf.id_kecamatan IN ($array_kecamatan)  
+                GROUP BY lf.id_laporan 
+                ORDER BY lf.tanggal_laporan DESC, lf.waktu_laporan DESC";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+        $result = $stmt->fetchAll();
+        return $response->withJson($result);
     });
 
     $app->get('/getLaporanKriminalitas', function ($request, $response) {
@@ -621,9 +616,10 @@ return function (App $app) {
 
         $app->post('/checkLogin', function ($request, $response) {
             $body = $request->getParsedBody();
-            $sql = "SELECT * FROM user where telpon_user='".$body["telpon_user"]."'";
+            $sql = "SELECT u.id_user,u.nama_user,u.telpon_user,u.status_user,u.premium_available_until,u.lokasi_aktif_user,k.nama_kecamatan AS kecamatan_user,u.status_aktif_user 
+                    FROM user u,kecamatan k WHERE u.id_kecamatan_user=k.id_kecamatan AND u.telpon_user=:telpon_user";
             $stmt = $this->db->prepare($sql);
-            $stmt->execute();
+            $stmt->execute([":telpon_user"=>$body["telpon_user"]]);
             $result = $stmt->fetch();
             if($result!=null){
                 if(password_verify($body["password_user"],$result["password_user"])){

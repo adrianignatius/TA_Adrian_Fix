@@ -24,8 +24,8 @@
                             <ColumnDefinition></ColumnDefinition>
                             <ColumnDefinition></ColumnDefinition>
                         </Grid.ColumnDefinitions>
-                        <CheckBox Grid.Column="0" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" FontSize="14" >Kehilangan Barang</CheckBox>
-                        <CheckBox Grid.Column="1" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" FontSize="14" >Penemuan Barang</CheckBox>
+                        <CheckBox Checked="jenisLaporanChecked" Unchecked="jenisLaporanUnchecked" Tag="1" Grid.Column="0" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" FontSize="14" >Kehilangan Barang</CheckBox>
+                        <CheckBox Checked="jenisLaporanChecked" Unchecked="jenisLaporanUnchecked" Tag="0" Grid.Column="1" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" FontSize="14" >Penemuan Barang</CheckBox>
                     </Grid>
                     <TextBlock Margin="0,8,0,0" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" FontSize="20" Text="Jenis Barang"></TextBlock>
                     <Grid Margin="0,4,0,0">

@@ -1,0 +1,70 @@
+﻿<Page
+    x:Class="SahabatSurabaya.Shared.Pages.AllCrimeReportPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:SahabatSurabaya.Shared.Helper"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    RequestedTheme="Light"
+    mc:Ignorable="d"
+    Loaded="pageLoaded"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Page.Resources>
+        <SolidColorBrush x:Key="brushTransparent" Color="Black" Opacity="0.4"></SolidColorBrush>
+        <local:DatetimeConverter x:Key="dateTimeConverter"/>
+        <local:ImageLaporanConverter x:Key="imageConverter"/>
+    </Page.Resources>
+
+    <Grid>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
+            </Grid.RowDefinitions>
+            <Grid Margin="0,8,0,12" Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Button Click="Back_Click" Grid.Column="0" VerticalAlignment="Top" HorizontalAlignment="Left" Style="{StaticResource NavigationBackButtonNormalStyle}"></Button>
+                <TextBlock Grid.Column="1" Name="txtJudulHalaman" Text="Daftar Laporan Kriminalitas" TextWrapping="WrapWholeWords" Margin="12,4,0,0" FontSize="24" FontWeight="Bold" ></TextBlock>
+            </Grid>
+            <StackPanel Visibility="Collapsed" Name="stackEmpty" Margin="0,80,0,0" Grid.Row="1">
+                <Image MaxWidth="400" Height="420" MaxHeight="420" Stretch="UniformToFill" VerticalAlignment="Center" Source="/Assets/empty-illustration.jpg"></Image>
+                <TextBlock Foreground="Gray" FontWeight="Bold" TextAlignment="Center" TextWrapping="WrapWholeWords" FontSize="20" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" Text="Anda belum pernah membuat laporan"></TextBlock>
+                <TextBlock Foreground="Gray" FontWeight="Light" TextAlignment="Center" TextWrapping="WrapWholeWords" FontSize="16" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" Text="Ayo ikut berkontribusi untuk lingkungan sekitar!"></TextBlock>
+            </StackPanel>
+            <ScrollViewer Name="svListView" Grid.Row="1">
+                <StackPanel Margin="8" Orientation="Vertical">
+                    <Button Content="Filter" Foreground="White" Background="Green" CornerRadius="10" HorizontalAlignment="Right" ></Button>
+                    <ListView Name="lvLaporanKriminalitas" SelectionMode="None" IsItemClickEnabled="True" Margin="0,16,0,0" >
+                        <ListView.ItemTemplate>
+                            <DataTemplate x:Name="ImageOverlayDataTemplate">
+                                <Border Margin="0,4,0,4" CornerRadius="10" BorderBrush="Gray" BorderThickness="1">
+                                    <Grid MaxHeight="280">
+                                        <Image Source="{Binding thumbnail_gambar,Converter={StaticResource imageConverter}}" Stretch="UniformToFill"/>
+                                        <StackPanel Orientation="Vertical" Height="80" VerticalAlignment="Bottom" Background="{StaticResource brushTransparent}" Padding="12">
+                                            <TextBlock FontWeight="ExtraBold" Opacity="1" Foreground="White" FontSize="14" Text="{Binding judul_laporan }"/>
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Opacity="1" Foreground="White" FontSize="14" Text="{Binding tanggal_laporan,Converter={StaticResource dateTimeConverter}}"></TextBlock>
+                                                <TextBlock Margin="2,0,0,0" Text="Pukul" Opacity="1" Foreground="White" FontSize="14"></TextBlock>
+                                                <TextBlock Margin="2,0,0,0" Opacity="1" Foreground="White" Text="{Binding waktu_laporan}" FontSize="14"></TextBlock>
+                                            </StackPanel>
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Opacity="1" Foreground="White" FontSize="14" Text="Oleh"></TextBlock>
+                                                <TextBlock Margin="2,0,0,0" Opacity="1" Foreground="White" FontSize="14" Text="{Binding nama_user_pelapor}"></TextBlock>
+                                            </StackPanel>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                    <Button Margin="0,8,0,8" Grid.Row="2" HorizontalAlignment="Center" Foreground="White" Background="Green" CornerRadius="10" Content="Muat lagi"></Button>
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+
+    </Grid>
+</Page>

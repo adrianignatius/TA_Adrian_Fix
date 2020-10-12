@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Windows.UI.Xaml.Data;
 
-namespace SahabatSurabaya.Shared
+namespace SahabatSurabaya.Shared.Helper
 {
     class ImageLaporanConverter:IValueConverter
     {
