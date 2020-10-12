@@ -38,6 +38,18 @@ namespace SahabatSurabaya.Shared.Pages
             args.Cancel = args.NewText.Any(c => !char.IsDigit(c));
         }
 
+#if __ANDROID__
+        private async static void HandleNotificationOpened(OSNotificationOpenedResult result)
+        {
+            Session session = new Session();
+            OSNotificationPayload payload = result.notification.payload;
+            Dictionary<string, object> additionalData = payload.additionalData;
+            string message = payload.body;
+            var messageDialog = new MessageDialog(message);
+            await messageDialog.ShowAsync();
+        }
+#endif
+
         public async void login(object sender, RoutedEventArgs e)
         {
             if (txtNoHandphone.Text.Length == 0 || txtPassword.Password.Length == 0)
@@ -76,9 +88,17 @@ namespace SahabatSurabaya.Shared.Pages
                     }
                     else
                     {
-#if __ANDROID__
-                        OneSignal.Current.SendTags(new Dictionary<string, string>() { {"no_handphone", userLogin.telpon_user}, {"tipe_user", userLogin.status_user.ToString()} });               
-#endif
+//#if __ANDROID__
+//                        var message = new MessageDialog("masuk");
+//                        await message.ShowAsync();
+//                        OneSignal.Current.StartInit("6fd226ba-1d41-4c7b-9f8b-a973a8fd436b").HandleNotificationOpened(HandleNotificationOpened)
+//                                         .Settings(new Dictionary<string, bool>() {
+//                                            { IOSSettings.kOSSettingsKeyAutoPrompt, false },
+//                                            { IOSSettings.kOSSettingsKeyInAppLaunchURL, false } })
+//                                         .InFocusDisplaying(OSInFocusDisplayOption.Notification)
+//                                         .EndInit();
+//                        OneSignal.Current.SendTags(new Dictionary<string, string>() { { "no_handphone", userLogin.telpon_user }, { "tipe_user", userLogin.status_user.ToString() } });
+//#endif
                         if (userLogin.status_user == 2)
                         {
                             this.Frame.Navigate(typeof(HomeNavigationPageKepalaKeamanan));

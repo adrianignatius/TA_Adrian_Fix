@@ -66,14 +66,12 @@ namespace SahabatSurabaya.Shared.Pages
             string tag = (sender as TextBlock).Tag.ToString();
             if (tag == "kriminalitas")
             {
-                this.Frame.Navigate(typeof(AllLostFoundReportPage));
+                this.Frame.Navigate(typeof(AllCrimeReportPage));
             }
             else
             {
-                this.Frame.Navigate(typeof(AllCrimeReportPage));
+                this.Frame.Navigate(typeof(AllLostFoundReportPage));
             }
-            //session.setAllReportParam(tag);
-            //this.Frame.Navigate(typeof(AllReportPage));
         }
 
         

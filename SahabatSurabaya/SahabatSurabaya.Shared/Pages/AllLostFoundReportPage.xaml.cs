@@ -58,7 +58,7 @@ namespace SahabatSurabaya.Shared.Pages
 
         private async void loadLaporanLostFound()
         {
-            string responseData = userLogin.status_user == 2 ? await httpObject.GetRequestWithAuthorization("kepalaKeamanan/getLaporanLostFound/" + userLogin.kecamatan_user, session.getTokenAuthorization()) : await httpObject.GetRequestWithAuthorization("getLaporanLostFound", session.getTokenAuthorization());
+            string responseData = await httpObject.GetRequestWithAuthorization("getLaporanLostFound", session.getTokenAuthorization());
             listLaporanLostFound = JsonConvert.DeserializeObject<ObservableCollection<LaporanLostFound>>(responseData);
             if (listLaporanLostFound.Count == 0)
             {

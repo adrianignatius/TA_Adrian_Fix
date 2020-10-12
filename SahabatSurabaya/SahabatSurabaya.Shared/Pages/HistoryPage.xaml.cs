@@ -78,7 +78,7 @@ namespace SahabatSurabaya.Shared
             }
             if (listHistoryLaporanLostFound.Count == 0){
                 stackEmpty.Visibility = Visibility.Visible;
-                stackListView.Visibility = Visibility.Collapsed;
+                lvHistory.Visibility = Visibility.Collapsed;
             }
             lvHistory.ItemsSource = listHistoryLaporanLostFound;
         }
@@ -91,7 +91,7 @@ namespace SahabatSurabaya.Shared
             }
             if (listHistoryLaporanLostFound.Count == 0){
                 stackEmpty.Visibility = Visibility.Visible;
-                stackListView.Visibility = Visibility.Collapsed;
+                lvHistory.Visibility = Visibility.Collapsed;
             }
             lvHistory.ItemsSource = listHistoryLaporanKriminalitas;
         }

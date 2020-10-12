@@ -38,22 +38,24 @@ namespace SahabatSurabaya
 #if __ANDROID__
             OneSignal.Current.StartInit("6fd226ba-1d41-4c7b-9f8b-a973a8fd436b").HandleNotificationOpened(HandleNotificationOpened)
                              .Settings(new Dictionary<string, bool>() {
-                                            { IOSSettings.kOSSettingsKeyAutoPrompt, false },
-                                            { IOSSettings.kOSSettingsKeyInAppLaunchURL, false } })
+                                                        { IOSSettings.kOSSettingsKeyAutoPrompt, false },
+                                                        { IOSSettings.kOSSettingsKeyInAppLaunchURL, false } })
                              .InFocusDisplaying(OSInFocusDisplayOption.Notification)
                              .EndInit();
 #endif
         }
 
-        private static void HandleNotificationOpened(OSNotificationOpenedResult result)
+        private async static void HandleNotificationOpened(OSNotificationOpenedResult result)
         {
             Session session = new Session();
             OSNotificationPayload payload = result.notification.payload;
             Dictionary<string, object> additionalData = payload.additionalData;
             string message = payload.body;
             string actionID = result.action.actionID;
-            Frame rootFrame = Windows.UI.Xaml.Window.Current.Content as Frame;
-            rootFrame.Navigate(typeof(ProfilePage));
+            //Frame rootFrame = Windows.UI.Xaml.Window.Current.Content as Frame;
+            //rootFrame.Navigate(typeof(ProfilePage));
+            var messaged = new MessageDialog("asd");
+            await messaged.ShowAsync();
         }
 
         /// <summary>
@@ -79,8 +81,6 @@ namespace SahabatSurabaya
                 rootFrame = new Frame();
 
                 rootFrame.NavigationFailed += OnNavigationFailed;
-
-
 
                 if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
                 {

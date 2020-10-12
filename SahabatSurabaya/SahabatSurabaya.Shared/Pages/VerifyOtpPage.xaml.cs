@@ -105,7 +105,7 @@ namespace SahabatSurabaya.Shared.Pages
                 await message.ShowAsync();
                 if (json["status"].ToString() == "1"){
 #if __ANDROID__
-                        OneSignal.Current.SendTags(new Dictionary<string, string>() { {"no_handphone", userLogin.telpon_user}, {"tipe_user", userLogin.status_user.ToString()} });               
+                        OneSignal.Current.SendTags(new Dictionary<string, string>() { {"no_handphone", userRegister.telpon_user}, {"tipe_user", userRegister.status_user.ToString()} });               
 #endif
                     this.Frame.Navigate(typeof(HomeNavigationPage));
                 }
