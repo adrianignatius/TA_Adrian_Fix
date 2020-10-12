@@ -463,7 +463,13 @@ return function (App $app) {
     $app->group('/kepalaKeamanan',function() use($app){
         $app->get('/getLaporanLostFound/{id_kecamatan}',function($request,$response,$args){
             $id_kecamatan=$args["id_kecamatan"];
-            $sql="SELECT * FROM laporan_lostfound_barang WHERE id_kecamatan=:id_kecamatan";
+            $sql="SELECT lf.id_laporan,lf.judul_laporan,lf.jenis_laporan,skl.nama_kategori AS jenis_barang,lf.tanggal_laporan,lf.waktu_laporan,lf.alamat_laporan,lf.lat_laporan,lf.lng_laporan,lf.deskripsi_barang,lf.deskripsi_barang,lf.id_user_pelapor,u.nama_user AS nama_user_pelapor,count(kl.id_laporan) AS jumlah_komentar,lf.thumbnail_gambar AS thumbnail_gambar FROM laporan_lostfound_barang lf 
+                JOIN user u ON lf.id_user_pelapor=u.id_user 
+                LEFT JOIN komentar_laporan kl ON lf.id_laporan=kl.id_laporan
+                JOIN setting_kategori_lostfound skl on skl.id_kategori=lf.id_kategori_barang
+                WHERE lf.id_kecamatan=:id_kecamatan
+                GROUP BY lf.id_laporan 
+                ORDER BY lf.tanggal_laporan DESC, lf.waktu_laporan DESC";
             $stmt = $this->db->prepare($sql);
             $stmt->execute([":id_kecamatan"=>$id_kecamatan]);
             $result=$stmt->fetchAll();
@@ -472,7 +478,12 @@ return function (App $app) {
 
         $app->get('/getLaporanKriminalitas/{id_kecamatan}',function($request,$response,$args){
             $id_kecamatan=$args["id_kecamatan"];
-            $sql="SELECT * FROM laporan_kriminalitas WHERE id_kecamatan=:id_kecamatan";
+            $sql="SELECT lk.id_laporan,lk.judul_laporan,skk.nama_kategori AS jenis_kejadian,lk.deskripsi_kejadian,lk.tanggal_laporan,lk.waktu_laporan,lk.alamat_laporan,lk.lat_laporan,lk.lng_laporan,lk.id_user_pelapor,u.nama_user AS nama_user_pelapor, COUNT(kl.id_laporan) AS jumlah_komentar,lk.thumbnail_gambar AS thumbnail_gambar FROM user u 
+                JOIN laporan_kriminalitas lk ON lk.id_user_pelapor=u.id_user 
+                LEFT JOIN komentar_laporan kl ON lk.id_laporan=kl.id_laporan
+                JOIN setting_kategori_kriminalitas skk on skk.id_kategori=lk.id_kategori_kejadian
+                WHERE lk.id_kecamatan=:id_kecamatan
+                GROUP BY lk.id_laporan ORDER BY lk.tanggal_laporan DESC, lk.waktu_laporan DESC";
             $stmt = $this->db->prepare($sql);
             $stmt->execute([":id_kecamatan"=>$id_kecamatan]);
             $result=$stmt->fetchAll();
