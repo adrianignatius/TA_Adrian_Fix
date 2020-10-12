@@ -626,7 +626,7 @@ return function (App $app) {
             }
         });
 
-        $app->post('/checkLogin ', function ($request, $response) {
+        $app->post('/checkLogin', function ($request, $response) {
             $body = $request->getParsedBody();
             $sql = "SELECT u.id_user,u.password_user,u.nama_user,u.telpon_user,u.status_user,u.premium_available_until,u.lokasi_aktif_user,u.id_kecamatan_user,k.nama_kecamatan AS kecamatan_user ,u.status_aktif_user
                     FROM user u LEFT JOIN kecamatan k on k.id_kecamatan=u.id_kecamatan_user WHERE u.telpon_user=:telpon_user";
