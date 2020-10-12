@@ -53,7 +53,7 @@ namespace SahabatSurabaya.Shared.Pages
         private async void loadLaporanLostFound()
         {
             if (listLaporanLostFound.Count == 0){
-                string responseData = await httpObject.GetRequestWithAuthorization("kepalaKeamanan/getLaporanLostFound/" + userLogin.kecamatan_user, session.getTokenAuthorization());
+                string responseData = await httpObject.GetRequestWithAuthorization("kepalaKeamanan/getLaporanLostFound/" + userLogin.id_kecamatan_user, session.getTokenAuthorization());
                 //string responseData = userLogin.status_user == 2 ? await httpObject.GetRequestWithAuthorization("kepalaKeamanan/getLaporanLostFound/" + userLogin.kecamatan_user, session.getTokenAuthorization()) : await httpObject.GetRequestWithAuthorization("getLaporanLostFound", session.getTokenAuthorization());
                 listLaporanLostFound = JsonConvert.DeserializeObject<ObservableCollection<LaporanLostFound>>(responseData);
             }
@@ -67,7 +67,7 @@ namespace SahabatSurabaya.Shared.Pages
         private async void loadLaporanKriminalitas()
         {
             if (listLaporanKriminalitas.Count == 0){
-                string responseData = await httpObject.GetRequestWithAuthorization("kepalaKeamanan/getLaporanKriminalitas/" + userLogin.kecamatan_user, session.getTokenAuthorization());
+                string responseData = await httpObject.GetRequestWithAuthorization("kepalaKeamanan/getLaporanKriminalitas/" + userLogin.id_kecamatan_user, session.getTokenAuthorization());
                 //string responseData = userLogin.status_user == 2 ? await httpObject.GetRequestWithAuthorization("kepalaKeamanan/getLaporanKriminalitas/" + userLogin.kecamatan_user, session.getTokenAuthorization()) : await httpObject.GetRequestWithAuthorization("getLaporanKriminalitas", session.getTokenAuthorization());
                 listLaporanKriminalitas = JsonConvert.DeserializeObject<ObservableCollection<LaporanKriminalitas>>(responseData);
             }
