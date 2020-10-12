@@ -145,10 +145,12 @@ namespace SahabatSurabaya.Shared.Pages
 
         private async void shareLaporan(object sender, RoutedEventArgs e)
         {
+            string message = "Terdapat laporan tentang " + param.jenis_laporan + " yang terjadi pada tanggal " + param.tanggal_laporan;
+            message = param.tag == "kriminalitas" ? message += " yang terjadi di " + param.alamat_laporan : message += ". Lokasi terakhir barang ada di " + param.alamat_laporan;
             await Share.RequestAsync(new ShareTextRequest
             {
-                Text = "asd",
-                Title = "Share Text"
+                Text = message,
+                Title = "Share informasi "+param.tag
             });
         }
         private async void goToChatPage(object sender, RoutedEventArgs e)
@@ -158,20 +160,6 @@ namespace SahabatSurabaya.Shared.Pages
             ChatPageParams chatParam = new ChatPageParams(Convert.ToInt32(json["id_chat"].ToString()), userLogin.id_user, param.id_user_pelapor, param.nama_user_pelapor);
             session.setChatPageParams(chatParam);
             this.Frame.Navigate(typeof(PersonalChatPage));
-            //using (var client = new HttpClient())
-            //{
-            //    client.BaseAddress = new Uri(session.getApiURL());
-            //    client.DefaultRequestHeaders.Accept.Clear();
-            //    HttpResponseMessage response = await client.GetAsync("/checkHeaderChat/" + userLogin.id_user+"/"+param.id_user_pelapor);
-            //    if (response.IsSuccessStatusCode)
-            //    {
-            //        var responseData = response.Content.ReadAsStringAsync().Result;
-            //        JObject json = JObject.Parse(responseData);
-            //        ChatPageParams chatParam = new ChatPageParams(Convert.ToInt32(json["id_chat"].ToString()), userLogin.id_user, param.id_user_pelapor, param.nama_user_pelapor);
-            //        session.setChatPageParams(chatParam);
-            //        this.Frame.Navigate(typeof(PersonalChatPage));
-            //    }
-            //}
         }
 
         private async void sendComment(object sender,RoutedEventArgs e)
@@ -192,6 +180,7 @@ namespace SahabatSurabaya.Shared.Pages
                 JObject json = JObject.Parse(responseData);
                 var messageDialog = new MessageDialog(json["message"].ToString());
                 await messageDialog.ShowAsync();
+                txtKomentar.Text = "";
                 loadKomentarLaporan();
             }
             else

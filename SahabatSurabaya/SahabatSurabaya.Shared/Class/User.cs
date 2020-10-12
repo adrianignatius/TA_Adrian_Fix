@@ -19,13 +19,13 @@ namespace SahabatSurabaya
 
         public string lokasi_aktif_user { get; set; }
 
-        public int id_kecamatan_user { get; set; }
+        public int? id_kecamatan_user { get; set; }
 
         public string kecamatan_user { get; set; }
 
         public int status_aktif_user { get; set; }
 
-        public User(int id_user, string nama_user, string telpon_user, int status_user, string premium_available_until, string lokasi_aktif_user, int id_kecamatan_user, string kecamatan_user, int status_aktif_user)
+        public User(int id_user, string nama_user, string telpon_user, int status_user, string premium_available_until, string lokasi_aktif_user, int? id_kecamatan_user, string kecamatan_user, int status_aktif_user)
         {
             this.id_user = id_user;
             this.nama_user = nama_user;
