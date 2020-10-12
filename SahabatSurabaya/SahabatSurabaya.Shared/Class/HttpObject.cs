@@ -118,8 +118,8 @@ namespace SahabatSurabaya.Shared
         {
             using (var client = new HttpClient())
             {
-                client.BaseAddress = new Uri(API_URL);
-                //client.BaseAddress = new Uri(URL_DEBUG);
+                //client.BaseAddress = new Uri(API_URL);
+                client.BaseAddress = new Uri(URL_DEBUG);
                 client.DefaultRequestHeaders.Accept.Clear();
                 HttpResponseMessage response = await client.PostAsync(url, form);
                 if (response.IsSuccessStatusCode)

@@ -155,9 +155,9 @@ return function (App $app) {
         $result = Token::validate($body["token"], $_ENV['JWT_SECRET']);
         if($result==true){
             $payload=Token::getPayload($body["token"], $_ENV['JWT_SECRET']);
-            $sql = "SELECT u.id_user,u.nama_user,u.telpon_user,u.status_user,u.premium_available_until,u.lokasi_aktif_user,u.id_kecamatan_user,k.nama_kecamatan AS kecamatan_user ,u.status_aktif_user
-                    FROM user u LEFT JOIN kecamatan k on k.id_kecamatan=u.id_kecamatan_user WHERE u.telpon_user=:telpon_user";
-            $stmt = $this->db->prepare($sql);
+            $sql ="SELECT u.id_user,u.nama_user,u.telpon_user,u.status_user,u.premium_available_until,u.lokasi_aktif_user,u.id_kecamatan_user,k.nama_kecamatan AS kecamatan_user ,u.status_aktif_user
+                    FROM user u LEFT JOIN kecamatan k on k.id_kecamatan=u.id_kecamatan_user WHERE u.id_user=:id_user";
+            $stmt = $this->db->prepare($sql);   
             $stmt->execute([":id_user" => $payload["sub"]]);
             $user=$stmt->fetch();
             return $response->withJson(["status"=>"1","message"=>"Token verified","data"=>$user]);
@@ -165,7 +165,6 @@ return function (App $app) {
             return $response->withJson(["status"=>"400","message"=>"Token not verified"]);
         }
     });
-
     // $app->get('/getHeadlineLaporanLostFound', function ($request, $response) {
     //     $sql = "SELECT lf.id_laporan,lf.judul_laporan,lf.jenis_laporan,lf.tanggal_laporan,lf.waktu_laporan,lf.alamat_laporan,lf.lat_laporan,lf.lng_laporan,lf.deskripsi_barang,lf.deskripsi_barang,lf.id_user_pelapor,u.nama_user as nama_user_pelapor,count(kl.id_laporan) AS jumlah_komentar,gf.nama_file AS thumbnail_gambar FROM laporan_lostfound_barang lf 
     //             JOIN user u ON lf.id_user_pelapor=u.id_user 

@@ -51,11 +51,9 @@ namespace SahabatSurabaya.Shared.Pages
                         new KeyValuePair<string, string>("token", secureStorage.ToString())
                     });
                     string responseData = await httpObject.PostRequestWithUrlEncoded("sessionSignIn",content);
-                    
                     JObject json = JObject.Parse(responseData);
                     if (json["status"].ToString() == "1")
                     {
-
                         string data = json["data"].ToString();
                         User userLogin = JsonConvert.DeserializeObject<User>(data);
                         session.setUserLogin(userLogin);
