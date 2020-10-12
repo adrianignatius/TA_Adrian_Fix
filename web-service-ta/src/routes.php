@@ -616,7 +616,7 @@ return function (App $app) {
 
         $app->post('/checkLogin', function ($request, $response) {
             $body = $request->getParsedBody();
-            $sql = "SELECT u.id_user,u.nama_user,u.telpon_user,u.status_user,u.premium_available_until,u.lokasi_aktif_user,k.nama_kecamatan AS kecamatan_user,u.status_aktif_user 
+            $sql = "SELECT u.id_user,u.password_user,u.nama_user,u.telpon_user,u.status_user,u.premium_available_until,u.lokasi_aktif_user,k.nama_kecamatan AS kecamatan_user,u.status_aktif_user 
                     FROM user u,kecamatan k WHERE u.id_kecamatan_user=k.id_kecamatan AND u.telpon_user=:telpon_user";
             $stmt = $this->db->prepare($sql);
             $stmt->execute([":telpon_user"=>$body["telpon_user"]]);
