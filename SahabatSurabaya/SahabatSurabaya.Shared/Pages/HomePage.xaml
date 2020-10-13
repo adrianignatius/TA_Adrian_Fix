@@ -17,29 +17,6 @@
         <local:DatetimeConverter x:Key="dateTimeConverter"/>
         <SolidColorBrush x:Key="brushTransparent" Color="Black" Opacity="0.4"></SolidColorBrush>
         <local:ImageLaporanConverter x:Key="imageConverter"/>
-        <!--<win:DataTemplate x:Name="laporanTemplate">
-            <Border CornerRadius="10" BorderBrush="Gray" BorderThickness="1">
-                <Grid Name="borderGrid" MaxHeight="230" MaxWidth="360">
-                    <Image Source="{Binding thumbnail_gambar,Converter={StaticResource imageConverter}}" Stretch="UniformToFill"/>
-                    <StackPanel Orientation="Vertical" Height="96" VerticalAlignment="Bottom" Background="{StaticResource brushTransparent}" Padding="12">
-                        <TextBlock FontWeight="ExtraBold" Opacity="1" Foreground="White" FontSize="14" Text="{Binding judul_laporan }"/>
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Opacity="1" Foreground="White" FontSize="14" Text="{Binding tanggal_laporan,Converter={StaticResource dateTimeConverter}}"></TextBlock>
-                            <TextBlock Margin="2,0,0,0" Text="Pukul" Opacity="1" Foreground="White" FontSize="14"></TextBlock>
-                            <TextBlock Margin="2,0,0,0" Opacity="1" Foreground="White" Text="{Binding waktu_laporan}" FontSize="14"></TextBlock>
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Opacity="1" Foreground="White" FontSize="14" Text="Oleh"></TextBlock>
-                            <TextBlock Margin="2,0,0,0" Opacity="1" Foreground="White" FontSize="14" Text="{Binding nama_user_pelapor}"></TextBlock>
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Opacity="1" Foreground="White" FontSize="14" Text="{Binding jumlah_komentar}"></TextBlock>
-                            <TextBlock Margin="2,0,0,0" Opacity="1" Foreground="White" FontSize="14" Text="Komentar"></TextBlock>
-                        </StackPanel>
-                    </StackPanel>
-                </Grid>
-            </Border>
-        </win:DataTemplate>-->
     </Page.Resources>
 
     <Grid Margin="20">
@@ -62,8 +39,8 @@
                         </Ellipse.Fill>
                     </Ellipse>
                     <StackPanel Margin="12,0,0,0" Grid.Column="1" Orientation="Vertical">
-                        <TextBlock Name="txtNamaUser" Text="asd" FontSize="16" FontWeight="Black"/>
-                        <TextBlock Name="txtStatusUser" Text="asd" FontSize="14" FontWeight="SemiLight" Foreground="White"/>
+                        <TextBlock Name="txtNamaUser" Text="Welcome, nama user!" FontSize="16" FontWeight="Black"/>
+                        <TextBlock Name="txtStatusUser" Text="Status akun" FontSize="14" FontWeight="SemiLight" Foreground="White"/>
                     </StackPanel>
                     <StackPanel VerticalAlignment="Bottom" HorizontalAlignment="Right" Grid.Column="2" Orientation="Horizontal">
                         <android:Button Name="btnEmergency" HorizontalAlignment="Right" Click="emergencyAction" Foreground="White" Background="Red" CornerRadius="10" Content="Emergency"></android:Button>
@@ -85,7 +62,7 @@
                         <ColumnDefinition></ColumnDefinition>
                     </Grid.ColumnDefinitions>
                     <TextBlock Name="txtHeadlineTitle"  FontWeight="ExtraBold" FontSize="14" Grid.Column="0" Text="Laporan Kriminalitas Terkini"></TextBlock>
-                    <TextBlock Name="txtTagLine"  Tapped="goToAllReportPage" Foreground="Green" Grid.Column="1" TextAlignment="Right" Text="Lihat Semua"></TextBlock>
+                    <TextBlock Name="txtTagLine" Tag="lostfound"  Tapped="goToAllReportPage" Foreground="Green" Grid.Column="1" TextAlignment="Right" Text="Lihat Semua"></TextBlock>
                 </Grid>
             </android:StackPanel>
             <android:ListView Grid.Row="2" Name="lvHeadline" SelectionMode="Single" IsItemClickEnabled="True" ItemClick="goToDetailPage" Margin="0,10,0,0" >
@@ -105,6 +82,20 @@
                                         <TextBlock Opacity="1" Foreground="White" FontSize="14" Text="Oleh"></TextBlock>
                                         <TextBlock Margin="2,0,0,0" Opacity="1" Foreground="White" FontSize="14" Text="{Binding nama_user_pelapor}"></TextBlock>
                                     </StackPanel>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"></ColumnDefinition>
+                                            <ColumnDefinition Width="*"></ColumnDefinition>
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel Grid.Column="0" HorizontalAlignment="Left">
+                                            <SymbolIcon Symbol="View" Foreground="White"></SymbolIcon>
+                                            <TextBlock Margin="2,0,0,0" Opacity="1" Foreground="White" FontSize="14" Text="{Binding jumlah_konfirmasi}"></TextBlock>
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="1"  HorizontalAlignment="Right">
+                                            <SymbolIcon Symbol="Comment" Foreground="White"></SymbolIcon> 
+                                            <TextBlock Margin="2,0,0,0" Opacity="1" Foreground="White" FontSize="14" Text="{Binding jumlah_komentar}"></TextBlock>
+                                        </StackPanel>
+                                    </Grid>
                                 </StackPanel>
                             </Grid>
                         </Border>

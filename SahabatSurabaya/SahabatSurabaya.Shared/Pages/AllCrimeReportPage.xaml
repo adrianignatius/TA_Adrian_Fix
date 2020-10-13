@@ -29,7 +29,7 @@
                         <ColumnDefinition Width="*"></ColumnDefinition>
                     </Grid.ColumnDefinitions>
                     <Button Click="Back_Click" Grid.Column="0" VerticalAlignment="Top" HorizontalAlignment="Left" Style="{StaticResource NavigationBackButtonNormalStyle}"></Button>
-                    <TextBlock Grid.Column="1" Name="txtJudulHalaman" Text="Daftar Laporan Lost &amp; Found" TextWrapping="WrapWholeWords" Margin="12,4,0,0" FontSize="24" FontWeight="Bold" ></TextBlock>
+                    <TextBlock Grid.Column="1" Name="txtJudulHalaman" Text="Daftar Laporan Kriminalitas" TextWrapping="WrapWholeWords" Margin="12,4,0,0" FontSize="24" FontWeight="Bold" ></TextBlock>
                 </Grid>
                 <Button Margin="12,0,12,0" Foreground="White" Background="Green" CornerRadius="10" HorizontalAlignment="Stretch" >
                     <Button.Content>

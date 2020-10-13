@@ -153,6 +153,7 @@ namespace SahabatSurabaya.Shared.Pages
                 btnSelectionLaporanLostFound.IsEnabled = false;
                 lvHeadline.Tag = "lvLostfound";
                 txtTagLine.Tag="lostfound";
+                txtHeadlineTitle.Text = "Laporan Lost & Found Terkini";
             }
             else
             {
@@ -161,6 +162,7 @@ namespace SahabatSurabaya.Shared.Pages
                 btnSelectionLaporanLostFound.IsEnabled = true;
                 lvHeadline.Tag = "lvKriminalitas";
                 txtTagLine.Tag="kriminalitas";
+                txtHeadlineTitle.Text = "Laporan Kriminalitas";
             }
         }
 

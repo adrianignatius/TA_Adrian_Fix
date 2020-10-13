@@ -55,9 +55,10 @@
                             <Button Click="openMap" FontSize="12" CornerRadius="10" Foreground="White" Background="Green" Margin="10,0,0,0" Content="Buka Map"></Button>
                         </StackPanel>
                         <WebView Name="webVieMapLokasi" Margin="0,12,0,0" Height="400"></WebView>
-                        <TextBlock Margin="0,10,0,0" FontFamily="14" TextWrapping="Wrap" Name="txtAlamatLaporan"></TextBlock>
+                        <TextBlock Margin="0,10,0,0" FontWeight="Bold" FontSize="16" TextWrapping="Wrap" Name="txtStatusKonfirmasiLaporan">0 Orang telah mengkonfirmasi kejadian ini</TextBlock>
+                        <TextBlock Margin="0,10,0,0" FontSize="14" TextWrapping="Wrap" Name="txtAlamatLaporan"></TextBlock>
                         <StackPanel Name="stackComment">
-                            <TextBlock Margin="0,20,0,0" FontFamily="16" Text="Tambahkan Komentar Disini"></TextBlock>
+                            <TextBlock Margin="0,20,0,0" FontSize="16" Text="Tambahkan Komentar Disini"></TextBlock>
                             <Grid Margin="0,10,0,0">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="0.8*"></ColumnDefinition>

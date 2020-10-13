@@ -62,7 +62,7 @@ namespace SahabatSurabaya.Shared.Pages
                 btnKonfirmasi.Visibility = Visibility.Collapsed;
                 type = param.tag == "Penemuan barang" ? "0":"1";
             }
-            if (userLogin.id_user == param.id_user_pelapor)
+            if ((userLogin.id_user == param.id_user_pelapor) || (userLogin.status_user==2))
             {
                 btnChatPage.Visibility = Visibility.Collapsed;
                 btnKonfirmasi.Visibility = Visibility.Collapsed;

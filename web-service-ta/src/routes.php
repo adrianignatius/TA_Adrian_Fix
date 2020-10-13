@@ -179,12 +179,12 @@ return function (App $app) {
     //     return $response->withJson($result);
     // });
     $app->get('/getHeadlineLaporanKriminalitas', function ($request, $response) {
-        $sql = "SELECT lk.id_laporan,lk.judul_laporan,skk.nama_kategori AS jenis_kejadian,lk.deskripsi_kejadian,lk.tanggal_laporan,lk.waktu_laporan,lk.alamat_laporan,lk.lat_laporan,lk.lng_laporan,lk.id_user_pelapor,u.nama_user AS nama_user_pelapor,lk.status_laporan, COUNT(kl.id_laporan) AS jumlah_komentar,lk.thumbnail_gambar AS thumbnail_gambar FROM user u 
+        $sql = "SELECT lk.id_laporan,lk.judul_laporan,skk.nama_kategori AS jenis_kejadian,lk.deskripsi_kejadian,lk.tanggal_laporan,lk.waktu_laporan,lk.alamat_laporan,lk.lat_laporan,lk.lng_laporan,lk.id_user_pelapor,u.nama_user AS nama_user_pelapor,lk.status_laporan, COUNT(kl.id_laporan) AS jumlah_komentar,COUNT(klk.id_laporan) AS jumlah_konfirmasi,lk.thumbnail_gambar AS thumbnail_gambar FROM user u 
                 JOIN laporan_kriminalitas lk ON lk.id_user_pelapor=u.id_user 
-                LEFT JOIN komentar_laporan kl ON lk.id_laporan=kl.id_laporan
-                JOIN setting_kategori_kriminalitas skk on skk.id_kategori=lk.id_kategori_kejadian
-                WHERE lk.status_laporan=1
-                GROUP BY lk.id_laporan ORDER BY lk.tanggal_laporan DESC, lk.waktu_laporan DESC LIMIT 5";
+                LEFT JOIN komentar_laporan kl ON lk.id_laporan=kl.id_laporan 
+                LEFT JOIN konfirmasi_laporan_kriminalitas klk ON lk.id_laporan=klk.id_laporan 
+                JOIN setting_kategori_kriminalitas skk on skk.id_kategori=lk.id_kategori_kejadian 
+                WHERE lk.status_laporan=1 GROUP BY lk.id_laporan ORDER BY lk.tanggal_laporan DESC, lk.waktu_laporan DESC LIMIT 5";
         $stmt = $this->db->prepare($sql);
         $stmt->execute();
         $result = $stmt->fetchAll();
@@ -342,7 +342,10 @@ return function (App $app) {
             $stmt = $this->db->prepare($sql);
             $stmt->execute(["id_laporan"=>$id_laporan]);
             if($stmt->execute()){
-                $sql="SELECT lk.lat_laporan,lk.lng_laporan,lk.alamat_laporan,skk.nama_kategori AS jenis_kejadian,lk.id_kecamatan FROM laporan_kriminalitas lk,setting_kategori_kriminalitas skk WHERE lk.id_laporan=:id_laporan AND lk.id_kategori_kejadian=skk.id_kategori;";
+                $sql="SELECT lk.id_laporan,lk.judul_laporan,lk.tanggal_laporan,lk.waktu_laporan,lk.alamat_laporan,lk.deskripsi_kejadian,lk.thumbnail_gambar,lk.lat_laporan,lk.lng_laporan,lk.alamat_laporan,lk.id_user_pelapor,lk.status_laporan,u.nama_user 
+                    AS nama_user_pelapor,skk.nama_kategori AS jenis_kejadian,lk.id_kecamatan
+                    FROM laporan_kriminalitas lk,setting_kategori_kriminalitas skk,user u WHERE lk.id_laporan=:id_laporan AND lk.id_kategori_kejadian=skk.id_kategori AND lk.id_user_pelapor=u.id_user";
+                //$sql="SELECT lk.lat_laporan,lk.lng_laporan,lk.alamat_laporan,skk.nama_kategori AS jenis_kejadian,lk.id_kecamatan FROM laporan_kriminalitas lk,setting_kategori_kriminalitas skk WHERE lk.id_laporan=:id_laporan AND lk.id_kategori_kejadian=skk.id_kategori;";
                 $stmt= $this->db->prepare($sql);
                 $stmt->execute(["id_laporan"=>$id_laporan]);
                 $laporan=$stmt->fetch();
@@ -357,11 +360,27 @@ return function (App $app) {
                 $heading = array(
                     "en" => "Cek laporan baru di area pengawasan anda!"
                 );
-                return $response->withJson($result);
-                // foreach($result as $user){
-                //     sendOneSignalNotification($user["telpon_user"],$content,$heading);
-                // }
-                //return $response->withJson(["status"=>"1","message"=>"Laporan berhasil dikonfirmasi"]);
+                $data=array(
+                    "page"=>"1",
+                    "id_laporan"=>$laporan["id_laporan"],
+                    "judul_laporan"=>$laporan["judul_laporan"],
+                    "jenis_laporan"=>$laporan["jenis_kejadian"],
+                    "alamat_laporan"=>$laporan["alamat_laporan"],
+                    "tanggal_laporan"=>$laporan["tanggal_laporan"],
+                    "waktu_laporan"=>$laporan["waktu_laporan"],
+                    "lat_laporan"=>$laporan["lat_laporan"],
+                    "lng_laporan"=>$laporan["lng_laporan"],
+                    "deskripsi_laporan"=>$laporan["deskripsi_kejadian"],
+                    "tag"=>"kriminalitas",
+                    "id_user_pelapor"=>$laporan["id_user_pelapor"],
+                    "nama_user_pelapor"=>$laporan["nama_user_pelapor"],
+                    "status_laporan"=>$laporan["status_laporan"],
+                    "thumbnail_gambar"=>$laporan["thumbnail_gambar"],
+                );
+                foreach($result as $user){
+                    sendOneSignalNotification($user["telpon_user"],$content,$heading,$data);
+                }
+                return $response->withJson(["status"=>"1","message"=>"Laporan berhasil dikonfirmasi"]);
             }else{
                 return $response->withJson(["status"=>"400","message"=>"Laporan gagal dikonfirmasi"]);
             }
@@ -832,7 +851,6 @@ return function (App $app) {
         $app->get('/getPendingContactRequest/{id_user}', function($request, $response, $args){
             $id_user=$args["id_user"];
             $sql="SELECT dkd.id_daftar_kontak, u.id_user,u.nama_user,u.telpon_user from daftar_kontak_darurat dkd, user u where dkd.id_user_2=".$id_user." and dkd.status_relasi=0 and dkd.id_user_1=u.id_user";
-            //$sql="SELECT * from user where id_user in (SELECT id_user_1 FROM daftar_kontak_darurat where id_user_2=".$id_user." and status_relasi=0)";
             $stmt = $this->db->prepare($sql);
             $stmt->execute();
             $result = $stmt->fetchAll();
@@ -1002,6 +1020,15 @@ return function (App $app) {
             }else{
                 return $response->withJson(["status" => "400", "message" => "Gagal menambah komentar"], 200);
             } 
+        });
+
+        $app->get('/getJumlahKonfirmasiLaporan/{id_laporan}',function ($request,$response,$args){
+            $id_laporan=$args["id_laporan"];
+            $sql="SELECT COUNT(*) FROM konfirmasi_laporan_kriminalitas WHERE id_laporan=:id_laporan";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([":id_laporan"=>$id_laporan]);
+            $result = $stmt->fetchColumn();
+            
         });
 
         $app->post('/konfirmasiLaporanKriminalitas',function ($request,$response){
