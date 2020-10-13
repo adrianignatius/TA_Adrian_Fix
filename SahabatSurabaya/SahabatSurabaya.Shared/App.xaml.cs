@@ -52,9 +52,9 @@ namespace SahabatSurabaya
             Dictionary<string, object> additionalData = payload.additionalData;
             string message = payload.body;
             string actionID = result.action.actionID;
-            //Frame rootFrame = Windows.UI.Xaml.Window.Current.Content as Frame;
-            //rootFrame.Navigate(typeof(ProfilePage));
-            var messaged = new MessageDialog("asd");
+            Frame rootFrame = Windows.UI.Xaml.Window.Current.Content as Frame;
+            rootFrame.Navigate(typeof(ProfilePage));
+            var messaged = new MessageDialog(result.notification.payload.title);
             await messaged.ShowAsync();
         }
 
