@@ -56,8 +56,8 @@
                         </StackPanel>
                         <WebView Name="webVieMapLokasi" Margin="0,12,0,0" Height="400"></WebView>
                         <StackPanel Name="stackKonfirmasiLaporan" Margin="0,10,0,0" Orientation="Horizontal">
-                            <TextBlock FontWeight="Bold" FontSize="16" Name="txtStatusKonfirmasiLaporan"></TextBlock>
-                            <TextBlock Margin="0,4,0,0" FontWeight="Bold" FontSize="16" Text="telah mengkonfirmasi kejadian ini"></TextBlock>
+                            <TextBlock FontWeight="Bold" FontSize="16" Name="txtJumlahKonfirmasiLaporan"></TextBlock>
+                            <TextBlock Margin="2,0,0,0" FontWeight="Bold" FontSize="16" Text=" orang telah mengkonfirmasi kejadian ini"></TextBlock>
                         </StackPanel>
                         <TextBlock Margin="0,10,0,0" FontSize="14" TextWrapping="Wrap" Name="txtAlamatLaporan"></TextBlock>
                         <StackPanel Name="stackComment">

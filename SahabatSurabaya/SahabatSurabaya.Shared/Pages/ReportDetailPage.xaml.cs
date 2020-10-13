@@ -36,6 +36,8 @@ namespace SahabatSurabaya.Shared.Pages
         {
             string responseData = await httpObject.GetRequestWithAuthorization("user/checkKonfirmasiLaporan?id_laporan=" + param.id_laporan + "&id_user=" + userLogin.id_user,session.getTokenAuthorization());
             JObject json = JObject.Parse(responseData);
+            var message = new MessageDialog(json["count"].ToString());
+            await message.ShowAsync();
             if (json["count"].ToString() == "0")
             {
                 btnKonfirmasi.IsEnabled = true;
@@ -53,7 +55,8 @@ namespace SahabatSurabaya.Shared.Pages
             string type = "";
             if (param.tag == "kriminalitas")
             {
-                txtStatusKonfirmasiLaporan.Text = param.jumlah_konfirmasi.ToString();
+                txtJumlahKonfirmasiLaporan.Text = param.jumlah_konfirmasi.ToString();
+                checkKonfirmasiLaporan();
             }
             else
             {
@@ -110,6 +113,7 @@ namespace SahabatSurabaya.Shared.Pages
                 var messageDialog = new MessageDialog(json["message"].ToString());
                 await messageDialog.ShowAsync();
                 btnKonfirmasi.IsEnabled = false;
+                txtJumlahKonfirmasiLaporan.Text = (Convert.ToInt32(txtJumlahKonfirmasiLaporan.Text) + 1).ToString();
             }
         }
 
@@ -177,8 +181,6 @@ namespace SahabatSurabaya.Shared.Pages
                 });
                 string responseData = await httpObject.PostRequestWithUrlEncoded("user/insertKomentarLaporan", content);
                 JObject json = JObject.Parse(responseData);
-                var messageDialog = new MessageDialog(json["message"].ToString());
-                await messageDialog.ShowAsync();
                 txtKomentar.Text = "";
                 loadKomentarLaporan();
             }
