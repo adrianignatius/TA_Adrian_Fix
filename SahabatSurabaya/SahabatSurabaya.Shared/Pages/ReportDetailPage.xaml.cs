@@ -34,7 +34,7 @@ namespace SahabatSurabaya.Shared.Pages
 
         private async void checkKonfirmasiLaporan()
         {
-            string responseData = await httpObject.GetRequestWithAuthorization("user/checkKonfirmasiLaporan?id_laporan=" + param.id_laporan + "&id_user=" + userLogin.id_user,session.getTokenAuthorization());
+            string responseData = await httpObject.GetRequestWithAuthorization("laporan/checkKonfirmasiLaporan?id_laporan=" + param.id_laporan + "&id_user=" + userLogin.id_user,session.getTokenAuthorization());
             JObject json = JObject.Parse(responseData);
             if (json["count"].ToString() == "0")
             {
@@ -106,7 +106,7 @@ namespace SahabatSurabaya.Shared.Pages
                     new KeyValuePair<string, string>("id_laporan", param.id_laporan),
                     new KeyValuePair<string, string>("id_user", userLogin.id_user.ToString())
                 });
-                string responseData = await httpObject.PostRequestWithUrlEncoded("user/konfirmasiLaporanKriminalitas", content);
+                string responseData = await httpObject.PostRequestWithUrlEncoded("laporan/konfirmasiLaporanKriminalitas", content);
                 JObject json = JObject.Parse(responseData);
                 var messageDialog = new MessageDialog(json["message"].ToString());
                 await messageDialog.ShowAsync();
@@ -139,7 +139,7 @@ namespace SahabatSurabaya.Shared.Pages
 
         public async void loadKomentarLaporan()
         {
-            string responseData = await httpObject.GetRequestWithAuthorization("getKomentarLaporan/" + param.id_laporan,session.getTokenAuthorization());
+            string responseData = await httpObject.GetRequestWithAuthorization("laporan/getKomentarLaporan/" + param.id_laporan,session.getTokenAuthorization());
             listKomentar = JsonConvert.DeserializeObject<ObservableCollection<KomentarLaporan>>(responseData);
             lvKomentarLaporan.ItemsSource = listKomentar;
         }
@@ -181,6 +181,8 @@ namespace SahabatSurabaya.Shared.Pages
                 });
                 string responseData = await httpObject.PostRequestWithUrlEncoded("user/insertKomentarLaporan", content);
                 JObject json = JObject.Parse(responseData);
+                var message = new MessageDialog(json["message"].ToString());
+                await message.ShowAsync();
                 txtKomentar.Text = "";
                 loadKomentarLaporan();
             }

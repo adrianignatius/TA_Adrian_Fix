@@ -481,6 +481,19 @@ return function (App $app) {
             $result = $stmt->fetchAll();
             return $response->withJson($result);
         });
+    })->add(function ($request, $response, $next) {
+        $headers = $request->getHeader("Authorization");
+        if($headers!=null){
+            $result = Token::validate($headers[0], $_ENV['JWT_SECRET']);
+            if($result==false){
+                return $response->withJson(["status"=>"400","message"=>"Token not valid"]);
+            }else{
+                $response = $next($request, $response);
+                return $response;
+            }         
+        }else{
+            return $response->withJson(["status"=>"404","message"=>"Token not found"]);
+        }
     });
 
     $app->group('/admin', function() use($app){
@@ -1233,6 +1246,19 @@ return function (App $app) {
                 return $response->withJson(["status" => "400"]);
             }
             });
+    })->add(function ($request, $response, $next) {
+        $headers = $request->getHeader("Authorization");
+        if($headers!=null){
+            $result = Token::validate($headers[0], $_ENV['JWT_SECRET']);
+            if($result==false){
+                return $response->withJson(["status"=>"400","message"=>"Token not valid"]);
+            }else{
+                $response = $next($request, $response);
+                return $response;
+            }         
+        }else{
+            return $response->withJson(["status"=>"404","message"=>"Token not found"]);
+        }
     });
     
         $app->get('/[{name}]', function (Request     $request, Response $response, array $args) use ($container) {
