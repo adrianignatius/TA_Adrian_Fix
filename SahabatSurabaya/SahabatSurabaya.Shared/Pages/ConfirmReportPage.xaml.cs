@@ -127,7 +127,6 @@ namespace SahabatSurabaya.Shared.Pages
             }
             JObject json = JObject.Parse(responseData);
             var message = new MessageDialog(json["message"].ToString());
-            await message.ShowAsync();
             if (json["status"].ToString() == "1")
             {
                 this.Frame.Navigate(typeof(HomeNavigationPage));
