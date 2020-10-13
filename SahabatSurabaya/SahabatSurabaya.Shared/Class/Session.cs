@@ -4,12 +4,13 @@ using System.Runtime.ConstrainedExecution;
 using System.Text;
 using System.Dynamic;
 using SahabatSurabaya.Shared;
+using SahabatSurabaya.Shared.Class;
 
 namespace SahabatSurabaya
 {
     class Session
     {
-       
+        public static FilterParams filterParams { get; set; }
         public static ConfirmReportParams confirmReportParam { get; set; }
         public static string allReportParam { get; set; }
 
@@ -29,6 +30,16 @@ namespace SahabatSurabaya
         public readonly static string URL_WEBVIEW = "http://adrian-webview.ta-istts.com/";
         public readonly static string URL_ASSETS = "http://adrian-assets.ta-istts.com/";
         public readonly static string URL_GAMBAR_LAPORAN = "http://adrian-webservice.ta-istts.com/public/uploads/";
+
+        public FilterParams getFilterParams()
+        {
+            return filterParams;
+        }
+
+        public void setFilterParams(FilterParams param)
+        {
+            filterParams = param;
+        }
 
         public void setTokenAuthorization(string token)
         {

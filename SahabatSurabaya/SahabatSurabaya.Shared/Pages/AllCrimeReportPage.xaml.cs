@@ -65,5 +65,10 @@ namespace SahabatSurabaya.Shared.Pages
             }
             lvLaporanKriminalitas.ItemsSource = listLaporanKriminalitas;
         }
+
+        private void goToFilterPage(object sender, RoutedEventArgs e)
+        {
+            this.Frame.Navigate(typeof(FilterPage));
+        }
     }
 }

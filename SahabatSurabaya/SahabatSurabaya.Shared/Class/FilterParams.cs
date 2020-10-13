@@ -27,5 +27,35 @@ namespace SahabatSurabaya.Shared.Class
             this.list_id_barang = listIdBarang;
             this.list_id_kecamatan = listIdKecamatan;
         }
+
+        public string getArrayJenisLaporan()
+        {
+            string s = "";
+            for (int i = 0; i < list_jenis_laporan.Count; i++)
+            {
+                s += list_jenis_laporan[i].ToString() + ",";
+            }
+            return s.Remove(s.Length - 1);
+        }
+
+        public string getArrayIdKecamatan()
+        {
+            string s = "";
+            for (int i = 0; i < list_id_kecamatan.Count; i++)
+            {
+                s += list_id_kecamatan[i].ToString() + ",";
+            }
+            return s.Remove(s.Length - 1);
+        }
+
+        public string getArrayIdBarang()
+        {
+            string s = "";
+            for (int i = 0; i < list_id_barang.Count; i++)
+            {
+                s += list_id_barang[i].ToString() + ",";
+            }
+            return s.Remove(s.Length - 1);
+        }
     }
 }

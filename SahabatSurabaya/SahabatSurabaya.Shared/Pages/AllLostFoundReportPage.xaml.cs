@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using SahabatSurabaya.Shared.Class;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -7,6 +8,7 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -38,7 +40,6 @@ namespace SahabatSurabaya.Shared.Pages
 
         private void pageLoaded(object sender,RoutedEventArgs e)
         {
-            loadLaporanLostFound();
         }
 
         private void Back_Click(object sender, RoutedEventArgs e)
@@ -66,6 +67,36 @@ namespace SahabatSurabaya.Shared.Pages
                 svListView.Visibility = Visibility.Collapsed;
             }
             lvLaporanLostFound.ItemsSource = listLaporanLostFound;
+        }
+
+        private void goToFilterPage(object sender,RoutedEventArgs e)
+        {
+            this.Frame.Navigate(typeof(FilterPage));
+        }
+
+        protected async override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+            var entry = this.Frame.BackStack.LastOrDefault();
+            if (entry.SourcePageType == typeof(FilterPage))
+            {
+                FilterParams param = session.getFilterParams();
+                this.Frame.BackStack.RemoveAt(this.Frame.BackStackDepth - 1);
+                this.Frame.BackStack.RemoveAt(this.Frame.BackStackDepth - 1);
+                string reqUri = "laporan/getLaporanLostFoundWithFilter?tanggal_awal=" + param.tanggal_awal + "&tanggal_akhir=" + param.tanggal_akhir + "&jenis_laporan=" + param.getArrayJenisLaporan() + "&id_barang=" + param.getArrayIdBarang() + "&id_kecamatan=" + param.getArrayIdKecamatan();
+                string responseData = await httpObject.GetRequestWithAuthorization("laporan/getLaporanLostFoundWithFilter", session.getTokenAuthorization());
+                listLaporanLostFound = JsonConvert.DeserializeObject<ObservableCollection<LaporanLostFound>>(responseData);
+                if (listLaporanLostFound.Count == 0)
+                {
+                    stackEmpty.Visibility = Visibility.Visible;
+                    svListView.Visibility = Visibility.Collapsed;
+                }
+                lvLaporanLostFound.ItemsSource = listLaporanLostFound;
+            }
+            else
+            {
+                loadLaporanLostFound();
+            }
         }
     }
 }

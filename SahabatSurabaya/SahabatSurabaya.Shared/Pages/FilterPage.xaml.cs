@@ -35,7 +35,7 @@ namespace SahabatSurabaya.Shared.Pages
 
         private async void pageLoaded(object sender,RoutedEventArgs e)
         {
-            string responseData = await httpObject.GetRequest("getKecamatan");
+            string responseData = await httpObject.GetRequest("settings/getKecamatan");
             listKecamatan = JsonConvert.DeserializeObject<ObservableCollection<Kecamatan>>(responseData);
             gvKecamatan.ItemsSource = listKecamatan;
             dtTanggalAwal.MaxYear = new DateTime(2023, 12, 31);
@@ -46,16 +46,13 @@ namespace SahabatSurabaya.Shared.Pages
 
         private void Back_Click(object sender, RoutedEventArgs e)
         {
-            FilterParams param = new FilterParams(0, null,null,null,null,null);
-            this.Frame.Navigate(typeof(AllReportPage),param);
+            this.Frame.GoBack();
         }
 
         private async void setFilter(object sender,RoutedEventArgs e)
         {
             if (validateInput() == true)
             {
-                var messagesd = new MessageDialog(listJenisLaporan.Count.ToString());
-                await messagesd.ShowAsync();
                 DateTime tanggal_awal = dtTanggalAwal.Date.DateTime;
                 DateTime tanggal_akhir = dtTanggalAkhir.Date.DateTime;
                 List<int> listIdKecamatanSelected = new List<int>();
@@ -63,23 +60,24 @@ namespace SahabatSurabaya.Shared.Pages
                 {
                     listIdKecamatanSelected.Add(listKecamatanSelected[i].id_kecamatan);
                 }
-                FilterParams param = new FilterParams(1,tanggal_awal.ToString("yyyy-MM-dd"), tanggal_akhir.ToString("yyyy-MM-dd"), listJenisLaporan, listIdBarangSelected, listIdKecamatanSelected);
-                this.Frame.Navigate(typeof(AllReportPage), param);
+                FilterParams param = new FilterParams(1, tanggal_awal.ToString("yyyy-MM-dd"), tanggal_akhir.ToString("yyyy-MM-dd"), listJenisLaporan, listIdBarangSelected, listIdKecamatanSelected);
+                session.setFilterParams(param);
+                this.Frame.Navigate(typeof(AllLostFoundReportPage));
+                
                 //string json = JsonConvert.SerializeObject(param, Formatting.Indented);
                 //using (var client = new HttpClient())
                 //{
-                //    var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
                 //    client.BaseAddress = new Uri("http://localhost:8080/");
-                //    HttpResponseMessage result = await client.PostAsync("getLaporanLostFoundWithFilter", content);
+                //    client.DefaultRequestHeaders.Add("Authorization", session.getTokenAuthorization());
+                //    HttpResponseMessage result = await client.GetAsync("laporan/getLaporanLostFoundWithFilter?tanggal_awal=" + tanggal_awal.ToString("yyyy-MM-dd") + "&tanggal_akhir=" + tanggal_akhir.ToString("yyyy-MM-dd")+"&jenis_laporan="+param.getArrayJenisLaporan()+"&id_barang="+param.getArrayIdBarang()+"&id_kecamatan="+param.getArrayIdKecamatan());
                 //    if (result.IsSuccessStatusCode)
                 //    {
                 //        var responseData = result.Content.ReadAsStringAsync().Result;
                 //        var message = new MessageDialog(responseData);
                 //        await message.ShowAsync();
                 //    }
-
                 //}
-            }
+                }
             else
             {
                 var messageDialog = new MessageDialog("Harap isi semua kriteria yang dibutuhkan untuk pencarian");
