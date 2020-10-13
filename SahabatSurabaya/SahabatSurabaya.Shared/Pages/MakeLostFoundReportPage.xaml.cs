@@ -95,7 +95,7 @@ namespace SahabatSurabaya.Shared.Pages
 
         private async void setComboBoxKategoriLostFound()
         {
-            string responseData = await httpObject.GetRequest("getKategoriLostFound");
+            string responseData = await httpObject.GetRequest("settings/getKategoriLostFound");
             listSettingKategoriLostFound = JsonConvert.DeserializeObject<ObservableCollection<SettingKategori>>(responseData);
             cbJenisBarang.ItemsSource = listSettingKategoriLostFound;
             cbJenisBarang.DisplayMemberPath = "nama_kategori";
@@ -155,7 +155,7 @@ namespace SahabatSurabaya.Shared.Pages
             {
                 if (imageLaporan != null)
                 {
-                    string responseData = await httpObject.GetRequest("checkKecamatanAvailable?lat=" + lat + "&lng=" + lng);
+                    string responseData = await httpObject.GetRequest("settings/checkKecamatanAvailable?lat=" + lat + "&lng=" + lng);
                     JObject json = JObject.Parse(responseData);
                     if (json["status"].ToString() == "1"){
                         int jenisLaporan = (bool)rbLostItem.IsChecked ? 1 : 0;

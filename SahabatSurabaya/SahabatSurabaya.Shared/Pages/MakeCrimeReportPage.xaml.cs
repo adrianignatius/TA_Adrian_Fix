@@ -129,7 +129,7 @@ namespace SahabatSurabaya.Shared.Pages
 
         private async void setComboBoxKategoriKriminalitas()
         {
-            string responseData = await httpObject.GetRequest("getKategoriKriminalitas");
+            string responseData = await httpObject.GetRequest("settings/getKategoriKriminalitas");
             listSetingKategoriKriminalitas = JsonConvert.DeserializeObject<ObservableCollection<SettingKategori>>(responseData);
             cbJenisKejadian.ItemsSource = listSetingKategoriKriminalitas;
             cbJenisKejadian.DisplayMemberPath = "nama_kategori";
@@ -179,7 +179,7 @@ namespace SahabatSurabaya.Shared.Pages
             }
             else
             {
-                string responseData = await httpObject.GetRequest("checkKecamatanAvailable?lat="+lat+"&lng="+lng);
+                string responseData = await httpObject.GetRequest("settings/checkKecamatanAvailable?lat=" + lat+"&lng="+lng);
                 JObject json = JObject.Parse(responseData);
                 if (json["status"].ToString() == "1"){
                     string judulLaporan = txtJudulLaporan.Text;

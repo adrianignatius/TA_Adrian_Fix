@@ -65,7 +65,7 @@ namespace SahabatSurabaya.Shared.Pages
                     new KeyValuePair<string, string>("telpon_user", txtNoHandphone.Text),
                     new KeyValuePair<string, string>("password_user", txtPassword.Password),
                 });
-                string responseData = await httpObject.PostRequestWithUrlEncoded("user/checkLogin", content);
+                string responseData = await httpObject.PostRequestWithUrlEncoded("checkLogin", content);
                 JObject json = JObject.Parse(responseData);
                 string statusCode = json["status"].ToString();
                 if (statusCode == "200")

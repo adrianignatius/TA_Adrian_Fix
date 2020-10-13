@@ -88,9 +88,9 @@ namespace SahabatSurabaya.Shared.Pages
             {
                 txtStatusUser.Text = "Free Account";
             }
-            string responseData = await httpObject.GetRequestWithAuthorization("/getHeadlineLaporanKriminalitas",session.getTokenAuthorization());
+            string responseData = await httpObject.GetRequestWithAuthorization("laporan/getHeadlineLaporanKriminalitas",session.getTokenAuthorization());
             listLaporanKriminalitas = JsonConvert.DeserializeObject<ObservableCollection<LaporanKriminalitas>>(responseData);
-            responseData = await httpObject.GetRequestWithAuthorization("/getHeadlineLaporanLostFound",session.getTokenAuthorization());
+            responseData = await httpObject.GetRequestWithAuthorization("laporan/getHeadlineLaporanLostFound", session.getTokenAuthorization());
             listLaporanLostFound = JsonConvert.DeserializeObject<ObservableCollection<LaporanLostFound>>(responseData);
 #if __ANDROID__
             lvHeadline.ItemsSource = listLaporanLostFound;
@@ -109,37 +109,6 @@ namespace SahabatSurabaya.Shared.Pages
             lvLaporanKriminalitas.ItemsSource = listLaporanKriminalitas;
             lvLaporanLostFound.ItemsSource = listLaporanLostFound;
 #endif 
-        }
-
-        private async void sendEmergencyChat(User u, string address)
-        {
-            string message = "Saya sedang dalam keadaan darurat! Lokasi terakhir saya di " + address;
-            string responseData=await httpObject.GetRequestWithAuthorization("checkHeaderChat/" + userLogin.id_user + "/" + u.id_user,session.getTokenAuthorization());
-            JObject json = JObject.Parse(responseData);
-            var content = new FormUrlEncodedContent(new[]{
-                new KeyValuePair<string, string>("id_chat", json["id_chat"].ToString()),
-                new KeyValuePair<string, string>("id_user_pengirim", userLogin.id_user.ToString()),
-                new KeyValuePair<string, string>("id_user_penerima", u.id_user.ToString()),
-                new KeyValuePair<string, string>("isi_chat", message),
-            });
-            await httpObject.PostRequestUrlEncodedWithAuthorization("insertDetailChat", content,session.getTokenAuthorization());
-            //using (var client=new HttpClient())
-            //{
-            //    client.BaseAddress = new Uri(session.getApiURL());
-            //    client.DefaultRequestHeaders.Accept.Clear();
-            //    HttpResponseMessage response = await client.GetAsync("checkHeaderChat/" + userLogin.id_user+"/"+u.id_user);
-            //    if (response.IsSuccessStatusCode)
-            //    {
-            //        var responseData = response.Content.ReadAsStringAsync().Result;
-            //        JObject json = JObject.Parse(responseData);  
-            //        MultipartFormDataContent form = new MultipartFormDataContent();
-            //        form.Add(new StringContent(json["id_chat"].ToString()), "id_chat");
-            //        form.Add(new StringContent(userLogin.id_user.ToString()), "id_user_pengirim");
-            //        form.Add(new StringContent(u.id_user.ToString()), "id_user_penerima");
-            //        form.Add(new StringContent(content), "isi_chat");
-            //        await client.PostAsync("insertDetailChat", form);
-            //    }
-            //}
         }
 
 #if __ANDROID__
@@ -223,6 +192,37 @@ namespace SahabatSurabaya.Shared.Pages
             //        await message.ShowAsync();
             //    }
             //}
+
+            private async void sendEmergencyChat(User u, string address)
+            {
+                string message = "Saya sedang dalam keadaan darurat! Lokasi terakhir saya di " + address;
+                string responseData = await httpObject.GetRequestWithAuthorization("user/checkHeaderChat?id_user_1=" + userLogin.id_user + "&id_user_2=" + u.id_user, session.getTokenAuthorization());
+                JObject json = JObject.Parse(responseData);
+                var content = new FormUrlEncodedContent(new[]{
+                    new KeyValuePair<string, string>("id_chat", json["id_chat"].ToString()),
+                    new KeyValuePair<string, string>("id_user_pengirim", userLogin.id_user.ToString()),
+                    new KeyValuePair<string, string>("id_user_penerima", u.id_user.ToString()),
+                    new KeyValuePair<string, string>("isi_chat", message),
+                });
+                responseData = await httpObject.PostRequestUrlEncodedWithAuthorization("user/insertDetailChat", content, session.getTokenAuthorization());
+                //using (var client=new HttpClient())
+                //{
+                //    client.BaseAddress = new Uri(session.getApiURL());
+                //    client.DefaultRequestHeaders.Accept.Clear();
+                //    HttpResponseMessage response = await client.GetAsync("checkHeaderChat/" + userLogin.id_user+"/"+u.id_user);
+                //    if (response.IsSuccessStatusCode)
+                //    {
+                //        var responseData = response.Content.ReadAsStringAsync().Result;
+                //        JObject json = JObject.Parse(responseData);  
+                //        MultipartFormDataContent form = new MultipartFormDataContent();
+                //        form.Add(new StringContent(json["id_chat"].ToString()), "id_chat");
+                //        form.Add(new StringContent(userLogin.id_user.ToString()), "id_user_pengirim");
+                //        form.Add(new StringContent(u.id_user.ToString()), "id_user_penerima");
+                //        form.Add(new StringContent(content), "isi_chat");
+                //        await client.PostAsync("insertDetailChat", form);
+                //    }
+            //}
+        }
         }
 #endif
 

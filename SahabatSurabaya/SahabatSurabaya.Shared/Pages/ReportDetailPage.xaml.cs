@@ -36,8 +36,6 @@ namespace SahabatSurabaya.Shared.Pages
         {
             string responseData = await httpObject.GetRequestWithAuthorization("user/checkKonfirmasiLaporan?id_laporan=" + param.id_laporan + "&id_user=" + userLogin.id_user,session.getTokenAuthorization());
             JObject json = JObject.Parse(responseData);
-            var message = new MessageDialog(json["count"].ToString());
-            await message.ShowAsync();
             if (json["count"].ToString() == "0")
             {
                 btnKonfirmasi.IsEnabled = true;
@@ -148,7 +146,9 @@ namespace SahabatSurabaya.Shared.Pages
 
         private async void shareLaporan(object sender, RoutedEventArgs e)
         {
-            string message = "Terdapat laporan tentang " + param.jenis_laporan + " yang terjadi pada tanggal " + param.tanggal_laporan;
+            DateTime dt = DateTime.Parse(param.tanggal_laporan);
+            string tanggal_format=dt.ToString("dd MMMM yyyy", new System.Globalization.CultureInfo("id-ID"));
+            string message = "Terdapat laporan tentang " + param.jenis_laporan + " yang terjadi pada tanggal " + tanggal_format;
             message = param.tag == "kriminalitas" ? message += " yang terjadi di " + param.alamat_laporan : message += ". Lokasi terakhir barang ada di " + param.alamat_laporan;
             await Share.RequestAsync(new ShareTextRequest
             {
