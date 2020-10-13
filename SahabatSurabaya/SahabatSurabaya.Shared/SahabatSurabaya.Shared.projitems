@@ -19,6 +19,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Helper\ChatAlignmentConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helper\ChatBackgroundConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helper\DatetimeConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helper\IconVisibilityConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helper\ImageLaporanConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helper\ImageSourceKantorPolisiConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helper\StatusLaporanColorConverter.cs" />

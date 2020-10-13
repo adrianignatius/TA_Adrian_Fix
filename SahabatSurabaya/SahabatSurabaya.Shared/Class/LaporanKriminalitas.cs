@@ -6,6 +6,7 @@ namespace SahabatSurabaya
 {
     class LaporanKriminalitas
     {
+        public int kategori_laporan { get; set; }
         public string id_laporan { get; set; }
 
         public string judul_laporan { get; set; }
@@ -30,12 +31,15 @@ namespace SahabatSurabaya
 
         public int jumlah_komentar { get; set; }
 
+        public int jumlah_konfirmasi { get; set; }
+
         public string thumbnail_gambar { get; set; }
 
         public int status_laporan { get; set; }
 
-        public LaporanKriminalitas(string id_laporan, string judul_laporan, string jenis_kejadian, string deskripsi_kejadian, string tanggal_laporan, string waktu_laporan, string alamat_laporan, string lat_laporan, string lng_laporan, int id_user_pelapor, string nama_user_pelapor, int jumlah_komentar, string thumbnail_gambar, int status_laporans)
+        public LaporanKriminalitas(int kategori_laporan, string id_laporan, string judul_laporan, string jenis_kejadian, string deskripsi_kejadian, string tanggal_laporan, string waktu_laporan, string alamat_laporan, string lat_laporan, string lng_laporan, int id_user_pelapor, string nama_user_pelapor, int jumlah_komentar, int jumlah_konfirmasi, string thumbnail_gambar, int status_laporan)
         {
+            this.kategori_laporan = kategori_laporan;
             this.id_laporan = id_laporan;
             this.judul_laporan = judul_laporan;
             this.jenis_kejadian = jenis_kejadian;
@@ -48,6 +52,7 @@ namespace SahabatSurabaya
             this.id_user_pelapor = id_user_pelapor;
             this.nama_user_pelapor = nama_user_pelapor;
             this.jumlah_komentar = jumlah_komentar;
+            this.jumlah_konfirmasi = jumlah_konfirmasi;
             this.thumbnail_gambar = thumbnail_gambar;
             this.status_laporan = status_laporan;
         }

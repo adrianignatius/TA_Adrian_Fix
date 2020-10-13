@@ -179,7 +179,7 @@ return function (App $app) {
     //     return $response->withJson($result);
     // });
     $app->get('/getHeadlineLaporanKriminalitas', function ($request, $response) {
-        $sql = "SELECT lk.id_laporan,lk.judul_laporan,skk.nama_kategori AS jenis_kejadian,lk.deskripsi_kejadian,lk.tanggal_laporan,lk.waktu_laporan,lk.alamat_laporan,lk.lat_laporan,lk.lng_laporan,lk.id_user_pelapor,u.nama_user AS nama_user_pelapor,lk.status_laporan, COUNT(kl.id_laporan) AS jumlah_komentar,COUNT(klk.id_laporan) AS jumlah_konfirmasi,lk.thumbnail_gambar AS thumbnail_gambar FROM user u 
+        $sql = "SELECT 0 AS kategori_laporan,lk.id_laporan,lk.judul_laporan,skk.nama_kategori AS jenis_kejadian,lk.deskripsi_kejadian,lk.tanggal_laporan,lk.waktu_laporan,lk.alamat_laporan,lk.lat_laporan,lk.lng_laporan,lk.id_user_pelapor,u.nama_user AS nama_user_pelapor,lk.status_laporan, COUNT(kl.id_laporan) AS jumlah_komentar,COUNT(klk.id_laporan) AS jumlah_konfirmasi,lk.thumbnail_gambar AS thumbnail_gambar FROM user u 
                 JOIN laporan_kriminalitas lk ON lk.id_user_pelapor=u.id_user 
                 LEFT JOIN komentar_laporan kl ON lk.id_laporan=kl.id_laporan 
                 LEFT JOIN konfirmasi_laporan_kriminalitas klk ON lk.id_laporan=klk.id_laporan 
@@ -192,7 +192,7 @@ return function (App $app) {
     });
 
     $app->get('/getHeadlineLaporanLostFound', function ($request, $response) {
-        $sql = "SELECT lf.id_laporan,lf.judul_laporan,lf.jenis_laporan,skl.nama_kategori AS jenis_barang,lf.tanggal_laporan,lf.waktu_laporan,lf.alamat_laporan,lf.lat_laporan,lf.lng_laporan,lf.deskripsi_barang,lf.deskripsi_barang,lf.id_user_pelapor,u.nama_user AS nama_user_pelapor,lf.status_laporan, COUNT(kl.id_laporan) AS jumlah_komentar,lf.thumbnail_gambar AS thumbnail_gambar FROM laporan_lostfound_barang lf 
+        $sql = "SELECT 1 as kategori_laporan,lf.id_laporan,lf.judul_laporan,lf.jenis_laporan,skl.nama_kategori AS jenis_barang,lf.tanggal_laporan,lf.waktu_laporan,lf.alamat_laporan,lf.lat_laporan,lf.lng_laporan,lf.deskripsi_barang,lf.deskripsi_barang,lf.id_user_pelapor,u.nama_user AS nama_user_pelapor,lf.status_laporan, COUNT(kl.id_laporan) AS jumlah_komentar,lf.thumbnail_gambar AS thumbnail_gambar FROM laporan_lostfound_barang lf 
                 JOIN user u ON lf.id_user_pelapor=u.id_user 
                 LEFT JOIN komentar_laporan kl ON lf.id_laporan=kl.id_laporan
                 JOIN setting_kategori_lostfound skl on skl.id_kategori=lf.id_kategori_barang
