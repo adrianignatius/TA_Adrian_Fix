@@ -26,6 +26,7 @@ namespace SahabatSurabaya
 {
     sealed partial class Application : Windows.UI.Xaml.Application
     {
+
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
         /// executed, and as such is the logical equivalent of main() or WinMain().
@@ -70,7 +71,14 @@ namespace SahabatSurabaya
                     string tag = additionalData["tag"].ToString();
                     string thumbnail_gambar = additionalData["thumbnail_gambar"].ToString();
                     int status_laporan = Convert.ToInt32(additionalData["status_laporan"].ToString());
-                    ReportDetailPageParams param = new ReportDetailPageParams(id_user_pelapor, nama_user_pelapor, id_laporan, alamat_laporan, tanggal_laporan, waktu_laporan, judul_laporan, jenis_laporan, deskripsi_laporan, lat_laporan, lng_laporan, tag, thumbnail_gambar, status_laporan);
+                    int? jumlah_konfirmasi = 0;
+                    if (tag == "kriminalitas"){
+                        jumlah_konfirmasi = Convert.ToInt32(additionalData["jumlah_konfirmasi"].ToString());
+                    }
+                    else{
+                        jumlah_konfirmasi = null;
+                    }
+                    ReportDetailPageParams param = new ReportDetailPageParams(id_user_pelapor, nama_user_pelapor, id_laporan, alamat_laporan, tanggal_laporan, waktu_laporan, judul_laporan, jenis_laporan, deskripsi_laporan, lat_laporan, lng_laporan, tag, thumbnail_gambar, status_laporan,jumlah_konfirmasi);
                     session.setReportDetailPageParams(param);
                     rootFrame.Navigate(typeof(ReportDetailPage));
                 }

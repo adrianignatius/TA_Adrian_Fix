@@ -342,9 +342,10 @@ return function (App $app) {
             $stmt = $this->db->prepare($sql);
             $stmt->execute(["id_laporan"=>$id_laporan]);
             if($stmt->execute()){
-                $sql="SELECT lk.id_laporan,lk.judul_laporan,lk.tanggal_laporan,lk.waktu_laporan,lk.alamat_laporan,lk.deskripsi_kejadian,lk.thumbnail_gambar,lk.lat_laporan,lk.lng_laporan,lk.alamat_laporan,lk.id_user_pelapor,lk.status_laporan,u.nama_user 
-                    AS nama_user_pelapor,skk.nama_kategori AS jenis_kejadian,lk.id_kecamatan
-                    FROM laporan_kriminalitas lk,setting_kategori_kriminalitas skk,user u WHERE lk.id_laporan=:id_laporan AND lk.id_kategori_kejadian=skk.id_kategori AND lk.id_user_pelapor=u.id_user";
+                $sql="SELECT lk.id_laporan,lk.judul_laporan,lk.tanggal_laporan,lk.waktu_laporan,lk.alamat_laporan,lk.deskripsi_kejadian,lk.thumbnail_gambar,lk.lat_laporan,lk.lng_laporan,lk.alamat_laporan,lk.id_user_pelapor,lk.status_laporan,u.nama_user AS nama_user_pelapor,
+                     skk.nama_kategori AS jenis_kejadian,lk.id_kecamatan,COUNT(klk.id_laporan) AS jumlah_konfirmasi 
+                     FROM laporan_kriminalitas lk LEFT JOIN konfirmasi_laporan_kriminalitas klk ON klk.id_laporan=lk.id_laporan 
+                     JOIN setting_kategori_kriminalitas skk ON lk.id_kategori_kejadian=skk.id_kategori JOIN user u ON lk.id_user_pelapor=u.id_user WHERE lk.id_laporan=:id_laporan";
                 //$sql="SELECT lk.lat_laporan,lk.lng_laporan,lk.alamat_laporan,skk.nama_kategori AS jenis_kejadian,lk.id_kecamatan FROM laporan_kriminalitas lk,setting_kategori_kriminalitas skk WHERE lk.id_laporan=:id_laporan AND lk.id_kategori_kejadian=skk.id_kategori;";
                 $stmt= $this->db->prepare($sql);
                 $stmt->execute(["id_laporan"=>$id_laporan]);
@@ -376,6 +377,7 @@ return function (App $app) {
                     "nama_user_pelapor"=>$laporan["nama_user_pelapor"],
                     "status_laporan"=>$laporan["status_laporan"],
                     "thumbnail_gambar"=>$laporan["thumbnail_gambar"],
+                    "jumlah_konfirmasi"=>$laporan["jumlah_konfirmasi"]
                 );
                 foreach($result as $user){
                     sendOneSignalNotification($user["telpon_user"],$content,$heading,$data);
@@ -1028,7 +1030,7 @@ return function (App $app) {
             $stmt = $this->db->prepare($sql);
             $stmt->execute([":id_laporan"=>$id_laporan]);
             $result = $stmt->fetchColumn();
-            
+            return $response->withJson(["status"=>"1","count"=>$result]);
         });
 
         $app->post('/konfirmasiLaporanKriminalitas',function ($request,$response){

@@ -17,7 +17,6 @@ using Xamarin.Essentials;
 
 namespace SahabatSurabaya.Shared.Pages
 {
-
     public sealed partial class ReportDetailPage : Page
     {
         ReportDetailPageParams param;
@@ -54,13 +53,13 @@ namespace SahabatSurabaya.Shared.Pages
             string type = "";
             if (param.tag == "kriminalitas")
             {
-                type = "2";
-                checkKonfirmasiLaporan();
+                txtStatusKonfirmasiLaporan.Text = param.jumlah_konfirmasi.ToString();
             }
             else
             {
                 btnKonfirmasi.Visibility = Visibility.Collapsed;
                 type = param.tag == "Penemuan barang" ? "0":"1";
+                stackKonfirmasiLaporan.Visibility = Visibility.Collapsed;
             }
             if ((userLogin.id_user == param.id_user_pelapor) || (userLogin.status_user==2))
             {
