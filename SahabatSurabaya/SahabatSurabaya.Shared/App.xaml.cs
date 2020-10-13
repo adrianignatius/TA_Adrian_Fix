@@ -50,12 +50,33 @@ namespace SahabatSurabaya
             Session session = new Session();
             OSNotificationPayload payload = result.notification.payload;
             Dictionary<string, object> additionalData = payload.additionalData;
-            string message = payload.body;
-            string actionID = result.action.actionID;
-            Frame rootFrame = Windows.UI.Xaml.Window.Current.Content as Frame;
-            rootFrame.Navigate(typeof(ProfilePage));
-            var messaged = new MessageDialog(result.notification.payload.title);
-            await messaged.ShowAsync();
+            if (additionalData != null)
+            {
+                Frame rootFrame = Windows.UI.Xaml.Window.Current.Content as Frame;
+                string page = additionalData["page"].ToString();
+                if (page == "1")
+                {
+                    int id_user_pelapor = Convert.ToInt32(additionalData["id_user_pelapor"].ToString());
+                    string nama_user_pelapor = additionalData["nama_user_pelapor"].ToString();
+                    string id_laporan = additionalData["id_laporan"].ToString();
+                    string alamat_laporan = additionalData["alamat_laporan"].ToString();
+                    string tanggal_laporan = additionalData["tanggal_laporan"].ToString();
+                    string waktu_laporan = additionalData["waktu_laporan"].ToString();
+                    string judul_laporan = additionalData["judul_laporan"].ToString();
+                    string jenis_laporan = additionalData["jenis_laporan"].ToString();
+                    string deskripsi_laporan = additionalData["deskripsi_laporan"].ToString();
+                    string lat_laporan = additionalData["lat_laporan"].ToString();
+                    string lng_laporan = additionalData["lng_laporan"].ToString();
+                    string tag = additionalData["tag"].ToString();
+                    string thumbnail_gambar = additionalData["thumbnail_gambar"].ToString();
+                    int status_laporan = Convert.ToInt32(additionalData["status_laporan"].ToString());
+                    ReportDetailPageParams param = new ReportDetailPageParams(id_user_pelapor, nama_user_pelapor, id_laporan, alamat_laporan, tanggal_laporan, waktu_laporan, judul_laporan, jenis_laporan, deskripsi_laporan, lat_laporan, lng_laporan, tag, thumbnail_gambar, status_laporan);
+                    session.setReportDetailPageParams(param);
+                    rootFrame.Navigate(typeof(ReportDetailPage));
+                }
+            }
+            
+            
         }
 
         /// <summary>

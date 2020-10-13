@@ -27,13 +27,14 @@ function getKecamatan($lat,$lng){
     return $kecamatan;
 }
 
-function sendOneSignalNotification($number,$content,$heading){
+function sendOneSignalNotification($number,$content,$heading,$data){
     $curl = curl_init();
     $fields = array(
         'app_id' => "6fd226ba-1d41-4c7b-9f8b-a973a8fd436b",
         'filters' => array(array("field" => "tag", "key" => "no_handphone", "relation" => "=", "value" => $number)),
         'contents' => $content,
-        'headings' => $heading
+        'headings' => $heading,
+        'data'=>$data
     );
     $fields = json_encode($fields);
     $ch = curl_init();
@@ -182,6 +183,7 @@ return function (App $app) {
                 JOIN laporan_kriminalitas lk ON lk.id_user_pelapor=u.id_user 
                 LEFT JOIN komentar_laporan kl ON lk.id_laporan=kl.id_laporan
                 JOIN setting_kategori_kriminalitas skk on skk.id_kategori=lk.id_kategori_kejadian
+                WHERE lk.status_laporan=1
                 GROUP BY lk.id_laporan ORDER BY lk.tanggal_laporan DESC, lk.waktu_laporan DESC LIMIT 5";
         $stmt = $this->db->prepare($sql);
         $stmt->execute();
@@ -194,6 +196,7 @@ return function (App $app) {
                 JOIN user u ON lf.id_user_pelapor=u.id_user 
                 LEFT JOIN komentar_laporan kl ON lf.id_laporan=kl.id_laporan
                 JOIN setting_kategori_lostfound skl on skl.id_kategori=lf.id_kategori_barang
+                WHERE lf.status_laporan=1
                 GROUP BY lf.id_laporan 
                 ORDER BY lf.tanggal_laporan DESC, lf.waktu_laporan DESC LIMIT 5";
         $stmt = $this->db->prepare($sql);
@@ -282,7 +285,9 @@ return function (App $app) {
             $stmt = $this->db->prepare($sql);
             $stmt->execute(["id_laporan"=>$id_laporan]);
             if($stmt->execute()){
-                $sql="SELECT lf.lat_laporan,lf.lng_laporan,lf.jenis_laporan,lf.alamat_laporan,skl.nama_kategori AS jenis_barang FROM laporan_lostfound_barang lf,setting_kategori_lostfound skl WHERE lf.id_laporan=:id_laporan AND lf.id_kategori_barang=skl.id_kategori;";
+                $sql="SELECT lf.id_laporan,lf.judul_laporan,lf.tanggal_laporan,lf.waktu_laporan,lf.alamat_laporan,lf.deskripsi_barang,lf.thumbnail_gambar,lf.lat_laporan,lf.lng_laporan,lf.jenis_laporan,lf.alamat_laporan,lf.id_user_pelapor,lf.status_laporan,u.nama_user 
+                    AS nama_user_pelapor,skl.nama_kategori AS jenis_barang 
+                    FROM laporan_lostfound_barang lf,setting_kategori_lostfound skl,user u WHERE lf.id_laporan=:id_laporan AND lf.id_kategori_barang=skl.id_kategori AND lf.id_user_pelapor=u.id_user";
                 $stmt= $this->db->prepare($sql);
                 $stmt->execute(["id_laporan"=>$id_laporan]);
                 $laporan=$stmt->fetch();
@@ -303,12 +308,31 @@ return function (App $app) {
                 $heading = array(
                     "en" => "Cek laporan " .$display_jenis_laporan." barang baru didaerahmu!"
                 );
+                $tag=$laporan["jenis_laporan"] == 0 ? "Penemuan barang":"Kehilangan barang";
+                $jenis_laporan=$laporan["jenis_laporan"] == 0 ? "Penemuan ".$laporan["jenis_barang"] : "Kehilangan ".$laporan["jenis_barang"]; 
+                $data=array(
+                    "page"=>"1",
+                    "id_laporan"=>$laporan["id_laporan"],
+                    "judul_laporan"=>$laporan["judul_laporan"],
+                    "jenis_laporan"=>$jenis_laporan,
+                    "alamat_laporan"=>$laporan["alamat_laporan"],
+                    "tanggal_laporan"=>$laporan["tanggal_laporan"],
+                    "waktu_laporan"=>$laporan["waktu_laporan"],
+                    "lat_laporan"=>$laporan["lat_laporan"],
+                    "lng_laporan"=>$laporan["lng_laporan"],
+                    "deskripsi_laporan"=>$laporan["deskripsi_barang"],
+                    "tag"=>$tag,
+                    "id_user_pelapor"=>$laporan["id_user_pelapor"],
+                    "nama_user_pelapor"=>$laporan["nama_user_pelapor"],
+                    "status_laporan"=>$laporan["status_laporan"],
+                    "thumbnail_gambar"=>$laporan["thumbnail_gambar"],
+                );
                 foreach($result as $user){
-                    sendOneSignalNotification($user["telpon_user"],$content,$heading);
+                    sendOneSignalNotification($user["telpon_user"],$content,$heading,$data);
                 }
-                return $response->withJson(["status"=>"1","message"=>"Laporan berhasil dikonfirmasi"]);
+                return $response->withJson(["status"=>"1","message"=>"Laporan berhasil dikonfirmasi",]);
             }else{
-                return $response->withJson(["status"=>"400","message"=>"Laporan gagal dikonfirmasi"]);
+                return $response->withJson(["status"=>"400","message"=>"Laporan gagal dikonfirmasi"]);  
             }
         });
 
