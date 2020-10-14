@@ -10,16 +10,17 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 
-// The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
 namespace SahabatSurabaya.Shared.Pages
 {
 
     public sealed partial class FilterPage : Page
     {
+        static int mode;
         ObservableCollection<Kecamatan> listKecamatan;
         List<Kecamatan> listKecamatanSelected;
         List<int> listIdBarangSelected;
+        List<int> listIdKejadianSelected;
         List<int> listJenisLaporan;
         Session session;
         HttpObject httpObject;
@@ -31,6 +32,7 @@ namespace SahabatSurabaya.Shared.Pages
             listKecamatan = new ObservableCollection<Kecamatan>();
             listIdBarangSelected = new List<int>();
             listJenisLaporan = new List<int>();
+            listIdKejadianSelected = new List<int>();
             listKecamatanSelected = new List<Kecamatan>();
         }
 
@@ -59,11 +61,17 @@ namespace SahabatSurabaya.Shared.Pages
                 {
                     listIdKecamatanSelected.Add(listKecamatanSelected[i].id_kecamatan);
                 }
-                FilterParams param = new FilterParams(1, tanggal_awal.ToString("yyyy-MM-dd"), tanggal_akhir.ToString("yyyy-MM-dd"), listJenisLaporan, listIdBarangSelected, listIdKecamatanSelected);
-                session.setFilterParams(param);
-                this.Frame.Navigate(typeof(AllLostFoundReportPage));
-                
+                if (mode == 0){
+                    FilterParams param = new FilterParams(tanggal_awal.ToString("yyyy-MM-dd"), tanggal_akhir.ToString("yyyy-MM-dd"), listJenisLaporan, listIdBarangSelected, listIdKecamatanSelected);
+                    session.setFilterParams(param);
+                    this.Frame.Navigate(typeof(AllLostFoundReportPage));
                 }
+                else{
+                    FilterParams param = new FilterParams(tanggal_awal.ToString("yyyy-MM-dd"), tanggal_akhir.ToString("yyyy-MM-dd"), null, listIdKejadianSelected, listIdKecamatanSelected);
+                    session.setFilterParams(param);
+                    this.Frame.Navigate(typeof(AllCrimeReportPage));
+                }
+            }
             else
             {
                 var messageDialog = new MessageDialog("Harap isi semua kriteria yang dibutuhkan untuk pencarian");
@@ -101,6 +109,16 @@ namespace SahabatSurabaya.Shared.Pages
                 }
                 txtStackKecamatan.Text = kecamatan.Substring(0, kecamatan.Length - 1);
             }
+        }
+
+        private void jenisKejadianChecked(object sender, RoutedEventArgs e)
+        {
+            
+        }
+
+        private void jenisKejadianUnchecked(object sender, RoutedEventArgs e)
+        {
+            
         }
 
         private void jenisLaporanChecked(object sender, RoutedEventArgs e)
@@ -141,12 +159,48 @@ namespace SahabatSurabaya.Shared.Pages
             listKecamatanSelected.Add(selected);
         }
 
+        private void resetPage()
+        {
+
+            dtTanggalAwal.SelectedDate = null;
+            dtTanggalAkhir.SelectedDate = null;
+            cbBarang1.IsChecked = false;
+            cbBarang2.IsChecked = false;
+            cbBarang3.IsChecked = false;
+            cbBarang4.IsChecked = false;
+            cbBarang5.IsChecked = false;
+            cbBarang6.IsChecked = false;
+            cbBarang7.IsChecked = false;
+            cbJenis1.IsChecked = false;
+            cbJenis2.IsChecked = false;
+            cbKejadian1.IsChecked = false;
+            cbKejadian2.IsChecked = false;
+            cbKejadian3.IsChecked = false;
+            cbKejadian4.IsChecked = false;
+            cbKejadian5.IsChecked = false;
+            cbKejadian6.IsChecked = false;
+        }
+
         protected async override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
             int? state = session.getFilterState();
-            if (state == 0)
+            var entry = this.Frame.BackStack.LastOrDefault();
+            if (entry.SourcePageType == typeof(AllLostFoundReportPage)){
+                stackKejadian.Visibility = Visibility.Collapsed;
+                stackBarang.Visibility = Visibility.Visible;
+                stackJenisLaporan.Visibility = Visibility.Visible;
+                mode = 0;
+            }
+            else if(entry.SourcePageType == typeof(AllCrimeReportPage))
             {
+                stackKejadian.Visibility = Visibility.Visible;
+                stackBarang.Visibility = Visibility.Collapsed;
+                stackJenisLaporan.Visibility = Visibility.Collapsed;
+                mode = 1;
+            }
+            if (state == 0){
+                resetPage();
                 string responseData = await httpObject.GetRequest("settings/getKecamatan");
                 listKecamatan = JsonConvert.DeserializeObject<ObservableCollection<Kecamatan>>(responseData);
                 gvKecamatan.ItemsSource = listKecamatan;

@@ -147,21 +147,6 @@ namespace SahabatSurabaya.Shared.Pages
         {
             base.OnNavigatedTo(e);
             var entry = this.Frame.BackStack.LastOrDefault();
-            if (entry.SourcePageType == typeof(FilterPage))
-            {
-                FilterParams param = e.Parameter as FilterParams;
-                if (param.status_cari == 0)
-                {
-                    var message = new MessageDialog("batal");
-                    await message.ShowAsync();
-                }
-                else
-                {
-                    var message = new MessageDialog("cari");
-                    await message.ShowAsync();
-                }
-                this.Frame.BackStack.RemoveAt(this.Frame.BackStackDepth - 1);
-            }
         }
     }
 }

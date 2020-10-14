@@ -6,25 +6,22 @@ namespace SahabatSurabaya.Shared.Class
 {
     class FilterParams
     {
-
-        public int status_cari { get; set; }
         public string tanggal_awal { get; set; }
 
         public string tanggal_akhir { get; set; }
 
         public List<int> list_jenis_laporan { get; set; }
 
-        public List<int> list_id_barang { get; set; }
+        public List<int> list_id_kategori { get; set; }
 
         public List<int> list_id_kecamatan { get; set; }
 
-        public FilterParams(int status_cari,string tanggal_awal, string tanggal_akhir, List<int> listJenisLaporan, List<int> listIdBarang, List<int> listIdKecamatan)
+        public FilterParams(string tanggal_awal, string tanggal_akhir, List<int> listJenisLaporan, List<int> list_id_kategori, List<int> listIdKecamatan)
         {
-            this.status_cari = status_cari;
             this.tanggal_awal = tanggal_awal;
             this.tanggal_akhir = tanggal_akhir;
             this.list_jenis_laporan = listJenisLaporan;
-            this.list_id_barang = listIdBarang;
+            this.list_id_kategori = list_id_kategori;
             this.list_id_kecamatan = listIdKecamatan;
         }
 
@@ -48,12 +45,12 @@ namespace SahabatSurabaya.Shared.Class
             return s.Remove(s.Length - 1);
         }
 
-        public string getArrayIdBarang()
+        public string getArrayIdKategori()
         {
             string s = "";
-            for (int i = 0; i < list_id_barang.Count; i++)
+            for (int i = 0; i < list_id_kategori.Count; i++)
             {
-                s += list_id_barang[i].ToString() + ",";
+                s += list_id_kategori[i].ToString() + ",";
             }
             return s.Remove(s.Length - 1);
         }

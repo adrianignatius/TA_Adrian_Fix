@@ -57,10 +57,10 @@
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Class\CrimeReportParams.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Class\DisplayHeaderChat.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Class\HeaderChat.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Pages\FilterPage.xaml.cs">
       <DependentUpon>FilterPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)Class\HeaderChat.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Pages\HistoryPage.xaml.cs">
       <DependentUpon>HistoryPage.xaml</DependentUpon>
     </Compile>

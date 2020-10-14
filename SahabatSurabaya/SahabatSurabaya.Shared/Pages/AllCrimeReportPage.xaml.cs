@@ -41,6 +41,7 @@ namespace SahabatSurabaya.Shared.Pages
 
         private void Back_Click(object sender, RoutedEventArgs e)
         {
+            session.setFilterState(null);
             On_BackRequested();
         }
 
@@ -93,7 +94,7 @@ namespace SahabatSurabaya.Shared.Pages
                 FilterParams param = session.getFilterParams();
                 this.Frame.BackStack.RemoveAt(this.Frame.BackStackDepth - 1);
                 this.Frame.BackStack.RemoveAt(this.Frame.BackStackDepth - 1);
-                string reqUri = "laporan/getLaporanLostFoundWithFilter?tanggal_awal=" + param.tanggal_awal + "&tanggal_akhir=" + param.tanggal_akhir + "&jenis_laporan=" + param.getArrayJenisLaporan() + "&id_barang=" + param.getArrayIdBarang() + "&id_kecamatan=" + param.getArrayIdKecamatan();
+                string reqUri = "laporan/getLaporanKriminalitasWithFilter?tanggal_awal=" + param.tanggal_awal + "&tanggal_akhir=" + param.tanggal_akhir + "&id_kejadian=" + param.getArrayIdKategori() + "&id_kecamatan=" + param.getArrayIdKecamatan();
                 string responseData = await httpObject.GetRequestWithAuthorization(reqUri, session.getTokenAuthorization());
                 listLaporanKriminalitas = JsonConvert.DeserializeObject<ObservableCollection<LaporanKriminalitas>>(responseData);
                 if (listLaporanKriminalitas.Count == 0)
