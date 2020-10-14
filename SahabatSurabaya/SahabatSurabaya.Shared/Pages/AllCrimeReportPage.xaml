@@ -40,10 +40,15 @@
                     </Button.Content>
                 </Button>
             </StackPanel>
+
+            <StackPanel Name="stackLoading" Margin="0,140,0,0" Visibility="Collapsed" Grid.Row="1">
+                <ProgressRing Width="150" Height="150" IsActive="True"></ProgressRing>
+                <TextBlock Foreground="Black" FontWeight="Bold" TextAlignment="Center" TextWrapping="WrapWholeWords" FontSize="20" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" Text="Sedang memuat data"></TextBlock>
+            </StackPanel>
+            
             <StackPanel Visibility="Collapsed" Name="stackEmpty" Margin="0,80,0,0" Grid.Row="1">
                 <Image MaxWidth="400" Height="420" MaxHeight="420" Stretch="UniformToFill" VerticalAlignment="Center" Source="/Assets/empty-illustration.jpg"></Image>
-                <TextBlock Foreground="Gray" FontWeight="Bold" TextAlignment="Center" TextWrapping="WrapWholeWords" FontSize="20" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" Text="Anda belum pernah membuat laporan"></TextBlock>
-                <TextBlock Foreground="Gray" FontWeight="Light" TextAlignment="Center" TextWrapping="WrapWholeWords" FontSize="16" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" Text="Ayo ikut berkontribusi untuk lingkungan sekitar!"></TextBlock>
+                <TextBlock Foreground="Gray" FontWeight="Bold" TextAlignment="Center" TextWrapping="WrapWholeWords" FontSize="20" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" Name="txtEmptyState" Text="Anda belum pernah membuat laporan"></TextBlock>
             </StackPanel>
             <ScrollViewer Name="svListView" Grid.Row="1">
                 <StackPanel Margin="8" Orientation="Vertical">

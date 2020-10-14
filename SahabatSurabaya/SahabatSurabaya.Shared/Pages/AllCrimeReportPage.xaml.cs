@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using SahabatSurabaya.Shared.Class;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -68,6 +69,50 @@ namespace SahabatSurabaya.Shared.Pages
         private void goToFilterPage(object sender, RoutedEventArgs e)
         {
             this.Frame.Navigate(typeof(FilterPage));
+        }
+
+        private void showLoading()
+        {
+            stackLoading.Visibility = Visibility.Visible;
+            svListView.Visibility = Visibility.Collapsed;
+        }
+
+        private void hideLoading()
+        {
+            stackLoading.Visibility = Visibility.Collapsed;
+            svListView.Visibility = Visibility.Visible;
+        }
+
+        protected async override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+            var entry = this.Frame.BackStack.LastOrDefault();
+            if (entry.SourcePageType == typeof(FilterPage))
+            {
+                showLoading();
+                FilterParams param = session.getFilterParams();
+                this.Frame.BackStack.RemoveAt(this.Frame.BackStackDepth - 1);
+                this.Frame.BackStack.RemoveAt(this.Frame.BackStackDepth - 1);
+                string reqUri = "laporan/getLaporanLostFoundWithFilter?tanggal_awal=" + param.tanggal_awal + "&tanggal_akhir=" + param.tanggal_akhir + "&jenis_laporan=" + param.getArrayJenisLaporan() + "&id_barang=" + param.getArrayIdBarang() + "&id_kecamatan=" + param.getArrayIdKecamatan();
+                string responseData = await httpObject.GetRequestWithAuthorization(reqUri, session.getTokenAuthorization());
+                listLaporanKriminalitas = JsonConvert.DeserializeObject<ObservableCollection<LaporanKriminalitas>>(responseData);
+                if (listLaporanKriminalitas.Count == 0)
+                {
+                    stackEmpty.Visibility = Visibility.Visible;
+                    svListView.Visibility = Visibility.Collapsed;
+                    stackLoading.Visibility = Visibility.Collapsed;
+                    txtEmptyState.Text = "Tidak ada laporan yang sesuai dengan kriteria pencarian";
+                }
+                else
+                {
+                    hideLoading();
+                    lvLaporanKriminalitas.ItemsSource = listLaporanKriminalitas;
+                }
+            }
+            else
+            {
+                loadLaporanKriminalitas();
+            }
         }
     }
 }

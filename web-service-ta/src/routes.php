@@ -468,31 +468,32 @@ return function (App $app) {
             $stmt->execute();
             $result = $stmt->fetchAll();
             return $response->withJson($result);
-            // $body=$request->getParsedBody();
-            // $jenis_laporan=implode(",",$body["list_jenis_laporan"]);
-            // $tanggal_akhir=$body["tanggal_awal"];
-            // $tanggal_akhir=$body["tanggal_akhir"];
-            // $array_barang=implode(",",$body["list_id_barang"]);
-            // $array_kecamatan=implode(",",$body["list_id_kecamatan"]);
-            // $sql = "SELECT lf.id_laporan,lf.judul_laporan,lf.jenis_laporan,lf.tanggal_laporan,lf.waktu_laporan,lf.alamat_laporan,lf.lat_laporan,lf.lng_laporan,lf.deskripsi_barang,lf.deskripsi_barang,lf.id_user_pelapor,u.nama_user AS nama_user_pelapor,count(kl.id_laporan) AS jumlah_komentar,lf.thumbnail_gambar AS thumbnail_gambar FROM laporan_lostfound_barang lf 
-            //         JOIN user u ON lf.id_user_pelapor=u.id_user 
-            //         LEFT JOIN komentar_laporan kl ON lf.id_laporan=kl.id_laporan
-            //         WHERE lf.jenis_laporan IN ($jenis_laporan) AND lf.id_kategori_barang IN ($array_barang) AND lf.id_kecamatan IN ($array_kecamatan)  
-            //         GROUP BY lf.id_laporan 
-            //         ORDER BY lf.tanggal_laporan DESC, lf.waktu_laporan DESC";
-            // $stmt = $this->db->prepare($sql);
-            // $stmt->execute();
-            // $result = $stmt->fetchAll();
-            // return $response->withJson($result);
+        });
+
+        $app->get('/getLaporanKriminalitasWithFilter', function ($request, $response) {
+            $tanggal_awal=$request->getQueryParam('tanggal_awal');
+            $tanggal_akhir=$request->getQueryParam('tanggal_awal');
+            $array_barang=$request->getQueryParam('id_barang');
+            $array_kecamatan=$request->getQueryParam('id_kecamatan');
+            $jenis_laporan=$request->getQueryParam('jenis_laporan');
+            $sql = "SELECT lf.id_laporan,lf.judul_laporan,lf.jenis_laporan,lf.tanggal_laporan,lf.waktu_laporan,lf.alamat_laporan,lf.lat_laporan,lf.lng_laporan,lf.deskripsi_barang,lf.deskripsi_barang,lf.id_user_pelapor,u.nama_user AS nama_user_pelapor,count(kl.id_laporan) AS jumlah_komentar,lf.thumbnail_gambar AS thumbnail_gambar FROM laporan_lostfound_barang lf 
+                    JOIN user u ON lf.id_user_pelapor=u.id_user 
+                    LEFT JOIN komentar_laporan kl ON lf.id_laporan=kl.id_laporan
+                    WHERE lf.jenis_laporan IN ($jenis_laporan) AND lf.id_kategori_barang IN ($array_barang) AND lf.id_kecamatan IN ($array_kecamatan)  
+                    GROUP BY lf.id_laporan 
+                    ORDER BY lf.tanggal_laporan DESC, lf.waktu_laporan DESC";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute();
+            $result = $stmt->fetchAll();
+            return $response->withJson($result);
         });
     
         $app->get('/getLaporanKriminalitas', function ($request, $response) {
-            $sql = "SELECT lk.id_laporan,lk.judul_laporan,lk.status_laporan,skk.nama_kategori AS jenis_kejadian,lk.deskripsi_kejadian,lk.tanggal_laporan,lk.waktu_laporan,lk.alamat_laporan,lk.lat_laporan,lk.lng_laporan,lk.id_user_pelapor,u.nama_user AS nama_user_pelapor, COUNT(kl.id_laporan) AS jumlah_komentar,lk.thumbnail_gambar AS thumbnail_gambar FROM user u 
+            $sql = "SELECT lk.id_laporan,lk.judul_laporan,skk.nama_kategori AS jenis_kejadian,lk.deskripsi_kejadian,lk.tanggal_laporan,lk.waktu_laporan,lk.alamat_laporan,lk.lat_laporan,lk.lng_laporan,lk.id_user_pelapor,u.nama_user AS nama_user_pelapor,lk.status_laporan,COUNT(klk.id_laporan) AS jumlah_konfirmasi,lk.thumbnail_gambar AS thumbnail_gambar FROM user u 
                     JOIN laporan_kriminalitas lk ON lk.id_user_pelapor=u.id_user 
-                    LEFT JOIN komentar_laporan kl ON lk.id_laporan=kl.id_laporan
-                    JOIN setting_kategori_kriminalitas skk on skk.id_kategori=lk.id_kategori_kejadian
-                    WHERE lk.status_laporan=1
-                    GROUP BY lk.id_laporan ORDER BY lk.tanggal_laporan DESC, lk.waktu_laporan DESC";
+                    LEFT JOIN konfirmasi_laporan_kriminalitas klk ON lk.id_laporan=klk.id_laporan 
+                    JOIN setting_kategori_kriminalitas skk on skk.id_kategori=lk.id_kategori_kejadian 
+                    WHERE lk.status_laporan=1 GROUP BY lk.id_laporan ORDER BY lk.tanggal_laporan DESC, lk.waktu_laporan DESC";
             $stmt = $this->db->prepare($sql);
             $stmt->execute();
             $result = $stmt->fetchAll();
