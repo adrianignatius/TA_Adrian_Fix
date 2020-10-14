@@ -158,15 +158,26 @@ namespace SahabatSurabaya.Shared.Pages
             lng = null;
         }
 
-        private void editLokasi(object sender,RoutedEventArgs e)
+        private async void editLokasi(object sender,RoutedEventArgs e)
         {
-            lokasiUser = txtAutocompleteAddress.Text;
-            txtLabelLokasi.Text = lokasiUser;
-            btnEditLokasi.Tag = "update";
-            txtStatusLokasiAktif.Text = "(Sudah diatur)";
-            btnEditLokasi.Content = "Ubah";
-            btnDisableLokasi.Visibility = Visibility.Visible;
-            hideEditPanel(sender, e);
+            string responseData = await httpObject.GetRequest("settings/checkKecamatanAvailable?lat=" + lat + "&lng=" + lng);
+            JObject json = JObject.Parse(responseData);
+            if (json["status"].ToString() == "1")
+            {
+                lokasiUser = txtAutocompleteAddress.Text;
+                txtLabelLokasi.Text = lokasiUser;
+                btnEditLokasi.Tag = "update";
+                txtStatusLokasiAktif.Text = "(Sudah diatur)";
+                btnEditLokasi.Content = "Ubah";
+                btnDisableLokasi.Visibility = Visibility.Visible;
+                hideEditPanel(sender, e);
+            }
+            else
+            {
+                var message = new MessageDialog(json["message"].ToString());
+                await message.ShowAsync();
+            }
+            
         }
 
         private void txtAutocompleteAddressTextChanged(object sender, TextChangedEventArgs e)

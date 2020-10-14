@@ -458,7 +458,7 @@ return function (App $app) {
             $array_barang=$request->getQueryParam('id_barang');
             $array_kecamatan=$request->getQueryParam('id_kecamatan');
             $jenis_laporan=$request->getQueryParam('jenis_laporan');
-            $sql = "SELECT lf.id_laporan,lf.judul_laporan,lf.jenis_laporan,lf.tanggal_laporan,lf.waktu_laporan,lf.alamat_laporan,lf.lat_laporan,lf.lng_laporan,lf.deskripsi_barang,lf.deskripsi_barang,lf.id_user_pelapor,u.nama_user AS nama_user_pelapor,count(kl.id_laporan) AS jumlah_komentar,lf.thumbnail_gambar AS thumbnail_gambar FROM laporan_lostfound_barang lf 
+            $sql = "SELECT lf.id_laporan,lf.judul_laporan,lf.jenis_laporan,lf.status_laporan,lf.tanggal_laporan,lf.waktu_laporan,lf.alamat_laporan,lf.lat_laporan,lf.lng_laporan,lf.deskripsi_barang,lf.deskripsi_barang,lf.id_user_pelapor,u.nama_user AS nama_user_pelapor,count(kl.id_laporan) AS jumlah_komentar,lf.thumbnail_gambar AS thumbnail_gambar FROM laporan_lostfound_barang lf 
                     JOIN user u ON lf.id_user_pelapor=u.id_user 
                     LEFT JOIN komentar_laporan kl ON lf.id_laporan=kl.id_laporan
                     WHERE lf.status_laporan=1 AND lf.jenis_laporan IN ($jenis_laporan) AND lf.id_kategori_barang IN ($array_barang) AND lf.id_kecamatan IN ($array_kecamatan)  
