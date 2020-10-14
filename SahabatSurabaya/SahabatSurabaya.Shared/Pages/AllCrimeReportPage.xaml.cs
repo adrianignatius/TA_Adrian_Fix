@@ -76,10 +76,6 @@ namespace SahabatSurabaya.Shared.Pages
 
         private void goToFilterPage(object sender, RoutedEventArgs e)
         {
-            if (session.getFilterState() == null)
-            {
-                session.setFilterState(0);
-            }
             this.Frame.Navigate(typeof(FilterPage));
         }
 
