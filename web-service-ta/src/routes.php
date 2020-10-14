@@ -254,11 +254,11 @@ return function (App $app) {
 
         $app->get('/getLaporanKriminalitas/{id_kecamatan}',function($request,$response,$args){
             $id_kecamatan=$args["id_kecamatan"];
-            $sql="SELECT lk.id_laporan,lk.judul_laporan,skk.nama_kategori AS jenis_kejadian,lk.deskripsi_kejadian,lk.tanggal_laporan,lk.waktu_laporan,lk.alamat_laporan,lk.lat_laporan,lk.lng_laporan,lk.id_user_pelapor,u.nama_user AS nama_user_pelapor, COUNT(kl.id_laporan) AS jumlah_komentar,lk.thumbnail_gambar AS thumbnail_gambar FROM user u 
+            $sql="SELECT lk.id_laporan,lk.judul_laporan,lk.status_laporan,skk.nama_kategori AS jenis_kejadian,lk.deskripsi_kejadian,lk.tanggal_laporan,lk.waktu_laporan,lk.alamat_laporan,lk.lat_laporan,lk.lng_laporan,lk.id_user_pelapor,u.nama_user AS nama_user_pelapor, COUNT(kl.id_laporan) AS jumlah_komentar,lk.thumbnail_gambar AS thumbnail_gambar FROM user u 
                 JOIN laporan_kriminalitas lk ON lk.id_user_pelapor=u.id_user 
                 LEFT JOIN komentar_laporan kl ON lk.id_laporan=kl.id_laporan
                 JOIN setting_kategori_kriminalitas skk on skk.id_kategori=lk.id_kategori_kejadian
-                WHERE lk.id_kecamatan=:id_kecamatan
+                WHERE lk.id_kecamatan=:id_kecamatan AND lk.status_laporan=1
                 GROUP BY lk.id_laporan ORDER BY lk.tanggal_laporan DESC, lk.waktu_laporan DESC";
             $stmt = $this->db->prepare($sql);
             $stmt->execute([":id_kecamatan"=>$id_kecamatan]);

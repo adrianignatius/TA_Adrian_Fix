@@ -33,6 +33,14 @@ namespace SahabatSurabaya.Shared.Pages
             loadLaporanKriminalitas();
         }
 
+        private void goToDetailPage(object sender, ItemClickEventArgs e)
+        {
+            LaporanKriminalitas selected = (LaporanKriminalitas)e.ClickedItem;
+            ReportDetailPageParams param = new ReportDetailPageParams(selected.id_user_pelapor, selected.nama_user_pelapor, selected.id_laporan, selected.alamat_laporan, selected.tanggal_laporan, selected.waktu_laporan, selected.judul_laporan, selected.jenis_kejadian, selected.deskripsi_kejadian, selected.lat_laporan, selected.lng_laporan, "kriminalitas", selected.thumbnail_gambar, selected.status_laporan, selected.jumlah_konfirmasi);
+            session.setReportDetailPageParams(param);
+            this.Frame.Navigate(typeof(ReportDetailPage));
+        }
+
         private void Back_Click(object sender, RoutedEventArgs e)
         {
             On_BackRequested();

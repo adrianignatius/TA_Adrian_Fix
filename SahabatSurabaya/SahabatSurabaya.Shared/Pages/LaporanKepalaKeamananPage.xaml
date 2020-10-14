@@ -42,7 +42,7 @@
             </StackPanel>
             <ScrollViewer Name="svListView" Grid.Row="1">
                 <StackPanel Margin="8" Orientation="Vertical">
-                    <ListView Name="lvLaporanArea" SelectionMode="None" IsItemClickEnabled="True" Margin="0,16,0,0" >
+                    <ListView ItemClick="goToDetailPage" Name="lvLaporanArea" SelectionMode="None" IsItemClickEnabled="True" Margin="0,16,0,0">
                         <ListView.ItemTemplate>
                             <DataTemplate x:Name="ImageOverlayDataTemplate">
                                 <Border Margin="0,4,0,4" CornerRadius="10" BorderBrush="Gray" BorderThickness="1">

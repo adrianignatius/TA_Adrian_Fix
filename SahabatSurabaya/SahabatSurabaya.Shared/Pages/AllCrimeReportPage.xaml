@@ -60,7 +60,7 @@
                             </StackPanel>
                         </Button.Content>
                     </Button>
-                    <ListView Name="lvLaporanKriminalitas" SelectionMode="None" IsItemClickEnabled="True" Margin="0,16,0,0" >
+                    <ListView ItemClick="goToDetailPage" Name="lvLaporanKriminalitas" SelectionMode="None" IsItemClickEnabled="True" Margin="0,16,0,0" >
                         <ListView.ItemTemplate>
                             <DataTemplate x:Name="ImageOverlayDataTemplate">
                                 <Border Margin="0,4,0,4" CornerRadius="10" BorderBrush="Gray" BorderThickness="1">
