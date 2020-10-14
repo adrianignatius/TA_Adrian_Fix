@@ -454,7 +454,7 @@ return function (App $app) {
     
         $app->get('/getLaporanLostFoundWithFilter', function ($request, $response) {
             $tanggal_awal=$request->getQueryParam('tanggal_awal');
-            $tanggal_akhir=$request->getQueryParam('tanggal_awal');
+            $tanggal_akhir=$request->getQueryParam('tanggal_akhir');
             $array_barang=$request->getQueryParam('id_barang');
             $id_kecamatan=$request->getQueryParam('id_kecamatan');
             $jenis_laporan=$request->getQueryParam('jenis_laporan');

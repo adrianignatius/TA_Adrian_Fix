@@ -40,13 +40,13 @@ namespace SahabatSurabaya.Shared.Pages
         private void pageLoaded(object sender,RoutedEventArgs e)
         {
             DateTime now = DateTime.Now;
-            DateTime later = now.AddMonths(-1);
+            DateTime before = now.AddMonths(-1);
             dtTanggalAwal.MaxYear = new DateTime(2023, 12, 31);
             dtTanggalAwal.MinYear = new DateTime(2020, 1, 31);
             dtTanggalAkhir.MaxYear = new DateTime(2023, 12, 31);
             dtTanggalAkhir.MinYear = new DateTime(2020, 1, 31);
-            dtTanggalAwal.Date = now;
-            dtTanggalAkhir.Date = later;
+            dtTanggalAwal.Date = before;
+            dtTanggalAkhir.Date = now;
         }
 
         private void Back_Click(object sender, RoutedEventArgs e)
@@ -62,6 +62,11 @@ namespace SahabatSurabaya.Shared.Pages
                 DateTime tanggal_akhir = dtTanggalAkhir.Date.DateTime;
                 if (DateTime.Compare(tanggal_awal, tanggal_akhir) > 0)
                 {
+                    var message = new MessageDialog("Tanggal awal tidak boleh lebih besar dari tanggal akhir");
+                    await message.ShowAsync();
+                }
+                else
+                {
                     int id_kecamatan = Convert.ToInt32(cbKecamatan.SelectedValue.ToString());
                     if (mode == 0)
                     {
@@ -75,11 +80,6 @@ namespace SahabatSurabaya.Shared.Pages
                         session.setFilterParams(param);
                         this.Frame.Navigate(typeof(AllCrimeReportPage));
                     }
-                }
-                else
-                {
-                    var message = new MessageDialog("Tanggal awal tidak boleh lebih besar dari tanggal akhir");
-                    await message.ShowAsync();
                 }
                 
             }
