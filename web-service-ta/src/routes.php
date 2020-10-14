@@ -439,11 +439,11 @@ return function (App $app) {
         });
     
         $app->get('/getLaporanLostFound', function ($request, $response) {
-            $sql = "SELECT lf.id_laporan,lf.judul_laporan,lf.jenis_laporan,skl.nama_kategori AS jenis_barang,lf.tanggal_laporan,lf.waktu_laporan,lf.alamat_laporan,lf.lat_laporan,lf.lng_laporan,lf.deskripsi_barang,lf.deskripsi_barang,lf.id_user_pelapor,u.nama_user AS nama_user_pelapor,count(kl.id_laporan) AS jumlah_komentar,lf.thumbnail_gambar AS thumbnail_gambar FROM laporan_lostfound_barang lf 
+            $sql = "SELECT lf.id_laporan,lf.judul_laporan,lf.jenis_laporan,lf.status_laporan,skl.nama_kategori AS jenis_barang,lf.tanggal_laporan,lf.waktu_laporan,lf.alamat_laporan,lf.lat_laporan,lf.lng_laporan,lf.deskripsi_barang,lf.deskripsi_barang,lf.id_user_pelapor,u.nama_user AS nama_user_pelapor,count(kl.id_laporan) AS jumlah_komentar,lf.thumbnail_gambar AS thumbnail_gambar FROM laporan_lostfound_barang lf 
                     JOIN user u ON lf.id_user_pelapor=u.id_user 
                     LEFT JOIN komentar_laporan kl ON lf.id_laporan=kl.id_laporan
                     JOIN setting_kategori_lostfound skl on skl.id_kategori=lf.id_kategori_barang
-                    GROUP BY lf.id_laporan 
+                    GROUP BY lf.id_laporan s
                     ORDER BY lf.tanggal_laporan DESC, lf.waktu_laporan DESC";
             $stmt = $this->db->prepare($sql);
             $stmt->execute();

@@ -35,7 +35,6 @@ namespace SahabatSurabaya.Shared.Pages
 
         private void pageLoaded(object sender, RoutedEventArgs e)
         {
-            txtJudulHalaman.Text = userLogin.status_user == 2 ? "Daftar Laporan Kriminalitas di Area " + userLogin.kecamatan_user : "Daftar Laporan Kriminalitas";
             loadLaporanKriminalitas();
         }
 
@@ -56,7 +55,7 @@ namespace SahabatSurabaya.Shared.Pages
 
         private async void loadLaporanKriminalitas()
         {
-            string responseData = userLogin.status_user == 2 ? await httpObject.GetRequestWithAuthorization("kepalaKeamanan/getLaporanKriminalitas/" + userLogin.id_kecamatan_user, session.getTokenAuthorization()) : await httpObject.GetRequestWithAuthorization("laporan/getLaporanKriminalitas", session.getTokenAuthorization());
+            string responseData = await httpObject.GetRequestWithAuthorization("laporan/getLaporanKriminalitas", session.getTokenAuthorization());
             listLaporanKriminalitas = JsonConvert.DeserializeObject<ObservableCollection<LaporanKriminalitas>>(responseData);
             if (listLaporanKriminalitas.Count == 0)
             {

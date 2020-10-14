@@ -8,6 +8,7 @@ using System.Net.Http;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Navigation;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -33,15 +34,13 @@ namespace SahabatSurabaya.Shared.Pages
             listKecamatanSelected = new List<Kecamatan>();
         }
 
-        private async void pageLoaded(object sender,RoutedEventArgs e)
+        private void pageLoaded(object sender,RoutedEventArgs e)
         {
-            string responseData = await httpObject.GetRequest("settings/getKecamatan");
-            listKecamatan = JsonConvert.DeserializeObject<ObservableCollection<Kecamatan>>(responseData);
-            gvKecamatan.ItemsSource = listKecamatan;
             dtTanggalAwal.MaxYear = new DateTime(2023, 12, 31);
             dtTanggalAwal.MinYear = new DateTime(2020, 1, 31);
             dtTanggalAkhir.MaxYear = new DateTime(2023, 12, 31);
             dtTanggalAkhir.MinYear = new DateTime(2020, 1, 31);
+            session.setFilterState(1);
         }
 
         private void Back_Click(object sender, RoutedEventArgs e)
@@ -64,19 +63,6 @@ namespace SahabatSurabaya.Shared.Pages
                 session.setFilterParams(param);
                 this.Frame.Navigate(typeof(AllLostFoundReportPage));
                 
-                //string json = JsonConvert.SerializeObject(param, Formatting.Indented);
-                //using (var client = new HttpClient())
-                //{
-                //    client.BaseAddress = new Uri("http://localhost:8080/");
-                //    client.DefaultRequestHeaders.Add("Authorization", session.getTokenAuthorization());
-                //    HttpResponseMessage result = await client.GetAsync("laporan/getLaporanLostFoundWithFilter?tanggal_awal=" + tanggal_awal.ToString("yyyy-MM-dd") + "&tanggal_akhir=" + tanggal_akhir.ToString("yyyy-MM-dd")+"&jenis_laporan="+param.getArrayJenisLaporan()+"&id_barang="+param.getArrayIdBarang()+"&id_kecamatan="+param.getArrayIdKecamatan());
-                //    if (result.IsSuccessStatusCode)
-                //    {
-                //        var responseData = result.Content.ReadAsStringAsync().Result;
-                //        var message = new MessageDialog(responseData);
-                //        await message.ShowAsync();
-                //    }
-                //}
                 }
             else
             {
@@ -101,7 +87,6 @@ namespace SahabatSurabaya.Shared.Pages
                     return true;
                 }
             }
-            
         }
 
         private void flyoutDone(object sender,RoutedEventArgs e)
@@ -154,6 +139,20 @@ namespace SahabatSurabaya.Shared.Pages
             int id_kecamatan = Convert.ToInt32((sender as CheckBox).Tag.ToString());
             Kecamatan selected = listKecamatan.Single(i => i.id_kecamatan == id_kecamatan);
             listKecamatanSelected.Add(selected);
+        }
+
+        protected async override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+            int? state = session.getFilterState();
+            if (state == 0)
+            {
+                string responseData = await httpObject.GetRequest("settings/getKecamatan");
+                listKecamatan = JsonConvert.DeserializeObject<ObservableCollection<Kecamatan>>(responseData);
+                gvKecamatan.ItemsSource = listKecamatan;
+                listKecamatanSelected.Clear();
+                txtStackKecamatan.Text = "";
+            }      
         }
     }
 }

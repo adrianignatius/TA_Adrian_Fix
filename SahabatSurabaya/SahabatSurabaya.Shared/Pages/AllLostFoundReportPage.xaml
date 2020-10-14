@@ -40,15 +40,18 @@
                     </Button.Content>
                 </Button>
             </StackPanel>
-            
+
+            <StackPanel Name="stackLoading" Margin="0,140,0,0" Visibility="Collapsed" Grid.Row="1">
+                <ProgressRing Width="150" Height="150" IsActive="True"></ProgressRing>
+                <TextBlock Foreground="Black" FontWeight="Bold" TextAlignment="Center" TextWrapping="WrapWholeWords" FontSize="20" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" Text="Sedang memuat data"></TextBlock>
+            </StackPanel>
             <StackPanel Visibility="Collapsed" Name="stackEmpty" Margin="0,80,0,0" Grid.Row="1">
                 <Image MaxWidth="400" Height="420" MaxHeight="420" Stretch="UniformToFill" VerticalAlignment="Center" Source="/Assets/empty-illustration.jpg"></Image>
-                <TextBlock Foreground="Gray" FontWeight="Bold" TextAlignment="Center" TextWrapping="WrapWholeWords" FontSize="20" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" Text="Anda belum pernah membuat laporan"></TextBlock>
-                <TextBlock Foreground="Gray" FontWeight="Light" TextAlignment="Center" TextWrapping="WrapWholeWords" FontSize="16" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" Text="Ayo ikut berkontribusi untuk lingkungan sekitar!"></TextBlock>
+                <TextBlock Foreground="Gray" Name="txtEmptyState" FontWeight="Bold" TextAlignment="Center" TextWrapping="WrapWholeWords" FontSize="20" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" Text="Belum ada laporan yang masuk pada sistem"></TextBlock>
             </StackPanel>
             <ScrollViewer Name="svListView" Grid.Row="1">
                 <StackPanel Margin="8" Orientation="Vertical">
-                    <ListView Name="lvLaporanLostFound" SelectionMode="None" IsItemClickEnabled="True" Margin="0,16,0,0" >
+                    <ListView Name="lvLaporanLostFound" ItemClick="goToDetailPage" SelectionMode="None" IsItemClickEnabled="True" Margin="0,16,0,0" >
                         <ListView.ItemTemplate>
                             <DataTemplate x:Name="ImageOverlayDataTemplate">
                                 <Border Margin="0,4,0,4" CornerRadius="10" BorderBrush="Gray" BorderThickness="1">
@@ -74,82 +77,6 @@
                     <Button Margin="0,8,0,8" Grid.Row="2" HorizontalAlignment="Center" Foreground="White" Background="Green" CornerRadius="10" Content="Muat lagi"></Button>
                 </StackPanel>
             </ScrollViewer>
-            <!--<Pivot Name="rootPivotLaporan" Grid.Row="1">
-                <Pivot.HeaderTemplate>
-                    <DataTemplate>
-                        <TextBlock Foreground="Green" FontSize="16" Text="{Binding}"></TextBlock>
-                    </DataTemplate>
-                </Pivot.HeaderTemplate>
-                <Pivot.Items>
-                    <PivotItem Name="pvLaporanKriminalitas"  Header="Laporan Kriminalitas">
-                        <ScrollViewer HorizontalScrollMode="Disabled" VerticalScrollBarVisibility="Auto" VerticalScrollMode="Enabled">
-                            <StackPanel Orientation="Vertical">
-                                <ListView Tag="lvKriminalitas" ItemClick="goToDetailPage" Name="lvLaporanKriminalitas" SelectionMode="None" IsItemClickEnabled="True" >
-                                    <ListView.ItemTemplate>
-                                        <DataTemplate>
-                                            <Grid>
-                                                <Grid.RowDefinitions>
-                                                    <RowDefinition Height="*"></RowDefinition>
-                                                    <RowDefinition Height="auto"></RowDefinition>
-                                                </Grid.RowDefinitions>
-                                                <Border Name="rootBorder" Margin="0,4,0,4" BorderBrush="Gray" BorderThickness="1" CornerRadius="10">
-                                                    <Grid MaxHeight="240">
-                                                        <Image Stretch="UniformToFill"  Source="{Binding thumbnail_gambar,Converter={StaticResource imageConverter}}" ></Image>
-                                                        <StackPanel Orientation="Vertical" Height="80" VerticalAlignment="Bottom" Background="{StaticResource brushTransparent}" Padding="12">
-                                                            <TextBlock Opacity="1" Foreground="White" FontSize="14" Text="{Binding judul_laporan }"/>
-                                                            <StackPanel Orientation="Horizontal">
-                                                                <TextBlock Opacity="1" Foreground="White" FontSize="14" Text="{Binding tanggal_laporan,Converter={StaticResource dateTimeConverter}}"></TextBlock>
-                                                                <TextBlock Margin="2,0,0,0" Text="Pukul" Opacity="1" Foreground="White" FontSize="14"></TextBlock>
-                                                                <TextBlock Margin="2,0,0,0" Opacity="1" Foreground="White" Text="{Binding waktu_laporan}" FontSize="14"></TextBlock>
-                                                            </StackPanel>
-                                                            <StackPanel Orientation="Horizontal">
-                                                                <TextBlock Opacity="1" Foreground="White" FontSize="14" Text="Oleh"></TextBlock>
-                                                                <TextBlock Margin="2,0,0,0" Opacity="1" Foreground="White" FontSize="14" Text="{Binding nama_user_pelapor}"></TextBlock>
-                                                            </StackPanel>
-                                                        </StackPanel>
-                                                    </Grid>
-                                                </Border>
-                                            </Grid>
-                                        </DataTemplate>
-                                    </ListView.ItemTemplate>
-                                    <ListView.ItemContainerStyle>
-                                        <Style TargetType="ListViewItem">
-                                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                                        </Style>
-                                    </ListView.ItemContainerStyle>
-                                </ListView>
-                                
-                            </StackPanel>
-                        </ScrollViewer>
-                    </PivotItem>
-                    <PivotItem Name="pvLaporanLostFound" Header="Laporan LostFound">
-                        <ListView Tag="lvLostFound" ItemClick="goToDetailPage" Name="lvLaporanLostFound" SelectionMode="None" IsItemClickEnabled="True" >
-                            <ListView.ItemTemplate>
-                                <DataTemplate>
-                                    <Border Margin="0,4,0,4" BorderBrush="Gray" BorderThickness="1" CornerRadius="10">
-                                        <Grid MaxHeight="240">
-                                            <Image Stretch="UniformToFill"  Source="{Binding thumbnail_gambar,Converter={StaticResource imageConverter}}" ></Image>
-                                            <StackPanel Orientation="Vertical" Height="80" VerticalAlignment="Bottom" Background="{StaticResource brushTransparent}" Padding="12">
-                                                <TextBlock Opacity="1" Foreground="White" FontSize="14" Text="{Binding judul_laporan }"/>
-                                                <StackPanel Orientation="Horizontal">
-                                                    <TextBlock Opacity="1" Foreground="White" FontSize="14" Text="{Binding tanggal_laporan,Converter={StaticResource dateTimeConverter}}"></TextBlock>
-                                                    <TextBlock Margin="2,0,0,0" Text="Pukul" Opacity="1" Foreground="White" FontSize="14"></TextBlock>
-                                                    <TextBlock Margin="2,0,0,0" Opacity="1" Foreground="White" Text="{Binding waktu_laporan}" FontSize="14"></TextBlock>
-                                                </StackPanel>
-                                                <StackPanel Orientation="Horizontal">
-                                                    <TextBlock Opacity="1" Foreground="White" FontSize="14" Text="Oleh"></TextBlock>
-                                                    <TextBlock Margin="2,0,0,0" Opacity="1" Foreground="White" FontSize="14" Text="{Binding nama_user_pelapor}"></TextBlock>
-                                                </StackPanel>
-                                            </StackPanel>
-                                        </Grid>
-                                    </Border>
-                                </DataTemplate>
-                            </ListView.ItemTemplate>
-                        </ListView>
-                    </PivotItem>
-                </Pivot.Items>
-            </Pivot>-->
         </Grid>
-
     </Grid>
 </Page>

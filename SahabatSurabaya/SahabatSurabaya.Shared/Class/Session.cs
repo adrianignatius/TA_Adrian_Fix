@@ -10,26 +10,37 @@ namespace SahabatSurabaya
 {
     class Session
     {
-        public static FilterParams filterParams { get; set; }
-        public static ConfirmReportParams confirmReportParam { get; set; }
-        public static string allReportParam { get; set; }
+        private static int? filterState { get; set; }
+        private static FilterParams filterParams { get; set; }
+        private static ConfirmReportParams confirmReportParam { get; set; }
+        private static string allReportParam { get; set; }
 
-        public static string tokenAuthorization { get; set; }
-        public static User userLogin { get; set; }
-        public static KantorPolisi kantorPolisiSelected { get; set; }
+        private static string tokenAuthorization { get; set; }
+        private static User userLogin { get; set; }
+        private static KantorPolisi kantorPolisiSelected { get; set; }
 
-        public static LaporanLostFound laporanLostFoundSelected { get; set; }
+        private static LaporanLostFound laporanLostFoundSelected { get; set; }
 
-        public static LaporanKriminalitas laporanKriminalitasSelected { get; set; }
-        public static ReportDetailPageParams reportDetailPageParam { get; set; }
-        public static CrimeReportParams crimeReportParam { get; set; }
-        public static LostFoundReportParams lostFoundReportParam { get; set; }
+        private static LaporanKriminalitas laporanKriminalitasSelected { get; set; }
+        private static ReportDetailPageParams reportDetailPageParam { get; set; }
+        private static CrimeReportParams crimeReportParam { get; set; }
+        private static LostFoundReportParams lostFoundReportParam { get; set; }
 
         public static ChatPageParams chatPageParam { get; set; }
-        public readonly static string API_URL = "http://adrian-webservice.ta-istts.com/";
-        public readonly static string URL_WEBVIEW = "http://adrian-webview.ta-istts.com/";
-        public readonly static string URL_ASSETS = "http://adrian-assets.ta-istts.com/";
-        public readonly static string URL_GAMBAR_LAPORAN = "http://adrian-webservice.ta-istts.com/public/uploads/";
+        private readonly static string API_URL = "http://adrian-webservice.ta-istts.com/";
+        private readonly static string URL_WEBVIEW = "http://adrian-webview.ta-istts.com/";
+        private readonly static string URL_ASSETS = "http://adrian-assets.ta-istts.com/";
+        private readonly static string URL_GAMBAR_LAPORAN = "http://adrian-webservice.ta-istts.com/public/uploads/";
+
+        public int? getFilterState()
+        {
+            return filterState;
+        }
+
+        public void setFilterState(int? state)
+        {
+            filterState = state;
+        }
 
         public FilterParams getFilterParams()
         {
