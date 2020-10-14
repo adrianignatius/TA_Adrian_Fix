@@ -22,6 +22,7 @@ using Com.OneSignal.Abstractions;
 namespace SahabatSurabaya.Shared.Pages
 {
 
+
     public sealed partial class HomePage : Page
     {
         Session session;
@@ -191,7 +192,7 @@ namespace SahabatSurabaya.Shared.Pages
             //        var message = new MessageDialog("Pesan darurat telah dikirimkan ke semua kontak darurat anda");
             //        await message.ShowAsync();
             //    }
-            //}
+        }
 
             private async void sendEmergencyChat(User u, string address)
             {
@@ -222,7 +223,6 @@ namespace SahabatSurabaya.Shared.Pages
                 //        await client.PostAsync("insertDetailChat", form);
                 //    }
             //}
-        }
         }
 #endif
 

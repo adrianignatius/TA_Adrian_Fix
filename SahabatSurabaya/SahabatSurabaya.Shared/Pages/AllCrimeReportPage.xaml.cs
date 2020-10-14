@@ -120,7 +120,7 @@ namespace SahabatSurabaya.Shared.Pages
                 FilterParams param = session.getFilterParams();
                 this.Frame.BackStack.RemoveAt(this.Frame.BackStackDepth - 1);
                 this.Frame.BackStack.RemoveAt(this.Frame.BackStackDepth - 1);
-                string reqUri = "laporan/getLaporanKriminalitasWithFilter?tanggal_awal=" + param.tanggal_awal + "&tanggal_akhir=" + param.tanggal_akhir + "&id_kejadian=" + param.getArrayIdKategori() + "&id_kecamatan=" + param.getArrayIdKecamatan();
+                string reqUri = "laporan/getLaporanKriminalitasWithFilter?tanggal_awal=" + param.tanggal_awal + "&tanggal_akhir=" + param.tanggal_akhir + "&id_kejadian=" + param.getArrayIdKategori() + "&id_kecamatan=" + param.id_kecamatan;
                 string responseData = await httpObject.GetRequestWithAuthorization(reqUri, session.getTokenAuthorization());
                 listLaporanKriminalitas = JsonConvert.DeserializeObject<ObservableCollection<LaporanKriminalitas>>(responseData);
                 if (listLaporanKriminalitas.Count == 0)

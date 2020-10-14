@@ -70,8 +70,9 @@ namespace SahabatSurabaya.Shared.Pages
                     break;
 
                 case "SignOut":
-                    this.Frame.Navigate(typeof(LoginPage));
                     SecureStorage.Remove("jwt_token");
+                    this.Frame.BackStack.Clear();
+                    this.Frame.Navigate(typeof(LoginPage));
                     break;
 
                 case "PoliceStationPage":

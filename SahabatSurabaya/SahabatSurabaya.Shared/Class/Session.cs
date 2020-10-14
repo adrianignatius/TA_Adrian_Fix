@@ -10,7 +10,7 @@ namespace SahabatSurabaya
 {
     class Session
     {
-        private static int? filterState { get; set; }
+        private static int? filterState = 99;
         private static FilterParams filterParams { get; set; }
         private static ConfirmReportParams confirmReportParam { get; set; }
         private static string allReportParam { get; set; }

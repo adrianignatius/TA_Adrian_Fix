@@ -193,6 +193,7 @@ namespace SahabatSurabaya.Shared.Pages
             var entry = this.Frame.BackStack.LastOrDefault();
             if (entry.SourcePageType == typeof(ConfirmReportPage))
             {
+                isChosen = true;
                 ConfirmReportParams param = session.getConfirmReportParams();
                 txtJudulLaporan.Text = param.judul_laporan;
                 txtDescBarang.Text = param.deskripsi_laporan;

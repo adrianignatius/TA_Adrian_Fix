@@ -97,12 +97,12 @@ namespace SahabatSurabaya.Shared.Pages
             }
         }
 
-        private void goToFilterPage(object sender,RoutedEventArgs e)
+        private async void goToFilterPage(object sender,RoutedEventArgs e)
         {
-            if (session.getFilterState() == null)
+            if (session.getFilterState() == 99)
             {
                 session.setFilterState(0);
-            }        
+            }
             this.Frame.Navigate(typeof(FilterPage));
         }
 
@@ -123,7 +123,7 @@ namespace SahabatSurabaya.Shared.Pages
                 FilterParams param = session.getFilterParams();
                 this.Frame.BackStack.RemoveAt(this.Frame.BackStackDepth - 1);
                 this.Frame.BackStack.RemoveAt(this.Frame.BackStackDepth - 1);
-                string reqUri = "laporan/getLaporanLostFoundWithFilter?tanggal_awal=" + param.tanggal_awal + "&tanggal_akhir=" + param.tanggal_akhir + "&jenis_laporan=" + param.getArrayJenisLaporan() + "&id_barang=" + param.getArrayIdKategori() + "&id_kecamatan=" + param.getArrayIdKecamatan();
+                string reqUri = "laporan/getLaporanLostFoundWithFilter?tanggal_awal=" + param.tanggal_awal + "&tanggal_akhir=" + param.tanggal_akhir + "&jenis_laporan=" + param.getArrayJenisLaporan() + "&id_barang=" + param.getArrayIdKategori() + "&id_kecamatan=" + param.id_kecamatan;
                 string responseData = await httpObject.GetRequestWithAuthorization(reqUri, session.getTokenAuthorization());
                 listLaporanLostFound = JsonConvert.DeserializeObject<ObservableCollection<LaporanLostFound>>(responseData);
                 if (listLaporanLostFound.Count == 0)

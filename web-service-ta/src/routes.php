@@ -456,16 +456,16 @@ return function (App $app) {
             $tanggal_awal=$request->getQueryParam('tanggal_awal');
             $tanggal_akhir=$request->getQueryParam('tanggal_awal');
             $array_barang=$request->getQueryParam('id_barang');
-            $array_kecamatan=$request->getQueryParam('id_kecamatan');
+            $id_kecamatan=$request->getQueryParam('id_kecamatan');
             $jenis_laporan=$request->getQueryParam('jenis_laporan');
             $sql = "SELECT lf.id_laporan,lf.judul_laporan,lf.jenis_laporan,lf.status_laporan,lf.tanggal_laporan,lf.waktu_laporan,lf.alamat_laporan,lf.lat_laporan,lf.lng_laporan,lf.deskripsi_barang,lf.deskripsi_barang,lf.id_user_pelapor,u.nama_user AS nama_user_pelapor,count(kl.id_laporan) AS jumlah_komentar,lf.thumbnail_gambar AS thumbnail_gambar FROM laporan_lostfound_barang lf 
                     JOIN user u ON lf.id_user_pelapor=u.id_user 
                     LEFT JOIN komentar_laporan kl ON lf.id_laporan=kl.id_laporan
-                    WHERE lf.status_laporan=1 AND lf.jenis_laporan IN ($jenis_laporan) AND lf.id_kategori_barang IN ($array_barang) AND lf.id_kecamatan IN ($array_kecamatan)  
+                    WHERE lf.status_laporan=1 AND lf.jenis_laporan IN ($jenis_laporan) AND lf.id_kategori_barang IN ($array_barang) AND lf.id_kecamatan=:id_kecamatan  
                     GROUP BY lf.id_laporan 
                     ORDER BY lf.tanggal_laporan DESC, lf.waktu_laporan DESC";
             $stmt = $this->db->prepare($sql);
-            $stmt->execute();
+            $stmt->execute(["id_kecamatan"=>$id_kecamatan]);
             $result = $stmt->fetchAll();
             return $response->withJson($result);
         });
@@ -1102,30 +1102,29 @@ return function (App $app) {
             $message=$body["content"];
             $curl = curl_init();
             $content = array(
-                "en" => $content
+                "en" => $message
             );
             $heading = array(
                 "en" => $heading 
             );
-            $fields = array(
-                'app_id' => "6fd226ba-1d41-4c7b-9f8b-a973a8fd436b",
-                'filters' => array(array("field" => "tag", "key" => "no_handphone", "relation" => "=", "value" => $number)),
-                'contents' => $content,
-                'headings' => $heading
-            );
-            $fields = json_encode($fields);
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, "https://onesignal.com/api/v1/notifications");
-            curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json; charset=utf-8',
-                                                    'Authorization: Basic MDUyNjhlOGEtNDQ4NC00YTYwLWIxYmYtMDZjYTc2OGUwNDc4'));
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-            curl_setopt($ch, CURLOPT_HEADER, FALSE);
-            curl_setopt($ch, CURLOPT_POST, TRUE);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $fields);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-            $res = curl_exec($ch);
-            curl_close($ch);
-            return $response->withJson($res);
+            $data=[
+                "page"=>"2"
+            ];
+            sendOneSignalNotification($number,$content,$heading,$data);
+            return $response->withJson(["status"=>"1"]);
+            // $fields = json_encode($fields);
+            // $ch = curl_init();
+            // curl_setopt($ch, CURLOPT_URL, "https://onesignal.com/api/v1/notifications");
+            // curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json; charset=utf-8',
+            //                                         'Authorization: Basic MDUyNjhlOGEtNDQ4NC00YTYwLWIxYmYtMDZjYTc2OGUwNDc4'));
+            // curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+            // curl_setopt($ch, CURLOPT_HEADER, FALSE);
+            // curl_setopt($ch, CURLOPT_POST, TRUE);
+            // curl_setopt($ch, CURLOPT_POSTFIELDS, $fields);
+            // curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+            // $res = curl_exec($ch);
+            // curl_close($ch);
+            // return $response->withJson($res);
         });
 
         $app->get('/checkHeaderChat', function ($request, $response,$args) {   

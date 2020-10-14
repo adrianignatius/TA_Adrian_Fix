@@ -17,6 +17,7 @@ namespace SahabatSurabaya.Shared.Pages
     public sealed partial class FilterPage : Page
     {
         static int mode;
+        int id_kecamatan = 0;
         ObservableCollection<Kecamatan> listKecamatan;
         List<Kecamatan> listKecamatanSelected;
         List<int> listIdBarangSelected;
@@ -42,7 +43,6 @@ namespace SahabatSurabaya.Shared.Pages
             dtTanggalAwal.MinYear = new DateTime(2020, 1, 31);
             dtTanggalAkhir.MaxYear = new DateTime(2023, 12, 31);
             dtTanggalAkhir.MinYear = new DateTime(2020, 1, 31);
-            session.setFilterState(1);
         }
 
         private void Back_Click(object sender, RoutedEventArgs e)
@@ -56,18 +56,18 @@ namespace SahabatSurabaya.Shared.Pages
             {
                 DateTime tanggal_awal = dtTanggalAwal.Date.DateTime;
                 DateTime tanggal_akhir = dtTanggalAkhir.Date.DateTime;
-                List<int> listIdKecamatanSelected = new List<int>();
-                for (int i = 0; i < listKecamatanSelected.Count; i++)
+                int id_kecamatan = Convert.ToInt32(cbKecamatan.SelectedValue.ToString());
+                var message = new MessageDialog(id_kecamatan.ToString());
+                await message.ShowAsync();
+                if (mode == 0)
                 {
-                    listIdKecamatanSelected.Add(listKecamatanSelected[i].id_kecamatan);
-                }
-                if (mode == 0){
-                    FilterParams param = new FilterParams(tanggal_awal.ToString("yyyy-MM-dd"), tanggal_akhir.ToString("yyyy-MM-dd"), listJenisLaporan, listIdBarangSelected, listIdKecamatanSelected);
+                    FilterParams param = new FilterParams(tanggal_awal.ToString("yyyy-MM-dd"), tanggal_akhir.ToString("yyyy-MM-dd"), listJenisLaporan, listIdBarangSelected, id_kecamatan);
                     session.setFilterParams(param);
                     this.Frame.Navigate(typeof(AllLostFoundReportPage));
                 }
-                else{
-                    FilterParams param = new FilterParams(tanggal_awal.ToString("yyyy-MM-dd"), tanggal_akhir.ToString("yyyy-MM-dd"), null, listIdKejadianSelected, listIdKecamatanSelected);
+                else
+                {
+                    FilterParams param = new FilterParams(tanggal_awal.ToString("yyyy-MM-dd"), tanggal_akhir.ToString("yyyy-MM-dd"), null, listIdKejadianSelected, id_kecamatan);
                     session.setFilterParams(param);
                     this.Frame.Navigate(typeof(AllCrimeReportPage));
                 }
@@ -75,7 +75,7 @@ namespace SahabatSurabaya.Shared.Pages
             else
             {
                 var messageDialog = new MessageDialog("Harap isi semua kriteria yang dibutuhkan untuk pencarian");
-                await messageDialog.ShowAsync();    
+                await messageDialog.ShowAsync();
             }
         }
         private bool validateInput()
@@ -87,7 +87,7 @@ namespace SahabatSurabaya.Shared.Pages
             else
             {
                 if (mode == 0) {
-                    if (listJenisLaporan.Count == 0 || listIdBarangSelected.Count == 0 || listKecamatanSelected.Count == 0)
+                    if (listJenisLaporan.Count == 0 || listIdBarangSelected.Count == 0 || cbKecamatan.SelectedIndex == -1)
                     {
                         return false;
                     }
@@ -97,7 +97,7 @@ namespace SahabatSurabaya.Shared.Pages
                     }
                 }
                 else {
-                    if (listIdKejadianSelected.Count == 0|| listKecamatanSelected.Count == 0)
+                    if (listIdKejadianSelected.Count == 0 || cbKecamatan.SelectedIndex==-1)
                     {
                         return false;
                     }
@@ -110,19 +110,6 @@ namespace SahabatSurabaya.Shared.Pages
             }
         }
 
-        private void flyoutDone(object sender,RoutedEventArgs e)
-        {
-            flyoutKecamatan.Hide();
-            if (listKecamatanSelected.Count > 0)
-            {
-                string kecamatan = "";
-                for (int i = 0; i < listKecamatanSelected.Count; i++)
-                {
-                    kecamatan += listKecamatanSelected[i].nama_kecamatan + ",";
-                }
-                txtStackKecamatan.Text = kecamatan.Substring(0, kecamatan.Length - 1);
-            }
-        }
 
         private void jenisKejadianChecked(object sender, RoutedEventArgs e)
         {
@@ -154,7 +141,7 @@ namespace SahabatSurabaya.Shared.Pages
             listIdBarangSelected.Add(id_barang);
         }
 
-        private void jenisBarangUnchecked(object sender, RoutedEventArgs e)
+        private async void jenisBarangUnchecked(object sender, RoutedEventArgs e)
         {
             int id_barang = Convert.ToInt32((sender as CheckBox).Tag.ToString());
             listIdBarangSelected.Remove(id_barang);
@@ -174,35 +161,14 @@ namespace SahabatSurabaya.Shared.Pages
             listKecamatanSelected.Add(selected);
         }
 
-        private void resetPage()
-        {
-
-            dtTanggalAwal.SelectedDate = null;
-            dtTanggalAkhir.SelectedDate = null;
-            cbBarang1.IsChecked = false;
-            cbBarang2.IsChecked = false;
-            cbBarang3.IsChecked = false;
-            cbBarang4.IsChecked = false;
-            cbBarang5.IsChecked = false;
-            cbBarang6.IsChecked = false;
-            cbBarang7.IsChecked = false;
-            cbJenis1.IsChecked = false;
-            cbJenis2.IsChecked = false;
-            cbKejadian1.IsChecked = false;
-            cbKejadian2.IsChecked = false;
-            cbKejadian3.IsChecked = false;
-            cbKejadian4.IsChecked = false;
-            cbKejadian5.IsChecked = false;
-            cbKejadian6.IsChecked = false;
-        }
-
         protected async override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
             int? state = session.getFilterState();
+            stackLoading.Visibility = Visibility.Visible;
+            stackFilter.Visibility = Visibility.Collapsed;
             var entry = this.Frame.BackStack.LastOrDefault();
             if (entry.SourcePageType == typeof(AllLostFoundReportPage)){
-                stackKejadian.Visibility = Visibility.Collapsed;
                 stackBarang.Visibility = Visibility.Visible;
                 stackJenisLaporan.Visibility = Visibility.Visible;
                 mode = 0;
@@ -210,18 +176,15 @@ namespace SahabatSurabaya.Shared.Pages
             else if(entry.SourcePageType == typeof(AllCrimeReportPage))
             {
                 stackKejadian.Visibility = Visibility.Visible;
-                stackBarang.Visibility = Visibility.Collapsed;
-                stackJenisLaporan.Visibility = Visibility.Collapsed;
                 mode = 1;
             }
-            if (state == 0){
-                resetPage();
-                string responseData = await httpObject.GetRequest("settings/getKecamatan");
-                listKecamatan = JsonConvert.DeserializeObject<ObservableCollection<Kecamatan>>(responseData);
-                gvKecamatan.ItemsSource = listKecamatan;
-                listKecamatanSelected.Clear();
-                txtStackKecamatan.Text = "";
-            }      
+            string responseData = await httpObject.GetRequest("settings/getKecamatan");
+            listKecamatan = JsonConvert.DeserializeObject<ObservableCollection<Kecamatan>>(responseData);
+            cbKecamatan.ItemsSource = listKecamatan;
+            cbKecamatan.DisplayMemberPath = "nama_kecamatan";
+            cbKecamatan.SelectedValuePath = "id_kecamatan";
+            stackLoading.Visibility = Visibility.Collapsed;
+            stackFilter.Visibility = Visibility.Visible;
         }
     }
 }
