@@ -486,7 +486,6 @@ return function (App $app) {
             $tanggal_akhir=$request->getQueryParam('tanggal_awal');
             $array_kejadian=$request->getQueryParam('id_kejadian');
             $array_kecamatan=$request->getQueryParam('id_kecamatan');
-            $jenis_laporan=$request->getQueryParam('jenis_laporan');
             $sql = "SELECT lk.id_laporan,lk.judul_laporan,skk.nama_kategori AS jenis_kejadian,lk.deskripsi_kejadian,lk.tanggal_laporan,lk.waktu_laporan,lk.alamat_laporan,lk.lat_laporan,lk.lng_laporan,lk.id_user_pelapor,u.nama_user AS nama_user_pelapor,lk.status_laporan,COUNT(klk.id_laporan) AS jumlah_konfirmasi,lk.thumbnail_gambar AS thumbnail_gambar FROM user u 
                     JOIN laporan_kriminalitas lk ON lk.id_user_pelapor=u.id_user 
                     LEFT JOIN konfirmasi_laporan_kriminalitas klk ON lk.id_laporan=klk.id_laporan 
@@ -498,7 +497,7 @@ return function (App $app) {
             $result = $stmt->fetchAll();
             return $response->withJson($result);
         });
-        
+
     })->add(function ($request, $response, $next) {
         $headers = $request->getHeader("Authorization");
         if($headers!=null){
