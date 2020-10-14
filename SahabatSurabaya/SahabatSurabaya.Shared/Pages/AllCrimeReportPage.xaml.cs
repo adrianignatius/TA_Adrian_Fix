@@ -5,9 +5,11 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -69,6 +71,10 @@ namespace SahabatSurabaya.Shared.Pages
 
         private void goToFilterPage(object sender, RoutedEventArgs e)
         {
+            if (session.getFilterState() == null)
+            {
+                session.setFilterState(0);
+            }
             this.Frame.Navigate(typeof(FilterPage));
         }
 
@@ -94,21 +100,35 @@ namespace SahabatSurabaya.Shared.Pages
                 FilterParams param = session.getFilterParams();
                 this.Frame.BackStack.RemoveAt(this.Frame.BackStackDepth - 1);
                 this.Frame.BackStack.RemoveAt(this.Frame.BackStackDepth - 1);
-                string reqUri = "laporan/getLaporanKriminalitasWithFilter?tanggal_awal=" + param.tanggal_awal + "&tanggal_akhir=" + param.tanggal_akhir + "&id_kejadian=" + param.getArrayIdKategori() + "&id_kecamatan=" + param.getArrayIdKecamatan();
-                string responseData = await httpObject.GetRequestWithAuthorization(reqUri, session.getTokenAuthorization());
-                listLaporanKriminalitas = JsonConvert.DeserializeObject<ObservableCollection<LaporanKriminalitas>>(responseData);
-                if (listLaporanKriminalitas.Count == 0)
+                var message = new MessageDialog(param.getArrayIdKategori());
+                await message.ShowAsync();
+                using (var client = new HttpClient())
                 {
-                    stackEmpty.Visibility = Visibility.Visible;
-                    svListView.Visibility = Visibility.Collapsed;
-                    stackLoading.Visibility = Visibility.Collapsed;
-                    txtEmptyState.Text = "Tidak ada laporan yang sesuai dengan kriteria pencarian";
+                    client.BaseAddress = new Uri("http://adrian-webservice.ta-istts.com/");
+                    client.DefaultRequestHeaders.Add("Authorization", session.getTokenAuthorization());
+                    string reqUri = "laporan/getLaporanKriminalitasWithFilter?tanggal_awal=" + param.tanggal_awal + "&tanggal_akhir=" + param.tanggal_akhir + "&id_kejadian=" + param.getArrayIdKategori() + "&id_kecamatan=" + param.getArrayIdKecamatan();
+                    HttpResponseMessage response = await client.GetAsync(reqUri);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var m = new MessageDialog(response.Content.ReadAsStringAsync().Result);
+                        await m.ShowAsync();
+                    }
                 }
-                else
-                {
-                    hideLoading();
-                    lvLaporanKriminalitas.ItemsSource = listLaporanKriminalitas;
-                }
+                //string reqUri = "laporan/getLaporanKriminalitasWithFilter?tanggal_awal=" + param.tanggal_awal + "&tanggal_akhir=" + param.tanggal_akhir + "&id_kejadian=" + param.getArrayIdKategori() + "&id_kecamatan=" + param.getArrayIdKecamatan();
+                //string responseData = await httpObject.GetRequestWithAuthorization(reqUri, session.getTokenAuthorization());
+                //listLaporanKriminalitas = JsonConvert.DeserializeObject<ObservableCollection<LaporanKriminalitas>>(responseData);
+                //if (listLaporanKriminalitas.Count == 0)
+                //{
+                //    stackEmpty.Visibility = Visibility.Visible;
+                //    svListView.Visibility = Visibility.Collapsed;
+                //    stackLoading.Visibility = Visibility.Collapsed;
+                //    txtEmptyState.Text = "Tidak ada laporan yang sesuai dengan kriteria pencarian";
+                //}
+                //else
+                //{
+                //    hideLoading();
+                //    lvLaporanKriminalitas.ItemsSource = listLaporanKriminalitas;
+                //}
             }
             else
             {

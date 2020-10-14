@@ -80,20 +80,33 @@ namespace SahabatSurabaya.Shared.Pages
         }
         private bool validateInput()
         {
-            if(dtTanggalAwal.SelectedDate == null || dtTanggalAkhir.SelectedDate == null)
+            if (dtTanggalAwal.SelectedDate == null || dtTanggalAkhir.SelectedDate == null)
             {
                 return false;
             }
             else
             {
-                if (listJenisLaporan.Count == 0 || listIdBarangSelected.Count==0||listKecamatanSelected.Count==0)
-                {
-                    return false;
+                if (mode == 0) {
+                    if (listJenisLaporan.Count == 0 || listIdBarangSelected.Count == 0 || listKecamatanSelected.Count == 0)
+                    {
+                        return false;
+                    }
+                    else
+                    {
+                        return true;
+                    }
                 }
-                else
-                {
-                    return true;
+                else {
+                    if (listIdKejadianSelected.Count == 0|| listKecamatanSelected.Count == 0)
+                    {
+                        return false;
+                    }
+                    else
+                    {
+                        return true;
+                    }
                 }
+                
             }
         }
 
@@ -113,12 +126,14 @@ namespace SahabatSurabaya.Shared.Pages
 
         private void jenisKejadianChecked(object sender, RoutedEventArgs e)
         {
-            
+            int id_kejadian = Convert.ToInt32((sender as CheckBox).Tag.ToString());
+            listIdKejadianSelected.Add(id_kejadian);
         }
 
         private void jenisKejadianUnchecked(object sender, RoutedEventArgs e)
         {
-            
+            int id_kejadian = Convert.ToInt32((sender as CheckBox).Tag.ToString());
+            listIdKejadianSelected.Remove(id_kejadian);
         }
 
         private void jenisLaporanChecked(object sender, RoutedEventArgs e)
