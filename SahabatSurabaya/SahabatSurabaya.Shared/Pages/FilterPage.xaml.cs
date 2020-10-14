@@ -39,10 +39,14 @@ namespace SahabatSurabaya.Shared.Pages
 
         private void pageLoaded(object sender,RoutedEventArgs e)
         {
+            DateTime now = DateTime.Now;
+            DateTime later = now.AddMonths(-1);
             dtTanggalAwal.MaxYear = new DateTime(2023, 12, 31);
             dtTanggalAwal.MinYear = new DateTime(2020, 1, 31);
             dtTanggalAkhir.MaxYear = new DateTime(2023, 12, 31);
             dtTanggalAkhir.MinYear = new DateTime(2020, 1, 31);
+            dtTanggalAwal.Date = now;
+            dtTanggalAkhir.Date = later;
         }
 
         private void Back_Click(object sender, RoutedEventArgs e)
@@ -56,21 +60,28 @@ namespace SahabatSurabaya.Shared.Pages
             {
                 DateTime tanggal_awal = dtTanggalAwal.Date.DateTime;
                 DateTime tanggal_akhir = dtTanggalAkhir.Date.DateTime;
-                int id_kecamatan = Convert.ToInt32(cbKecamatan.SelectedValue.ToString());
-                var message = new MessageDialog(id_kecamatan.ToString());
-                await message.ShowAsync();
-                if (mode == 0)
+                if (DateTime.Compare(tanggal_awal, tanggal_akhir) > 0)
                 {
-                    FilterParams param = new FilterParams(tanggal_awal.ToString("yyyy-MM-dd"), tanggal_akhir.ToString("yyyy-MM-dd"), listJenisLaporan, listIdBarangSelected, id_kecamatan);
-                    session.setFilterParams(param);
-                    this.Frame.Navigate(typeof(AllLostFoundReportPage));
+                    int id_kecamatan = Convert.ToInt32(cbKecamatan.SelectedValue.ToString());
+                    if (mode == 0)
+                    {
+                        FilterParams param = new FilterParams(tanggal_awal.ToString("yyyy-MM-dd"), tanggal_akhir.ToString("yyyy-MM-dd"), listJenisLaporan, listIdBarangSelected, id_kecamatan);
+                        session.setFilterParams(param);
+                        this.Frame.Navigate(typeof(AllLostFoundReportPage));
+                    }
+                    else
+                    {
+                        FilterParams param = new FilterParams(tanggal_awal.ToString("yyyy-MM-dd"), tanggal_akhir.ToString("yyyy-MM-dd"), null, listIdKejadianSelected, id_kecamatan);
+                        session.setFilterParams(param);
+                        this.Frame.Navigate(typeof(AllCrimeReportPage));
+                    }
                 }
                 else
                 {
-                    FilterParams param = new FilterParams(tanggal_awal.ToString("yyyy-MM-dd"), tanggal_akhir.ToString("yyyy-MM-dd"), null, listIdKejadianSelected, id_kecamatan);
-                    session.setFilterParams(param);
-                    this.Frame.Navigate(typeof(AllCrimeReportPage));
+                    var message = new MessageDialog("Tanggal awal tidak boleh lebih besar dari tanggal akhir");
+                    await message.ShowAsync();
                 }
+                
             }
             else
             {
@@ -164,7 +175,6 @@ namespace SahabatSurabaya.Shared.Pages
         protected async override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
-            int? state = session.getFilterState();
             stackLoading.Visibility = Visibility.Visible;
             stackFilter.Visibility = Visibility.Collapsed;
             var entry = this.Frame.BackStack.LastOrDefault();

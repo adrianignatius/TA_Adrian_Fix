@@ -97,12 +97,8 @@ namespace SahabatSurabaya.Shared.Pages
             }
         }
 
-        private async void goToFilterPage(object sender,RoutedEventArgs e)
+        private void goToFilterPage(object sender,RoutedEventArgs e)
         {
-            if (session.getFilterState() == 99)
-            {
-                session.setFilterState(0);
-            }
             this.Frame.Navigate(typeof(FilterPage));
         }
 
