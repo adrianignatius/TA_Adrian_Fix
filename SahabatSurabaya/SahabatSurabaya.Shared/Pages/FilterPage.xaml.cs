@@ -56,13 +56,15 @@ namespace SahabatSurabaya.Shared.Pages
 
         private async void setFilter(object sender,RoutedEventArgs e)
         {
+            var message = new MessageDialog(listIdKejadianSelected.Count.ToString());
+            await message.ShowAsync();
             if (validateInput() == true)
             {
                 DateTime tanggal_awal = dtTanggalAwal.Date.DateTime;
                 DateTime tanggal_akhir = dtTanggalAkhir.Date.DateTime;
                 if (DateTime.Compare(tanggal_awal, tanggal_akhir) > 0)
                 {
-                    var message = new MessageDialog("Tanggal awal tidak boleh lebih besar dari tanggal akhir");
+                    message = new MessageDialog("Tanggal awal tidak boleh lebih besar dari tanggal akhir");
                     await message.ShowAsync();
                 }
                 else
@@ -181,11 +183,14 @@ namespace SahabatSurabaya.Shared.Pages
             if (entry.SourcePageType == typeof(AllLostFoundReportPage)){
                 stackBarang.Visibility = Visibility.Visible;
                 stackJenisLaporan.Visibility = Visibility.Visible;
+                stackKejadian.Visibility = Visibility.Collapsed;
                 mode = 0;
             }
             else if(entry.SourcePageType == typeof(AllCrimeReportPage))
             {
                 stackKejadian.Visibility = Visibility.Visible;
+                stackBarang.Visibility = Visibility.Collapsed;
+                stackJenisLaporan.Visibility = Visibility.Collapsed;
                 mode = 1;
             }
             string responseData = await httpObject.GetRequest("settings/getKecamatan");
