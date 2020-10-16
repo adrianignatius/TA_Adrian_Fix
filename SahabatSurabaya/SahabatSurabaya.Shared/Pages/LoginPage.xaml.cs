@@ -15,8 +15,6 @@ using Com.OneSignal;
 using Com.OneSignal.Abstractions;
 #endif
 
-// The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
-
 namespace SahabatSurabaya.Shared.Pages
 {
     public sealed partial class LoginPage : Page
@@ -40,6 +38,18 @@ namespace SahabatSurabaya.Shared.Pages
             args.Cancel = args.NewText.Any(c => !char.IsDigit(c));
         }
 
+#if __ANDROID__
+        private async static void HandleNotificationOpened(OSNotificationOpenedResult result)
+        {
+            Session session = new Session();
+            OSNotificationPayload payload = result.notification.payload;
+            Dictionary<string, object> additionalData = payload.additionalData;
+            string message = payload.body;
+            var messageDialog = new MessageDialog(message);
+            await messageDialog.ShowAsync();
+        }
+#endif
+
         public async void login(object sender, RoutedEventArgs e)
         {
             if (txtNoHandphone.Text.Length == 0 || txtPassword.Password.Length == 0)
@@ -55,7 +65,7 @@ namespace SahabatSurabaya.Shared.Pages
                     new KeyValuePair<string, string>("telpon_user", txtNoHandphone.Text),
                     new KeyValuePair<string, string>("password_user", txtPassword.Password),
                 });
-                string responseData = await httpObject.PostRequestWithUrlEncoded("user/checkLogin", content);
+                string responseData = await httpObject.PostRequestWithUrlEncoded("checkLogin", content);
                 JObject json = JObject.Parse(responseData);
                 string statusCode = json["status"].ToString();
                 if (statusCode == "200")
@@ -79,7 +89,7 @@ namespace SahabatSurabaya.Shared.Pages
                     else
                     {
 #if __ANDROID__
-                        OneSignal.Current.SendTags(new Dictionary<string, string>() { {"no_handphone", userLogin.telpon_user}, {"tipe_user", userLogin.status_user.ToString()} });               
+                        OneSignal.Current.SendTags(new Dictionary<string, string>() { { "no_handphone", userLogin.telpon_user }, { "tipe_user", userLogin.status_user.ToString() } });
 #endif
                         if (userLogin.status_user == 2)
                         {

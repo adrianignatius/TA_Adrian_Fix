@@ -1,22 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Data;
 
 namespace SahabatSurabaya.Shared.Helper
 {
-    class StatusLaporanConverter:IValueConverter
+    class IconVisibilityConverter:IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            int status = (int)value;
-            if (status == 0)
+            int id = (int)value;
+            if (id == 0)
             {
-                return "Belum diverifikasi";
+                return Visibility.Visible;
             }
             else
             {
-                return "Sudah diverifikasi";
+                return Visibility.Collapsed;
             }
         }
 

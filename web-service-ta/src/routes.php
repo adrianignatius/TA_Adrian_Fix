@@ -27,13 +27,14 @@ function getKecamatan($lat,$lng){
     return $kecamatan;
 }
 
-function sendOneSignalNotification($number,$content,$heading){
+function sendOneSignalNotification($number,$content,$heading,$data){
     $curl = curl_init();
     $fields = array(
         'app_id' => "6fd226ba-1d41-4c7b-9f8b-a973a8fd436b",
         'filters' => array(array("field" => "tag", "key" => "no_handphone", "relation" => "=", "value" => $number)),
         'contents' => $content,
-        'headings' => $heading
+        'headings' => $heading,
+        'data'=>$data
     );
     $fields = json_encode($fields);
     $ch = curl_init();
@@ -66,34 +67,77 @@ return function (App $app) {
     $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
     $dotenv->load();
 
-    $app->get('/getKategoriLostFound', function ($request, $response) {
-        $sql="SELECT * FROM setting_kategori_lostfound";
-        $stmt=$this->db->prepare($sql);
-        $stmt->execute();
-        $result = $stmt->fetchAll();
-        return $response->withJson($result);
+    $app->group('/settings', function() use($app){
+        $app->get('/getAllKantorPolisi', function ($request, $response) {   
+            $sql = "SELECT * FROM kantor_polisi";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute();
+            $result = $stmt->fetchAll();
+            return $response->withJson($result, 200);
+        });
+    
+        $app->get('/getKecamatan',function ($request,$response){
+            $sql="SELECT * FROM kecamatan";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute();
+            $result = $stmt->fetchAll();
+            return $response->withJson($result);
+        });
+
+        $app->get('/getKategoriLostFound', function ($request, $response) {
+            $sql="SELECT * FROM setting_kategori_lostfound";
+            $stmt=$this->db->prepare($sql);
+            $stmt->execute();
+            $result = $stmt->fetchAll();
+            return $response->withJson($result);
+        });
+
+        $app->get('/getKategoriKriminalitas', function ($request, $response) {
+            $sql="SELECT * FROM setting_kategori_kriminalitas";
+            $stmt=$this->db->prepare($sql);
+            $stmt->execute();
+            $result = $stmt->fetchAll();
+            return $response->withJson($result);
+        });
+
+        $app->get('/checkKecamatanAvailable', function ($request, $response) {
+            $lat = $request->getQueryParam('lat');
+            $lng = $request->getQueryParam('lng');
+            $kecamatan=getKecamatan($lat,$lng);
+            $sql="SELECT id_kecamatan FROM kecamatan where nama_kecamatan LIKE '%$kecamatan%'";
+            $stmt=$this->db->prepare($sql);
+            $stmt->execute();
+            $id_kecamatan = $stmt->fetchColumn();
+            if($id_kecamatan==null){
+                return $response->withJson(["status"=>"400","message"=>"Aplikasi ini hanya menjangkau area Surabaya saja"]);
+            }else{
+                return $response->withJson(["status"=>"1","id_kecamatan"=>$id_kecamatan]);
+            }
+        });
     });
 
-    $app->get('/getKategoriKriminalitas', function ($request, $response) {
-        $sql="SELECT * FROM setting_kategori_kriminalitas";
-        $stmt=$this->db->prepare($sql);
-        $stmt->execute();
-        $result = $stmt->fetchAll();
-        return $response->withJson($result);
-    });
-
-    $app->get('/checkKecamatanAvailable', function ($request, $response) {
-        $lat = $request->getQueryParam('lat');
-        $lng = $request->getQueryParam('lng');
-        $kecamatan=getKecamatan($lat,$lng);
-        $sql="SELECT id_kecamatan FROM kecamatan where nama_kecamatan LIKE '%$kecamatan%'";
-        $stmt=$this->db->prepare($sql);
-        $stmt->execute();
-        $id_kecamatan = $stmt->fetchColumn();
-        if($id_kecamatan==null){
-            return $response->withJson(["status"=>"400","message"=>"Aplikasi ini hanya menjangkau area Surabaya saja"]);
-        }else{
-            return $response->withJson(["status"=>"1","id_kecamatan"=>$id_kecamatan]);
+    $app->post('/checkLogin', function ($request, $response) {
+        $body = $request->getParsedBody();
+        $sql = "SELECT u.id_user,u.password_user,u.nama_user,u.telpon_user,u.status_user,u.premium_available_until,u.lokasi_aktif_user,u.id_kecamatan_user,k.nama_kecamatan AS kecamatan_user ,u.status_aktif_user
+                FROM user u LEFT JOIN kecamatan k on k.id_kecamatan=u.id_kecamatan_user WHERE u.telpon_user=:telpon_user";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([":telpon_user"=>$body["telpon_user"]]);
+        $result = $stmt->fetch();
+        if($result!=null){
+            if(password_verify($body["password_user"],$result["password_user"])){
+                $payload = array(
+                    "iss" => "slim-framework",
+                    "sub" => $result["id_user"],
+                    "iat" => time(),
+                    "exp" => time()+86400*7
+                );
+                $token = Token::customPayload($payload, $_ENV['JWT_SECRET']);
+                return $response->withJson(["status" => "200", "data" => $result,"token"=>$token]);
+            }else{
+                return $response->withJson(["status" => "400", "message" =>"Password yang dimasukkan salah"]);
+            }
+        }else{  
+            return $response->withJson(["status" => "404", "message" => "Nomor belum terdaftar"]);  
         }
     });
 
@@ -155,8 +199,9 @@ return function (App $app) {
         $result = Token::validate($body["token"], $_ENV['JWT_SECRET']);
         if($result==true){
             $payload=Token::getPayload($body["token"], $_ENV['JWT_SECRET']);
-            $sql="SELECT * FROM user where id_user=:id_user";
-            $stmt = $this->db->prepare($sql);
+            $sql ="SELECT u.id_user,u.nama_user,u.telpon_user,u.status_user,u.premium_available_until,u.lokasi_aktif_user,u.id_kecamatan_user,k.nama_kecamatan AS kecamatan_user ,u.status_aktif_user
+                    FROM user u LEFT JOIN kecamatan k on k.id_kecamatan=u.id_kecamatan_user WHERE u.id_user=:id_user";
+            $stmt = $this->db->prepare($sql);   
             $stmt->execute([":id_user" => $payload["sub"]]);
             $user=$stmt->fetch();
             return $response->withJson(["status"=>"1","message"=>"Token verified","data"=>$user]);
@@ -164,7 +209,6 @@ return function (App $app) {
             return $response->withJson(["status"=>"400","message"=>"Token not verified"]);
         }
     });
-
     // $app->get('/getHeadlineLaporanLostFound', function ($request, $response) {
     //     $sql = "SELECT lf.id_laporan,lf.judul_laporan,lf.jenis_laporan,lf.tanggal_laporan,lf.waktu_laporan,lf.alamat_laporan,lf.lat_laporan,lf.lng_laporan,lf.deskripsi_barang,lf.deskripsi_barang,lf.id_user_pelapor,u.nama_user as nama_user_pelapor,count(kl.id_laporan) AS jumlah_komentar,gf.nama_file AS thumbnail_gambar FROM laporan_lostfound_barang lf 
     //             JOIN user u ON lf.id_user_pelapor=u.id_user 
@@ -177,80 +221,6 @@ return function (App $app) {
     //     $result = $stmt->fetchAll();
     //     return $response->withJson($result);
     // });
-    $app->get('/getHeadlineLaporanKriminalitas', function ($request, $response) {
-        $sql = "SELECT lk.id_laporan,lk.judul_laporan,skk.nama_kategori AS jenis_kejadian,lk.deskripsi_kejadian,lk.tanggal_laporan,lk.waktu_laporan,lk.alamat_laporan,lk.lat_laporan,lk.lng_laporan,lk.id_user_pelapor,u.nama_user AS nama_user_pelapor, COUNT(kl.id_laporan) AS jumlah_komentar,lk.thumbnail_gambar AS thumbnail_gambar FROM user u 
-                JOIN laporan_kriminalitas lk ON lk.id_user_pelapor=u.id_user 
-                LEFT JOIN komentar_laporan kl ON lk.id_laporan=kl.id_laporan
-                JOIN setting_kategori_kriminalitas skk on skk.id_kategori=lk.id_kategori_kejadian
-                GROUP BY lk.id_laporan ORDER BY lk.tanggal_laporan DESC, lk.waktu_laporan DESC LIMIT 5";
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute();
-        $result = $stmt->fetchAll();
-        return $response->withJson($result);
-    });
-
-    $app->get('/getHeadlineLaporanLostFound', function ($request, $response) {
-        $sql = "SELECT lf.id_laporan,lf.judul_laporan,lf.jenis_laporan,skl.nama_kategori AS jenis_barang,lf.tanggal_laporan,lf.waktu_laporan,lf.alamat_laporan,lf.lat_laporan,lf.lng_laporan,lf.deskripsi_barang,lf.deskripsi_barang,lf.id_user_pelapor,u.nama_user AS nama_user_pelapor,count(kl.id_laporan) AS jumlah_komentar,lf.thumbnail_gambar AS thumbnail_gambar FROM laporan_lostfound_barang lf 
-                JOIN user u ON lf.id_user_pelapor=u.id_user 
-                LEFT JOIN komentar_laporan kl ON lf.id_laporan=kl.id_laporan
-                JOIN setting_kategori_lostfound skl on skl.id_kategori=lf.id_kategori_barang
-                GROUP BY lf.id_laporan 
-                ORDER BY lf.tanggal_laporan DESC, lf.waktu_laporan DESC LIMIT 5";
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute();
-        $result = $stmt->fetchAll();
-        return $response->withJson($result);
-    });
-
-    $app->get('/getLaporanLostFound', function ($request, $response) {
-        $sql = "SELECT lf.id_laporan,lf.judul_laporan,lf.jenis_laporan,skl.nama_kategori AS jenis_barang,lf.tanggal_laporan,lf.waktu_laporan,lf.alamat_laporan,lf.lat_laporan,lf.lng_laporan,lf.deskripsi_barang,lf.deskripsi_barang,lf.id_user_pelapor,u.nama_user AS nama_user_pelapor,count(kl.id_laporan) AS jumlah_komentar,lf.thumbnail_gambar AS thumbnail_gambar FROM laporan_lostfound_barang lf 
-                JOIN user u ON lf.id_user_pelapor=u.id_user 
-                LEFT JOIN komentar_laporan kl ON lf.id_laporan=kl.id_laporan
-                JOIN setting_kategori_lostfound skl on skl.id_kategori=lf.id_kategori_barang
-                GROUP BY lf.id_laporan 
-                ORDER BY lf.tanggal_laporan DESC, lf.waktu_laporan DESC";
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute();
-        $result = $stmt->fetchAll();
-        return $response->withJson($result);
-    });
-
-    $app->get('/getLaporanLostFoundWithFilter', function ($request, $response) {
-        $body=$request->getParsedBody();
-        $jenis_laporan=$body["jenis_laporan"];
-        $tanggal_awal=$body["tanggal_awal"];
-        $tanggal_akhir=$body["tanggal_akhir"];
-        $array_barang=$body["array_barang"];
-        $array_kecamatan=$body["array_kecamatan"]; 
-        $numArray = array_map('intval', jenis_laporan);
-    //     $sql = "SELECT lf.id_laporan,lf.judul_laporan,lf.jenis_laporan,lf.tanggal_laporan,lf.waktu_laporan,lf.alamat_laporan,lf.lat_laporan,lf.lng_laporan,lf.deskripsi_barang,lf.deskripsi_barang,lf.id_user_pelapor,u.nama_user AS nama_user_pelapor,count(kl.id_laporan) AS jumlah_komentar,lf.thumbnail_gambar AS thumbnail_gambar FROM laporan_lostfound_barang lf 
-    //             JOIN user u ON lf.id_user_pelapor=u.id_user 
-    //             LEFT JOIN komentar_laporan kl ON lf.id_laporan=kl.id_laporan
-    //             WHERE lf.jenis_laporan IN (:id_laporan) AND lf.id_kecamatan IN (:array_kecamatan)
-    //             GROUP BY lf.id_laporan 
-    //             ORDER BY lf.tanggal_laporan DESC, lf.waktu_laporan DESC";
-    //     $stmt = $this->db->prepare($sql);
-    //     $data=[
-    //         ":jenis_laporan"=>$jenis_laporan,
-    //         ":array_kecamatan"=>$array_kecamatan
-    //     ];
-    //     $stmt->execute($data);
-    //     $result = $stmt->fetchAll();
-    //     return $response->withJson($result);
-    });
-
-    $app->get('/getLaporanKriminalitas', function ($request, $response) {
-        $sql = "SELECT lk.id_laporan,lk.judul_laporan,skk.nama_kategori AS jenis_kejadian,lk.deskripsi_kejadian,lk.tanggal_laporan,lk.waktu_laporan,lk.alamat_laporan,lk.lat_laporan,lk.lng_laporan,lk.id_user_pelapor,u.nama_user AS nama_user_pelapor, COUNT(kl.id_laporan) AS jumlah_komentar,lk.thumbnail_gambar AS thumbnail_gambar FROM user u 
-                JOIN laporan_kriminalitas lk ON lk.id_user_pelapor=u.id_user 
-                LEFT JOIN komentar_laporan kl ON lk.id_laporan=kl.id_laporan
-                JOIN setting_kategori_kriminalitas skk on skk.id_kategori=lk.id_kategori_kejadian
-                GROUP BY lk.id_laporan ORDER BY lk.tanggal_laporan DESC, lk.waktu_laporan DESC";
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute();
-        $result = $stmt->fetchAll();
-        return $response->withJson($result);
-    });
-    
 
     // $app->get('/getHeadlineLaporanKriminalitas', function ($request, $response) {
     //     $sql = "SELECT lk.id_laporan,lk.judul_laporan,lk.jenis_kejadian,lk.deskripsi_kejadian,lk.tanggal_laporan,lk.waktu_laporan,lk.alamat_laporan,lk.lat_laporan,lk.lng_laporan,lk.id_user_pelapor,u.nama_user AS nama_user_pelapor, COUNT(kl.id_laporan) AS jumlah_komentar,gk.nama_file AS thumbnail_gambar FROM user u 
@@ -264,22 +234,295 @@ return function (App $app) {
     //     return $response->withJson($result);
     // });
 
-    $app->get('/getAllKantorPolisi', function ($request, $response) {   
-        $sql = "SELECT * FROM kantor_polisi";
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute();
-        $result = $stmt->fetchAll();
-        return $response->withJson($result, 200);
+    
+    
+    $app->group('/kepalaKeamanan',function() use($app){
+        $app->get('/getLaporanLostFound/{id_kecamatan}',function($request,$response,$args){
+            $id_kecamatan=$args["id_kecamatan"];
+            $sql="SELECT lf.id_laporan,lf.judul_laporan,lf.jenis_laporan,skl.nama_kategori AS jenis_barang,lf.tanggal_laporan,lf.waktu_laporan,lf.alamat_laporan,lf.lat_laporan,lf.lng_laporan,lf.deskripsi_barang,lf.deskripsi_barang,lf.id_user_pelapor,u.nama_user AS nama_user_pelapor,count(kl.id_laporan) AS jumlah_komentar,lf.thumbnail_gambar AS thumbnail_gambar FROM laporan_lostfound_barang lf 
+                JOIN user u ON lf.id_user_pelapor=u.id_user 
+                LEFT JOIN komentar_laporan kl ON lf.id_laporan=kl.id_laporan
+                JOIN setting_kategori_lostfound skl on skl.id_kategori=lf.id_kategori_barang
+                WHERE lf.id_kecamatan=:id_kecamatan
+                GROUP BY lf.id_laporan 
+                ORDER BY lf.tanggal_laporan DESC, lf.waktu_laporan DESC";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([":id_kecamatan"=>$id_kecamatan]);
+            $result=$stmt->fetchAll();
+            return $response->withJson($result);
+        });
+
+        $app->get('/getLaporanKriminalitas/{id_kecamatan}',function($request,$response,$args){
+            $id_kecamatan=$args["id_kecamatan"];
+            $sql="SELECT lk.id_laporan,lk.judul_laporan,lk.status_laporan,skk.nama_kategori AS jenis_kejadian,lk.deskripsi_kejadian,lk.tanggal_laporan,lk.waktu_laporan,lk.alamat_laporan,lk.lat_laporan,lk.lng_laporan,lk.id_user_pelapor,u.nama_user AS nama_user_pelapor, COUNT(kl.id_laporan) AS jumlah_komentar,lk.thumbnail_gambar AS thumbnail_gambar FROM user u 
+                JOIN laporan_kriminalitas lk ON lk.id_user_pelapor=u.id_user 
+                LEFT JOIN komentar_laporan kl ON lk.id_laporan=kl.id_laporan
+                JOIN setting_kategori_kriminalitas skk on skk.id_kategori=lk.id_kategori_kejadian
+                WHERE lk.id_kecamatan=:id_kecamatan AND lk.status_laporan=1
+                GROUP BY lk.id_laporan ORDER BY lk.tanggal_laporan DESC, lk.waktu_laporan DESC";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([":id_kecamatan"=>$id_kecamatan]);
+            $result=$stmt->fetchAll();
+            return $response->withJson($result);
+        });
+    })->add(function ($request, $response, $next) {
+        $headers = $request->getHeader("Authorization");
+        if($headers!=null){
+            $result = Token::validate($headers[0], $_ENV['JWT_SECRET']);
+            if($result==false){
+                return $response->withJson(["status"=>"400","message"=>"Token not valid"]);
+            }else{
+                $response = $next($request, $response);
+                return $response;
+            }         
+        }else{
+            return $response->withJson(["status"=>"404","message"=>"Token not found"]);
+        }
     });
 
-    $app->get('/getKecamatan',function ($request,$response){
-        $sql="SELECT * FROM kecamatan";
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute();
-        $result = $stmt->fetchAll();
-        return $response->withJson($result);
-    });
+    $app->group('/laporan', function() use($app){
+        $app->post('/insertLaporanLostFound', function(Request $request, Response $response) {
+            $new_laporan = $request->getParsedBody();
+            $time=date('H:i');
+            $formatDate=date('Y').date('m').date('d');
+            $id_laporan="LF".date('d').date('m').date('Y');
+            $sql="SELECT COUNT(*)+1 from laporan_lostfound_barang where id_laporan like'%$id_laporan%'";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute();
+            $result = $stmt->fetchColumn();           
+            $uploadedFiles = $request->getUploadedFiles();
+            $id_laporan=$id_laporan.str_pad($result,5,"0",STR_PAD_LEFT);  
+            $uploadedFile = $uploadedFiles['image'];
+            $extension = pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION);
+            $filename=$id_laporan.".".$extension;
+            $sql = "INSERT INTO laporan_lostfound_barang VALUES(:id_laporan,:judul_laporan,:jenis_laporan,:id_kategori_barang,:tanggal_laporan,:waktu_laporan,:alamat_laporan,:lat_laporan,:lng_laporan,:deskripsi_barang,:id_user_pelapor,:status_laporan,:id_kecamatan,:thumbnail_gambar) ";
+            $stmt = $this->db->prepare($sql);
+            $data = [
+                ":id_laporan" => $id_laporan,
+                ":judul_laporan"=>$new_laporan["judul_laporan"],
+                ":jenis_laporan" => $new_laporan["jenis_laporan"],
+                ":id_kategori_barang"=> $new_laporan["id_kategori_barang"],
+                ":tanggal_laporan"=>$formatDate,
+                ":waktu_laporan"=>$time,
+                ":alamat_laporan"=>$new_laporan["alamat_laporan"],
+                ":lat_laporan"=>$new_laporan["lat_laporan"],
+                ":lng_laporan"=>$new_laporan["lng_laporan"],
+                ":deskripsi_barang"=>$new_laporan["deskripsi_barang"],
+                ":id_user_pelapor"=>$new_laporan["id_user_pelapor"],
+                ":status_laporan"=>0,
+                ":id_kecamatan"=>$new_laporan["id_kecamatan"],
+                ":thumbnail_gambar"=>$filename
+            ];
+            if($stmt->execute($data)){
+                if($uploadedFiles!=null){
+                    $directory = $this->get('settings')['upload_directory'];
+                    $uploadedFile->moveTo($directory . DIRECTORY_SEPARATOR . $filename);
+                }
+                return $response->withJson(["status"=>"1","message"=>"Tambah laporan berhasil"]);
+            }else{
+                return $response->withJson(["status"=>"99","message"=>"Tambah laporan gagal, silahkan coba beberapa saat lagi"]);
+            }
+        });
+
+        $app->post('/insertLaporanKriminalitas', function(Request $request, Response $response,$args) {
+            $new_laporan = $request->getParsedBody();
+            $time=date('H:i');
+            $formatDate=date('Y').date('m').date('d');
+            $id_laporan="CR".date('d').date('m').date('Y');
+            $sql="SELECT COUNT(*)+1 from laporan_kriminalitas where id_laporan like'%$id_laporan%'";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute();
+            $result = $stmt->fetchColumn();     
+            $uploadedFiles = $request->getUploadedFiles();
+            $id_laporan=$id_laporan.str_pad($result,5,"0",STR_PAD_LEFT);    
+            $filename="no-image.png";
+            if($uploadedFiles!=null){
+                $uploadedFile = $uploadedFiles['image'];
+                $extension = pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION);
+                $filename=$id_laporan.".".$extension;
+            }      
+            $kecamatan=getKecamatan($new_laporan["lat_laporan"],$new_laporan["lng_laporan"]);
+            $sql = "INSERT INTO laporan_kriminalitas VALUES(:id_laporan,:judul_laporan,:id_kategori_kejadian,:deskripsi_kejadian,:tanggal_laporan,:waktu_laporan,:alamat_laporan,:lat_laporan,:lng_laporan,:id_user_pelapor,:status_laporan,:id_kecamatan,:thumbnail_gambar) ";
+            $stmt = $this->db->prepare($sql);
+            $data = [
+                ":id_laporan" => $id_laporan,
+                ":judul_laporan"=>$new_laporan["judul_laporan"],
+                ":id_kategori_kejadian" => $new_laporan["id_kategori_kejadian"],
+                ":deskripsi_kejadian"=>$new_laporan["deskripsi_kejadian"],
+                ":tanggal_laporan"=>$formatDate,
+                ":waktu_laporan"=>$time,
+                ":alamat_laporan"=>$new_laporan["alamat_laporan"],
+                ":lat_laporan"=>$new_laporan["lat_laporan"],
+                ":lng_laporan"=>$new_laporan["lng_laporan"],
+                ":id_user_pelapor"=>$new_laporan["id_user_pelapor"],
+                ":status_laporan"=>0,
+                ":id_kecamatan"=>$new_laporan["id_kecamatan"],
+                ":thumbnail_gambar"=>$filename
+            ];
+            if($stmt->execute($data)){
+                if($uploadedFiles!=null){
+                    $directory = $this->get('settings')['upload_directory'];
+                    $uploadedFile->moveTo($directory . DIRECTORY_SEPARATOR . $filename);
+                }
+                return $response->withJson(["status"=>"1","message"=>"Tambah laporan berhasil"]);
+            }else{
+                return $response->withJson(["status"=>"99","message"=>"Tambah laporan gagal, silahkan coba beberapa saat lagi"]);
+            }
+        });
+
+        $app->get('/getKomentarLaporan/{id_laporan}', function ($request, $response,$args) {
+            $id_laporan=$args["id_laporan"];
+            $sql = "SELECT kl.id_komentar,kl.id_laporan,kl.isi_komentar,kl.tanggal_komentar,kl.waktu_komentar,u.nama_user AS nama_user_komentar
+                    FROM komentar_laporan kl, user u 
+                    WHERE kl.id_user_komentar=u.id_user and kl.id_laporan=:id_laporan
+                    ORDER BY kl.tanggal_komentar DESC, kl.waktu_komentar DESC";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([":id_laporan" => $id_laporan]);
+            $result = $stmt->fetchAll();
+            return $response->withJson($result, 200);
+        });
+
+        $app->get('/getHeadlineLaporanKriminalitas', function ($request, $response) {
+            $sql = "SELECT 0 AS kategori_laporan,lk.id_laporan,lk.judul_laporan,skk.nama_kategori AS jenis_kejadian,lk.deskripsi_kejadian,lk.tanggal_laporan,lk.waktu_laporan,lk.alamat_laporan,lk.lat_laporan,lk.lng_laporan,lk.id_user_pelapor,u.nama_user AS nama_user_pelapor,lk.status_laporan, COUNT(kl.id_laporan) AS jumlah_komentar,COUNT(klk.id_laporan) AS jumlah_konfirmasi,lk.thumbnail_gambar AS thumbnail_gambar FROM user u 
+                    JOIN laporan_kriminalitas lk ON lk.id_user_pelapor=u.id_user 
+                    LEFT JOIN komentar_laporan kl ON lk.id_laporan=kl.id_laporan 
+                    LEFT JOIN konfirmasi_laporan_kriminalitas klk ON lk.id_laporan=klk.id_laporan 
+                    JOIN setting_kategori_kriminalitas skk on skk.id_kategori=lk.id_kategori_kejadian 
+                    WHERE lk.status_laporan=1 GROUP BY lk.id_laporan ORDER BY lk.tanggal_laporan DESC, lk.waktu_laporan DESC LIMIT 5";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute();
+            $result = $stmt->fetchAll();
+            return $response->withJson($result);
+        });
+
+        $app->post('/konfirmasiLaporanKriminalitas',function ($request,$response){
+            $body = $request->getParsedBody();
+            $sql="INSERT INTO konfirmasi_laporan_kriminalitas VALUES(:id_laporan,:id_user)";
+            $stmt = $this->db->prepare($sql);
+            $data=[
+                ":id_laporan"=>$body["id_laporan"],
+                ":id_user"=>$body["id_user"]
+            ];
+            if($stmt->execute($data)){
+                return $response->withJson(["status" => "1", "message" => "Konfirmasi Laporan Berhasil"], 200);
+            }else{
+                return $response->withJson(["status" => "400", "message" => "Konfirmasi Laporan Gagal"], 200);
+            }
+        });
+
+        $app->get('/checkKonfirmasiLaporan',function ($request,$response){
+            $id_laporan = $request->getQueryParam('id_laporan');
+            $id_user = $request->getQueryParam('id_user');
+            $sql="SELECT COUNT(*) FROM konfirmasi_laporan_kriminalitas WHERE id_laporan=:id_laporan AND id_user=:id_user";
+            $stmt = $this->db->prepare($sql);
+            $data=[
+                ":id_laporan"=>$id_laporan,
+                ":id_user"=>$id_user
+            ];
+            $stmt->execute($data);
+            $result = $stmt->fetchColumn();
+            return $response->withJson(["count"=>$result]);
+        });
     
+        $app->get('/getHeadlineLaporanLostFound', function ($request, $response) {
+            $sql = "SELECT 1 as kategori_laporan,lf.id_laporan,lf.judul_laporan,lf.jenis_laporan,skl.nama_kategori AS jenis_barang,lf.tanggal_laporan,lf.waktu_laporan,lf.alamat_laporan,lf.lat_laporan,lf.lng_laporan,lf.deskripsi_barang,lf.deskripsi_barang,lf.id_user_pelapor,u.nama_user AS nama_user_pelapor,lf.status_laporan, COUNT(kl.id_laporan) AS jumlah_komentar,lf.thumbnail_gambar AS thumbnail_gambar FROM laporan_lostfound_barang lf 
+                    JOIN user u ON lf.id_user_pelapor=u.id_user 
+                    LEFT JOIN komentar_laporan kl ON lf.id_laporan=kl.id_laporan
+                    JOIN setting_kategori_lostfound skl on skl.id_kategori=lf.id_kategori_barang
+                    WHERE lf.status_laporan=1
+                    GROUP BY lf.id_laporan 
+                    ORDER BY lf.tanggal_laporan DESC, lf.waktu_laporan DESC LIMIT 5";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute();
+            $result = $stmt->fetchAll();
+            return $response->withJson($result);
+        });
+    
+        $app->get('/getLaporanLostFound', function ($request, $response) {
+            $sql = "SELECT lf.id_laporan,lf.judul_laporan,lf.jenis_laporan,lf.status_laporan,skl.nama_kategori AS jenis_barang,lf.tanggal_laporan,lf.waktu_laporan,lf.alamat_laporan,lf.lat_laporan,lf.lng_laporan,lf.deskripsi_barang,lf.deskripsi_barang,lf.id_user_pelapor,u.nama_user AS nama_user_pelapor,count(kl.id_laporan) AS jumlah_komentar,lf.thumbnail_gambar AS thumbnail_gambar FROM laporan_lostfound_barang lf 
+                    JOIN user u ON lf.id_user_pelapor=u.id_user 
+                    LEFT JOIN komentar_laporan kl ON lf.id_laporan=kl.id_laporan
+                    JOIN setting_kategori_lostfound skl on skl.id_kategori=lf.id_kategori_barang
+                    WHERE lf.status_laporan=1
+                    GROUP BY lf.id_laporan
+                    ORDER BY lf.tanggal_laporan DESC, lf.waktu_laporan DESC";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute();
+            $result = $stmt->fetchAll();
+            return $response->withJson($result);
+        });
+    
+        $app->get('/getLaporanLostFoundWithFilter', function ($request, $response) {
+            $tanggal_awal=$request->getQueryParam('tanggal_awal');
+            $tanggal_akhir=$request->getQueryParam('tanggal_akhir');
+            $array_barang=$request->getQueryParam('id_barang');
+            $id_kecamatan=$request->getQueryParam('id_kecamatan');
+            $jenis_laporan=$request->getQueryParam('jenis_laporan');
+            $sql = "SELECT lf.id_laporan,lf.judul_laporan,lf.jenis_laporan,lf.status_laporan,lf.tanggal_laporan,lf.waktu_laporan,lf.alamat_laporan,lf.lat_laporan,lf.lng_laporan,lf.deskripsi_barang,lf.deskripsi_barang,lf.id_user_pelapor,u.nama_user AS nama_user_pelapor,count(kl.id_laporan) AS jumlah_komentar,lf.thumbnail_gambar AS thumbnail_gambar FROM laporan_lostfound_barang lf 
+                    JOIN user u ON lf.id_user_pelapor=u.id_user 
+                    LEFT JOIN komentar_laporan kl ON lf.id_laporan=kl.id_laporan
+                    WHERE lf.status_laporan=1 AND lf.jenis_laporan IN ($jenis_laporan) AND lf.id_kategori_barang IN ($array_barang) AND lf.id_kecamatan=:id_kecamatan AND (lf.tanggal_laporan BETWEEN :tanggal_awal AND :tanggal_akhir)
+                    GROUP BY lf.id_laporan 
+                    ORDER BY lf.tanggal_laporan DESC, lf.waktu_laporan DESC";
+            $stmt = $this->db->prepare($sql);
+            $data=[
+                ":id_kecamatan"=>$id_kecamatan,
+                ":tanggal_awal"=>$tanggal_awal,
+                ":tanggal_akhir"=>$tanggal_akhir
+            ];
+            $stmt->execute($data);
+            $result = $stmt->fetchAll();
+            return $response->withJson($result);
+        });
+        $app->get('/getLaporanKriminalitas', function ($request, $response) {
+            $sql = "SELECT lk.id_laporan,lk.judul_laporan,skk.nama_kategori AS jenis_kejadian,lk.deskripsi_kejadian,lk.tanggal_laporan,lk.waktu_laporan,lk.alamat_laporan,lk.lat_laporan,lk.lng_laporan,lk.id_user_pelapor,u.nama_user AS nama_user_pelapor,lk.status_laporan,COUNT(klk.id_laporan) AS jumlah_konfirmasi,lk.thumbnail_gambar AS thumbnail_gambar FROM user u 
+                    JOIN laporan_kriminalitas lk ON lk.id_user_pelapor=u.id_user 
+                    LEFT JOIN konfirmasi_laporan_kriminalitas klk ON lk.id_laporan=klk.id_laporan 
+                    JOIN setting_kategori_kriminalitas skk on skk.id_kategori=lk.id_kategori_kejadian 
+                    WHERE lk.status_laporan=1 GROUP BY lk.id_laporan ORDER BY lk.tanggal_laporan DESC, lk.waktu_laporan DESC";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute();
+            $result = $stmt->fetchAll();
+            return $response->withJson($result);
+        });
+
+        $app->get('/getLaporanKriminalitasWithFilter', function ($request, $response) {
+            $tanggal_awal=$request->getQueryParam('tanggal_awal');
+            $tanggal_akhir=$request->getQueryParam('tanggal_akhir');
+            $array_kejadian=$request->getQueryParam('id_kejadian');
+            $id_kecamatan=$request->getQueryParam('id_kecamatan');
+            $sql = "SELECT lk.id_laporan,lk.judul_laporan,skk.nama_kategori AS jenis_kejadian,lk.deskripsi_kejadian,lk.tanggal_laporan,lk.waktu_laporan,lk.alamat_laporan,lk.lat_laporan,lk.lng_laporan,lk.id_user_pelapor,u.nama_user AS nama_user_pelapor,lk.status_laporan,COUNT(klk.id_laporan) AS jumlah_konfirmasi,lk.thumbnail_gambar AS thumbnail_gambar FROM user u 
+                    JOIN laporan_kriminalitas lk ON lk.id_user_pelapor=u.id_user 
+                    LEFT JOIN konfirmasi_laporan_kriminalitas klk ON lk.id_laporan=klk.id_laporan 
+                    JOIN setting_kategori_kriminalitas skk on skk.id_kategori=lk.id_kategori_kejadian 
+                    WHERE lk.status_laporan=1 AND lk.id_kategori_kejadian IN ($array_kejadian) AND lk.id_kecamatan=:id_kecamatan AND (lk.tanggal_laporan BETWEEN :tanggal_awal AND :tanggal_akhir)
+                    GROUP BY lk.id_laporan ORDER BY lk.tanggal_laporan DESC, lk.waktu_laporan DESC";
+            $stmt = $this->db->prepare($sql);
+            $data=[
+                ":id_kecamatan"=>$id_kecamatan,
+                ":tanggal_awal"=>$tanggal_awal,
+                ":tanggal_akhir"=>$tanggal_akhir
+            ];
+            $stmt->execute($data);
+            $result = $stmt->fetchAll();
+            return $response->withJson($result);
+        });
+
+    })->add(function ($request, $response, $next) {
+        $headers = $request->getHeader("Authorization");
+        if($headers!=null){
+            $result = Token::validate($headers[0], $_ENV['JWT_SECRET']);
+            if($result==false){
+                return $response->withJson(["status"=>"400","message"=>"Token not valid"]);
+            }else{
+                $response = $next($request, $response);
+                return $response;
+            }         
+        }else{
+            return $response->withJson(["status"=>"404","message"=>"Token not found"]);
+        }
+    });
+
     $app->group('/admin', function() use($app){
         $app->put('/verifikasiLaporanLostFound/{id_laporan}',function ($request,$response,$args){
             $id_laporan=$args["id_laporan"];
@@ -287,7 +530,9 @@ return function (App $app) {
             $stmt = $this->db->prepare($sql);
             $stmt->execute(["id_laporan"=>$id_laporan]);
             if($stmt->execute()){
-                $sql="SELECT lf.lat_laporan,lf.lng_laporan,lf.jenis_laporan,lf.alamat_laporan,skl.nama_kategori AS jenis_barang FROM laporan_lostfound_barang lf,setting_kategori_lostfound skl WHERE lf.id_laporan=:id_laporan AND lf.id_kategori_barang=skl.id_kategori;";
+                $sql="SELECT lf.id_laporan,lf.judul_laporan,lf.tanggal_laporan,lf.waktu_laporan,lf.alamat_laporan,lf.deskripsi_barang,lf.thumbnail_gambar,lf.lat_laporan,lf.lng_laporan,lf.jenis_laporan,lf.alamat_laporan,lf.id_user_pelapor,lf.status_laporan,u.nama_user 
+                    AS nama_user_pelapor,skl.nama_kategori AS jenis_barang 
+                    FROM laporan_lostfound_barang lf,setting_kategori_lostfound skl,user u WHERE lf.id_laporan=:id_laporan AND lf.id_kategori_barang=skl.id_kategori AND lf.id_user_pelapor=u.id_user";
                 $stmt= $this->db->prepare($sql);
                 $stmt->execute(["id_laporan"=>$id_laporan]);
                 $laporan=$stmt->fetch();
@@ -308,12 +553,31 @@ return function (App $app) {
                 $heading = array(
                     "en" => "Cek laporan " .$display_jenis_laporan." barang baru didaerahmu!"
                 );
+                $tag=$laporan["jenis_laporan"] == 0 ? "Penemuan barang":"Kehilangan barang";
+                $jenis_laporan=$laporan["jenis_laporan"] == 0 ? "Penemuan ".$laporan["jenis_barang"] : "Kehilangan ".$laporan["jenis_barang"]; 
+                $data=array(
+                    "page"=>"1",
+                    "id_laporan"=>$laporan["id_laporan"],
+                    "judul_laporan"=>$laporan["judul_laporan"],
+                    "jenis_laporan"=>$jenis_laporan,
+                    "alamat_laporan"=>$laporan["alamat_laporan"],
+                    "tanggal_laporan"=>$laporan["tanggal_laporan"],
+                    "waktu_laporan"=>$laporan["waktu_laporan"],
+                    "lat_laporan"=>$laporan["lat_laporan"],
+                    "lng_laporan"=>$laporan["lng_laporan"],
+                    "deskripsi_laporan"=>$laporan["deskripsi_barang"],
+                    "tag"=>$tag,
+                    "id_user_pelapor"=>$laporan["id_user_pelapor"],
+                    "nama_user_pelapor"=>$laporan["nama_user_pelapor"],
+                    "status_laporan"=>$laporan["status_laporan"],
+                    "thumbnail_gambar"=>$laporan["thumbnail_gambar"],
+                );
                 foreach($result as $user){
-                    sendOneSignalNotification($user["telpon_user"],$content,$heading);
+                    sendOneSignalNotification($user["telpon_user"],$content,$heading,$data);
                 }
-                return $response->withJson(["status"=>"1","message"=>"Laporan berhasil dikonfirmasi"]);
+                return $response->withJson(["status"=>"1","message"=>"Laporan berhasil dikonfirmasi",]);
             }else{
-                return $response->withJson(["status"=>"400","message"=>"Laporan gagal dikonfirmasi"]);
+                return $response->withJson(["status"=>"400","message"=>"Laporan gagal dikonfirmasi"]);  
             }
         });
 
@@ -323,7 +587,11 @@ return function (App $app) {
             $stmt = $this->db->prepare($sql);
             $stmt->execute(["id_laporan"=>$id_laporan]);
             if($stmt->execute()){
-                $sql="SELECT lk.lat_laporan,lk.lng_laporan,lk.alamat_laporan,skk.nama_kategori AS jenis_kejadian,lk.id_kecamatan FROM laporan_kriminalitas lk,setting_kategori_kriminalitas skk WHERE lk.id_laporan=:id_laporan AND lk.id_kategori_kejadian=skk.id_kategori;";
+                $sql="SELECT lk.id_laporan,lk.judul_laporan,lk.tanggal_laporan,lk.waktu_laporan,lk.alamat_laporan,lk.deskripsi_kejadian,lk.thumbnail_gambar,lk.lat_laporan,lk.lng_laporan,lk.alamat_laporan,lk.id_user_pelapor,lk.status_laporan,u.nama_user AS nama_user_pelapor,
+                     skk.nama_kategori AS jenis_kejadian,lk.id_kecamatan,COUNT(klk.id_laporan) AS jumlah_konfirmasi 
+                     FROM laporan_kriminalitas lk LEFT JOIN konfirmasi_laporan_kriminalitas klk ON klk.id_laporan=lk.id_laporan 
+                     JOIN setting_kategori_kriminalitas skk ON lk.id_kategori_kejadian=skk.id_kategori JOIN user u ON lk.id_user_pelapor=u.id_user WHERE lk.id_laporan=:id_laporan";
+                //$sql="SELECT lk.lat_laporan,lk.lng_laporan,lk.alamat_laporan,skk.nama_kategori AS jenis_kejadian,lk.id_kecamatan FROM laporan_kriminalitas lk,setting_kategori_kriminalitas skk WHERE lk.id_laporan=:id_laporan AND lk.id_kategori_kejadian=skk.id_kategori;";
                 $stmt= $this->db->prepare($sql);
                 $stmt->execute(["id_laporan"=>$id_laporan]);
                 $laporan=$stmt->fetch();
@@ -338,11 +606,28 @@ return function (App $app) {
                 $heading = array(
                     "en" => "Cek laporan baru di area pengawasan anda!"
                 );
-                return $response->withJson($result);
-                // foreach($result as $user){
-                //     sendOneSignalNotification($user["telpon_user"],$content,$heading);
-                // }
-                //return $response->withJson(["status"=>"1","message"=>"Laporan berhasil dikonfirmasi"]);
+                $data=array(
+                    "page"=>"1",
+                    "id_laporan"=>$laporan["id_laporan"],
+                    "judul_laporan"=>$laporan["judul_laporan"],
+                    "jenis_laporan"=>$laporan["jenis_kejadian"],
+                    "alamat_laporan"=>$laporan["alamat_laporan"],
+                    "tanggal_laporan"=>$laporan["tanggal_laporan"],
+                    "waktu_laporan"=>$laporan["waktu_laporan"],
+                    "lat_laporan"=>$laporan["lat_laporan"],
+                    "lng_laporan"=>$laporan["lng_laporan"],
+                    "deskripsi_laporan"=>$laporan["deskripsi_kejadian"],
+                    "tag"=>"kriminalitas",
+                    "id_user_pelapor"=>$laporan["id_user_pelapor"],
+                    "nama_user_pelapor"=>$laporan["nama_user_pelapor"],
+                    "status_laporan"=>$laporan["status_laporan"],
+                    "thumbnail_gambar"=>$laporan["thumbnail_gambar"],
+                    "jumlah_konfirmasi"=>$laporan["jumlah_konfirmasi"]
+                );
+                foreach($result as $user){
+                    sendOneSignalNotification($user["telpon_user"],$content,$heading,$data);
+                }
+                return $response->withJson(["status"=>"1","message"=>"Laporan berhasil dikonfirmasi"]);
             }else{
                 return $response->withJson(["status"=>"400","message"=>"Laporan gagal dikonfirmasi"]);
             }
@@ -463,35 +748,6 @@ return function (App $app) {
             }
         });
     });
-    
-    $app->group('/kepalaKeamanan',function() use($app){
-        $app->get('/getLaporanLostFound/{kecamatan}',function($request,$response,$args){
-            $kecamatan=$args["kecamatan"];
-            $sql="SELECT * FROM laporan_lostfound_barang WHERE kecamatan LIKE '%$kecamatan%'";
-            $stmt = $this->db->prepare($sql);
-            $stmt->execute([":kecamatan" => $kecamatan]);
-            $result=$stmt->fetchAll();
-            return $response->withJson($result);
-        });
-
-        $app->get('/getLaporanKriminalitas/{kecamatan}',function($request,$response,$args){
-            $kecamatan=$args["kecamatan"];
-            $sql="SELECT * FROM laporan_kriminalitas WHERE kecamatan LIKE '%$kecamatan%'";
-            $stmt = $this->db->prepare($sql);
-            $stmt->execute([":kecamatan" => $kecamatan]);
-            $result=$stmt->fetchAll();
-            return $response->withJson($result);
-        });
-    });
-    // ->add(function ($request, $response, $next) {
-    //     $headers = $request->getHeader("Authorization");
-    //     if($headers!=null){
-    //         $response = $next($request, $response);
-    //         return $response;
-    //     }else{
-    //         return $response->withJson('No Token');
-    //     }
-    // });
 
     $app->group('/user', function () use ($app) {
         $app->put('/updateProfile',function ($request, $response){
@@ -619,30 +875,6 @@ return function (App $app) {
             }
         });
 
-        $app->post('/checkLogin', function ($request, $response) {
-            $body = $request->getParsedBody();
-            $sql = "SELECT * FROM user where telpon_user='".$body["telpon_user"]."'";
-            $stmt = $this->db->prepare($sql);
-            $stmt->execute();
-            $result = $stmt->fetch();
-            if($result!=null){
-                if(password_verify($body["password_user"],$result["password_user"])){
-                    $payload = array(
-                        "iss" => "slim-framework",
-                        "sub" => $result["id_user"],
-                        "iat" => time(),
-                        "exp" => time()+86400*7
-                    );
-                    $token = Token::customPayload($payload, $_ENV['JWT_SECRET']);
-                    return $response->withJson(["status" => "200", "data" => $result,"token"=>$token]);
-                }else{
-                    return $response->withJson(["status" => "400", "message" =>"Password yang dimasukkan salah"]);
-                }
-            }else{  
-                return $response->withJson(["status" => "404", "message" => "Nomor belum terdaftar"]);  
-            }
-        });
-
         $app->get('/getUser/{id}', function ($request, $response,$args) {
             $id=$args["id"];
             $sql = "SELECT id_user,nama_user,telpon_user,status_user,premium_available_until,lokasi_aktif_user,kecamatan_user,status_aktif_user FROM user where id_user=:id";
@@ -654,7 +886,13 @@ return function (App $app) {
 
         $app->get('/getHistoryLaporanLostFound/{id_user}', function ($request, $response,$args) {
             $id_user=$args["id_user"];
-            $sql = "SELECT * FROM laporan_lostfound_barang where id_user_pelapor=:id_user";
+            $sql="SELECT lf.id_laporan,lf.judul_laporan,lf.jenis_laporan,skl.nama_kategori AS jenis_barang,lf.tanggal_laporan,lf.waktu_laporan,lf.alamat_laporan,lf.lat_laporan,lf.lng_laporan,lf.deskripsi_barang,lf.deskripsi_barang,lf.id_user_pelapor,lf.status_laporan,u.nama_user AS nama_user_pelapor,count(kl.id_laporan) AS jumlah_komentar,lf.thumbnail_gambar AS thumbnail_gambar FROM laporan_lostfound_barang lf 
+                    JOIN user u ON lf.id_user_pelapor=u.id_user 
+                    LEFT JOIN komentar_laporan kl ON lf.id_laporan=kl.id_laporan
+                    JOIN setting_kategori_lostfound skl on skl.id_kategori=lf.id_kategori_barang
+                    WHERE lf.id_user_pelapor=:id_user
+                    GROUP BY lf.id_laporan 
+                    ORDER BY lf.tanggal_laporan DESC, lf.waktu_laporan DESC";
             $stmt = $this->db->prepare($sql);
             $stmt->execute([":id_user" => $id_user]);
             $result = $stmt->fetchAll();
@@ -663,7 +901,13 @@ return function (App $app) {
 
         $app->get('/getHistoryLaporanKriminalitas/{id_user}', function ($request, $response,$args) {
             $id_user=$args["id_user"];
-            $sql = "SELECT * FROM laporan_kriminalitas where id_user_pelapor=:id_user";
+            $sql="SELECT lk.id_laporan,lk.judul_laporan,skk.nama_kategori AS jenis_kejadian,lk.deskripsi_kejadian,lk.tanggal_laporan,lk.waktu_laporan,lk.alamat_laporan,lk.lat_laporan,lk.lng_laporan,lk.id_user_pelapor,lk.status_laporan,u.nama_user AS nama_user_pelapor, COUNT(kl.id_laporan) AS jumlah_komentar,lk.thumbnail_gambar AS thumbnail_gambar FROM user u 
+                JOIN laporan_kriminalitas lk ON lk.id_user_pelapor=u.id_user 
+                LEFT JOIN komentar_laporan kl ON lk.id_laporan=kl.id_laporan
+                JOIN setting_kategori_kriminalitas skk on skk.id_kategori=lk.id_kategori_kejadian
+                WHERE lk.id_user_pelapor=:id_user
+                GROUP BY lk.id_laporan ORDER BY lk.tanggal_laporan DESC, lk.waktu_laporan DESC";
+            //$sql = "SELECT * FROM laporan_kriminalitas where id_user_pelapor=:id_user";
             $stmt = $this->db->prepare($sql);
             $stmt->execute([":id_user" => $id_user]);
             $result = $stmt->fetchAll();
@@ -788,7 +1032,6 @@ return function (App $app) {
         $app->get('/getPendingContactRequest/{id_user}', function($request, $response, $args){
             $id_user=$args["id_user"];
             $sql="SELECT dkd.id_daftar_kontak, u.id_user,u.nama_user,u.telpon_user from daftar_kontak_darurat dkd, user u where dkd.id_user_2=".$id_user." and dkd.status_relasi=0 and dkd.id_user_1=u.id_user";
-            //$sql="SELECT * from user where id_user in (SELECT id_user_1 FROM daftar_kontak_darurat where id_user_2=".$id_user." and status_relasi=0)";
             $stmt = $this->db->prepare($sql);
             $stmt->execute();
             $result = $stmt->fetchAll();
@@ -869,44 +1112,29 @@ return function (App $app) {
             $message=$body["content"];
             $curl = curl_init();
             $content = array(
-                "en" => $content
+                "en" => $message
             );
             $heading = array(
                 "en" => $heading 
             );
-            $fields = array(
-                'app_id' => "6fd226ba-1d41-4c7b-9f8b-a973a8fd436b",
-                'filters' => array(array("field" => "tag", "key" => "no_handphone", "relation" => "=", "value" => $number)),
-                'contents' => $content,
-                'headings' => $heading
-            );
-            $fields = json_encode($fields);
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, "https://onesignal.com/api/v1/notifications");
-            curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json; charset=utf-8',
-                                                    'Authorization: Basic MDUyNjhlOGEtNDQ4NC00YTYwLWIxYmYtMDZjYTc2OGUwNDc4'));
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-            curl_setopt($ch, CURLOPT_HEADER, FALSE);
-            curl_setopt($ch, CURLOPT_POST, TRUE);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $fields);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-            $res = curl_exec($ch);
-            curl_close($ch);
-            return $response->withJson($res);
-        });
-
-        $app->get('/checkKonfirmasiLaporan',function ($request,$response){
-            $id_laporan = $request->getQueryParam('id_laporan');
-            $id_user = $request->getQueryParam('id_user');
-            $sql="SELECT COUNT(*) FROM konfirmasi_laporan_kriminalitas WHERE id_laporan=:id_laporan AND id_user=:id_user";
-            $stmt = $this->db->prepare($sql);
             $data=[
-                ":id_laporan"=>$id_laporan,
-                ":id_user"=>$id_user
+                "page"=>"2"
             ];
-            $stmt->execute($data);
-            $result = $stmt->fetchColumn();
-            return $response->withJson(["count"=>$result]);
+            sendOneSignalNotification($number,$content,$heading,$data);
+            return $response->withJson(["status"=>"1"]);
+            // $fields = json_encode($fields);
+            // $ch = curl_init();
+            // curl_setopt($ch, CURLOPT_URL, "https://onesignal.com/api/v1/notifications");
+            // curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json; charset=utf-8',
+            //                                         'Authorization: Basic MDUyNjhlOGEtNDQ4NC00YTYwLWIxYmYtMDZjYTc2OGUwNDc4'));
+            // curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+            // curl_setopt($ch, CURLOPT_HEADER, FALSE);
+            // curl_setopt($ch, CURLOPT_POST, TRUE);
+            // curl_setopt($ch, CURLOPT_POSTFIELDS, $fields);
+            // curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+            // $res = curl_exec($ch);
+            // curl_close($ch);
+            // return $response->withJson($res);
         });
 
         $app->get('/checkHeaderChat', function ($request, $response,$args) {   
@@ -960,19 +1188,13 @@ return function (App $app) {
             } 
         });
 
-        $app->post('/konfirmasiLaporanKriminalitas',function ($request,$response){
-            $body = $request->getParsedBody();
-            $sql="INSERT INTO konfirmasi_laporan_kriminalitas VALUES(:id_laporan,:id_user)";
+        $app->get('/getJumlahKonfirmasiLaporan/{id_laporan}',function ($request,$response,$args){
+            $id_laporan=$args["id_laporan"];
+            $sql="SELECT COUNT(*) FROM konfirmasi_laporan_kriminalitas WHERE id_laporan=:id_laporan";
             $stmt = $this->db->prepare($sql);
-            $data=[
-                ":id_laporan"=>$body["id_laporan"],
-                ":id_user"=>$body["id_user"]
-            ];
-            if($stmt->execute($data)){
-                return $response->withJson(["status" => "1", "message" => "Konfirmasi Laporan Berhasil"], 200);
-            }else{
-                return $response->withJson(["status" => "400", "message" => "Konfirmasi Laporan Gagal"], 200);
-            }
+            $stmt->execute([":id_laporan"=>$id_laporan]);
+            $result = $stmt->fetchColumn();
+            return $response->withJson(["status"=>"1","count"=>$result]);
         });
 
         $app->get('/getHeaderChat/{id_user}', function ($request, $response,$args) {   
@@ -1050,120 +1272,21 @@ return function (App $app) {
                 return $response->withJson(["status" => "400"]);
             }
             });
+    })->add(function ($request, $response, $next) {
+        $headers = $request->getHeader("Authorization");
+        if($headers!=null){
+            $result = Token::validate($headers[0], $_ENV['JWT_SECRET']);
+            if($result==false){
+                return $response->withJson(["status"=>"400","message"=>"Token not valid"]);
+            }else{
+                $response = $next($request, $response);
+                return $response;
+            }         
+        }else{
+            return $response->withJson(["status"=>"404","message"=>"Token not found"]);
+        }
     });
-        
-        $app->post('/insertLaporanLostFound', function(Request $request, Response $response) {
-            $new_laporan = $request->getParsedBody();
-            $day=date('d');
-            $month=date('m');
-            $year=date('Y');
-            $time=date('H:i');
-            $formatDate=$year.$month.$day;
-            $id_laporan="LF".$day.$month.$year;
-            $geohash=new Geohash();
-            $sql="SELECT COUNT(*)+1 from laporan_lostfound_barang where id_laporan like'%$id_laporan%'";
-            $stmt = $this->db->prepare($sql);
-            $stmt->execute();
-            $result = $stmt->fetchColumn();           
-            $uploadedFiles = $request->getUploadedFiles();
-            $id_laporan=$id_laporan.str_pad($result,5,"0",STR_PAD_LEFT);  
-            $uploadedFile = $uploadedFiles['image'];
-            $extension = pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION);
-            $filename=$id_laporan.".".$extension;
-            $sql = "INSERT INTO laporan_lostfound_barang VALUES(:id_laporan,:judul_laporan,:jenis_laporan,:id_kategori_barang,:tanggal_laporan,:waktu_laporan,:alamat_laporan,:lat_laporan,:lng_laporan,:deskripsi_barang,:id_user_pelapor,:status_laporan,:geohash_alamat_laporan,:id_kecamatan,:thumbnail_gambar) ";
-            $stmt = $this->db->prepare($sql);
-            $data = [
-                ":id_laporan" => $id_laporan,
-                ":judul_laporan"=>$new_laporan["judul_laporan"],
-                ":jenis_laporan" => $new_laporan["jenis_laporan"],
-                ":id_kategori_barang"=> $new_laporan["id_kategori_barang"],
-                ":tanggal_laporan"=>$formatDate,
-                ":waktu_laporan"=>$time,
-                ":alamat_laporan"=>$new_laporan["alamat_laporan"],
-                ":lat_laporan"=>$new_laporan["lat_laporan"],
-                ":lng_laporan"=>$new_laporan["lng_laporan"],
-                ":deskripsi_barang"=>$new_laporan["deskripsi_barang"],
-                ":id_user_pelapor"=>$new_laporan["id_user_pelapor"],
-                ":status_laporan"=>0,
-                ":geohash_alamat_laporan"=> $geohash->encode(floatval($new_laporan["lat_laporan"]), floatval($new_laporan["lng_laporan"]), 8),
-                ":id_kecamatan"=>$new_laporan["id_kecamatan"],
-                ":thumbnail_gambar"=>$filename
-            ];
-            if($stmt->execute($data)){
-                if($uploadedFiles!=null){
-                    $directory = $this->get('settings')['upload_directory'];
-                    $uploadedFile->moveTo($directory . DIRECTORY_SEPARATOR . $filename);
-                }
-                return $response->withJson(["status"=>"1","message"=>"Tambah laporan berhasil"]);
-            }else{
-                return $response->withJson(["status"=>"99","message"=>"Tambah laporan gagal, silahkan coba beberapa saat lagi"]);
-            }
-        });
-
-        $app->post('/insertLaporanKriminalitas', function(Request $request, Response $response,$args) {
-            $new_laporan = $request->getParsedBody();
-            $datetime = DateTime::createFromFormat('d/m/Y', $new_laporan["tanggal_laporan"]);
-            $day=date('d');
-            $month=date('m');
-            $year=date('Y');
-            $time=date('H:i');
-            $formatDate=$year.$month.$day;
-            $id_laporan="CR".$day.$month.$year;
-            $geohash=new Geohash();
-            $sql="SELECT COUNT(*)+1 from laporan_kriminalitas where id_laporan like'%$id_laporan%'";
-            $stmt = $this->db->prepare($sql);
-            $stmt->execute();
-            $result = $stmt->fetchColumn();     
-            $uploadedFiles = $request->getUploadedFiles();
-            $id_laporan=$id_laporan.str_pad($result,5,"0",STR_PAD_LEFT);    
-            $filename="no-image.png";
-            if($uploadedFiles!=null){
-                $uploadedFile = $uploadedFiles['image'];
-                $extension = pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION);
-                $filename=$id_laporan.".".$extension;
-            }      
-            $kecamatan=getKecamatan($new_laporan["lat_laporan"],$new_laporan["lng_laporan"]);
-            $sql = "INSERT INTO laporan_kriminalitas VALUES(:id_laporan,:judul_laporan,:id_kategori_kejadian,:deskripsi_kejadian,:tanggal_laporan,:waktu_laporan,:alamat_laporan,:lat_laporan,:lng_laporan,:id_user_pelapor,:status_laporan,:geohash_alamat_laporan,:id_kecamatan,:thumbnail_gambar) ";
-            $stmt = $this->db->prepare($sql);
-            $data = [
-                ":id_laporan" => $id_laporan,
-                ":judul_laporan"=>$new_laporan["judul_laporan"],
-                ":id_kategori_kejadian" => $new_laporan["id_kategori_kejadian"],
-                ":deskripsi_kejadian"=>$new_laporan["deskripsi_kejadian"],
-                ":tanggal_laporan"=>$formatDate,
-                ":waktu_laporan"=>$time,
-                ":alamat_laporan"=>$new_laporan["alamat_laporan"],
-                ":lat_laporan"=>$new_laporan["lat_laporan"],
-                ":lng_laporan"=>$new_laporan["lng_laporan"],
-                ":id_user_pelapor"=>$new_laporan["id_user_pelapor"],
-                ":status_laporan"=>0,
-                ":geohash_alamat_laporan"=> $geohash->encode(floatval($new_laporan["lat_laporan"]), floatval($new_laporan["lng_laporan"]), 8),
-                ":id_kecamatan"=>$new_laporan["id_kecamatan"],
-                ":thumbnail_gambar"=>$filename
-            ];
-            if($stmt->execute($data)){
-                if($uploadedFiles!=null){
-                    $directory = $this->get('settings')['upload_directory'];
-                    $uploadedFile->moveTo($directory . DIRECTORY_SEPARATOR . $filename);
-                }
-                return $response->withJson(["status"=>"1","message"=>"Tambah laporan berhasil"]);
-            }else{
-                return $response->withJson(["status"=>"99","message"=>"Tambah laporan gagal, silahkan coba beberapa saat lagi"]);
-            }
-        });
-
-        $app->get('/getKomentarLaporan/{id_laporan}', function ($request, $response,$args) {
-            $id_laporan=$args["id_laporan"];
-            $sql = "SELECT kl.id_komentar,kl.id_laporan,kl.isi_komentar,kl.tanggal_komentar,kl.waktu_komentar,u.nama_user AS nama_user_komentar
-                    FROM komentar_laporan kl, user u 
-                    WHERE kl.id_user_komentar=u.id_user and kl.id_laporan=:id_laporan
-                    ORDER BY kl.tanggal_komentar DESC, kl.waktu_komentar DESC";
-            $stmt = $this->db->prepare($sql);
-            $stmt->execute([":id_laporan" => $id_laporan]);
-            $result = $stmt->fetchAll();
-            return $response->withJson($result, 200);
-        });
-
+    
         $app->get('/[{name}]', function (Request     $request, Response $response, array $args) use ($container) {
             // Sample log message
             $container->get('logger')->info("Slim-Skeleton '/' route");

@@ -2,7 +2,7 @@
     x:Class="SahabatSurabaya.Shared.HistoryPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:SahabatSurabaya.Shared"
+    xmlns:local="using:SahabatSurabaya.Shared.Helper"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
@@ -46,31 +46,29 @@
                 <TextBlock Foreground="Gray" FontWeight="Bold" TextAlignment="Center" TextWrapping="WrapWholeWords" FontSize="20" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" Text="Anda belum pernah membuat laporan"></TextBlock>
                 <TextBlock Foreground="Gray" FontWeight="Light" TextAlignment="Center" TextWrapping="WrapWholeWords" FontSize="16" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" Text="Ayo ikut berkontribusi untuk lingkungan sekitar!"></TextBlock>
             </StackPanel>
-            <StackPanel Name="stackListView" Grid.Row="2">
-                <ListView SelectionMode="None" IsItemClickEnabled="True" ItemClick="goToDetailPage" Name="lvHistory" Margin="8">
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <Border Margin="0,4,0,4" CornerRadius="10" BorderBrush="Gray" BorderThickness="1">
-                                <Grid MaxHeight="280">
-                                    <Image Source="{Binding thumbnail_gambar,Converter={StaticResource imageConverter}}" Stretch="UniformToFill"/>
-                                    <StackPanel Orientation="Vertical" Height="80" VerticalAlignment="Bottom" Background="{StaticResource brushTransparent}" Padding="12">
-                                        <TextBlock FontWeight="ExtraBold" Opacity="1" Foreground="White" FontSize="14" Text="{Binding judul_laporan }"/>
-                                        <StackPanel Orientation="Horizontal">
-                                            <TextBlock Opacity="1" Foreground="White" FontSize="14" Text="{Binding tanggal_laporan,Converter={StaticResource dateTimeConverter}}"></TextBlock>
-                                            <TextBlock Margin="2,0,0,0" Text="Pukul" Opacity="1" Foreground="White" FontSize="14"></TextBlock>
-                                            <TextBlock Margin="2,0,0,0" Opacity="1" Foreground="White" Text="{Binding waktu_laporan}" FontSize="14"></TextBlock>
-                                        </StackPanel>
-                                        <StackPanel Orientation="Horizontal">
-                                            <TextBlock Opacity="1" Foreground="White" FontSize="14" Text="Status: "></TextBlock>
-                                            <TextBlock Margin="2,0,0,0" Opacity="1" Foreground="{Binding status_laporan,Converter={StaticResource statusLaporanColorConverter}}" FontSize="14" Text="{Binding status_laporan,Converter={StaticResource statusLaporanConverter}}"></TextBlock>
-                                        </StackPanel>
+            <ListView Grid.Row="2" ScrollViewer.VerticalScrollMode="Enabled" SelectionMode="None" IsItemClickEnabled="True" ItemClick="goToDetailPage" Name="lvHistory" Margin="8">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <Border Margin="0,4,0,4" CornerRadius="10" BorderBrush="Gray" BorderThickness="1">
+                            <Grid MaxHeight="280">
+                                <Image Source="{Binding thumbnail_gambar,Converter={StaticResource imageConverter}}" Stretch="UniformToFill"/>
+                                <StackPanel Orientation="Vertical" Height="80" VerticalAlignment="Bottom" Background="{StaticResource brushTransparent}" Padding="12">
+                                    <TextBlock FontWeight="ExtraBold" Opacity="1" Foreground="White" FontSize="14" Text="{Binding judul_laporan }"/>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Opacity="1" Foreground="White" FontSize="14" Text="{Binding tanggal_laporan,Converter={StaticResource dateTimeConverter}}"></TextBlock>
+                                        <TextBlock Margin="2,0,0,0" Text="Pukul" Opacity="1" Foreground="White" FontSize="14"></TextBlock>
+                                        <TextBlock Margin="2,0,0,0" Opacity="1" Foreground="White" Text="{Binding waktu_laporan}" FontSize="14"></TextBlock>
                                     </StackPanel>
-                                </Grid>
-                            </Border>
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
-            </StackPanel>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Opacity="1" Foreground="White" FontSize="14" Text="Status: "></TextBlock>
+                                        <TextBlock Margin="2,0,0,0" Opacity="1" Foreground="{Binding status_laporan,Converter={StaticResource statusLaporanColorConverter}}" FontSize="14" Text="{Binding status_laporan,Converter={StaticResource statusLaporanConverter}}"></TextBlock>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
         </Grid>
     </Grid>
 </Page>

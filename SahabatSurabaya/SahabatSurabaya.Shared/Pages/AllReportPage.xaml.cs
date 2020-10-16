@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using SahabatSurabaya.Shared;
+using SahabatSurabaya.Shared.Class;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -19,8 +20,8 @@ namespace SahabatSurabaya.Shared.Pages
         Session session;
         HttpObject httpObject;
         User userLogin;
-        ObservableCollection<LaporanKriminalitas> listLaporanKriminalitas = new ObservableCollection<LaporanKriminalitas>();
         ObservableCollection<LaporanLostFound> listLaporanLostFound = new ObservableCollection<LaporanLostFound>();
+        ObservableCollection<LaporanKriminalitas> listLaporanKriminalitas = new ObservableCollection<LaporanKriminalitas>();
         public AllReportPage()
         {
             this.InitializeComponent();
@@ -52,7 +53,8 @@ namespace SahabatSurabaya.Shared.Pages
         private async void loadLaporanLostFound()
         {
             if (listLaporanLostFound.Count == 0){
-                string responseData = userLogin.status_user == 2 ? await httpObject.GetRequestWithAuthorization("kepalaKeamanan/getLaporanLostFound/" + userLogin.kecamatan_user, session.getTokenAuthorization()) : await httpObject.GetRequestWithAuthorization("getLaporanLostFound", session.getTokenAuthorization());
+                string responseData = await httpObject.GetRequestWithAuthorization("kepalaKeamanan/getLaporanLostFound/" + userLogin.id_kecamatan_user, session.getTokenAuthorization());
+                //string responseData = userLogin.status_user == 2 ? await httpObject.GetRequestWithAuthorization("kepalaKeamanan/getLaporanLostFound/" + userLogin.kecamatan_user, session.getTokenAuthorization()) : await httpObject.GetRequestWithAuthorization("getLaporanLostFound", session.getTokenAuthorization());
                 listLaporanLostFound = JsonConvert.DeserializeObject<ObservableCollection<LaporanLostFound>>(responseData);
             }
             if (listLaporanLostFound.Count == 0){
@@ -65,7 +67,8 @@ namespace SahabatSurabaya.Shared.Pages
         private async void loadLaporanKriminalitas()
         {
             if (listLaporanKriminalitas.Count == 0){
-                string responseData = userLogin.status_user == 2 ? await httpObject.GetRequestWithAuthorization("kepalaKeamanan/getLaporanKriminalitas/" + userLogin.kecamatan_user, session.getTokenAuthorization()) : await httpObject.GetRequestWithAuthorization("getLaporanKriminalitas", session.getTokenAuthorization());
+                string responseData = await httpObject.GetRequestWithAuthorization("kepalaKeamanan/getLaporanKriminalitas/" + userLogin.id_kecamatan_user, session.getTokenAuthorization());
+                //string responseData = userLogin.status_user == 2 ? await httpObject.GetRequestWithAuthorization("kepalaKeamanan/getLaporanKriminalitas/" + userLogin.kecamatan_user, session.getTokenAuthorization()) : await httpObject.GetRequestWithAuthorization("getLaporanKriminalitas", session.getTokenAuthorization());
                 listLaporanKriminalitas = JsonConvert.DeserializeObject<ObservableCollection<LaporanKriminalitas>>(responseData);
             }
             if (listLaporanKriminalitas.Count == 0){
@@ -93,9 +96,7 @@ namespace SahabatSurabaya.Shared.Pages
 
         private void pageLoaded(object sender, RoutedEventArgs e)
         {
-            if (userLogin.status_user == 2){
-                txtJudulHalaman.Text = "Daftar laporan di area kecamatan " + userLogin.kecamatan_user;
-            }
+            txtJudulHalaman.Text = "Daftar laporan di area kecamatan " + userLogin.kecamatan_user;
             string param = session.getAllReportParam();
             if (param == "kriminalitas"){
                 setListViewKriminalitas();
@@ -111,14 +112,14 @@ namespace SahabatSurabaya.Shared.Pages
             if (tag == "lvKriminalitas")
             {
                 LaporanKriminalitas selected = (LaporanKriminalitas)e.ClickedItem;
-                ReportDetailPageParams param = new ReportDetailPageParams(selected.id_user_pelapor, selected.nama_user_pelapor, selected.id_laporan, selected.alamat_laporan, selected.tanggal_laporan, selected.waktu_laporan, selected.judul_laporan, selected.jenis_kejadian, selected.deskripsi_kejadian, selected.lat_laporan, selected.lng_laporan, "kriminalitas",selected.thumbnail_gambar,selected.status_laporan);
+                ReportDetailPageParams param = new ReportDetailPageParams(selected.id_user_pelapor, selected.nama_user_pelapor, selected.id_laporan, selected.alamat_laporan, selected.tanggal_laporan, selected.waktu_laporan, selected.judul_laporan, selected.jenis_kejadian, selected.deskripsi_kejadian, selected.lat_laporan, selected.lng_laporan, "kriminalitas",selected.thumbnail_gambar,selected.status_laporan,selected.jumlah_konfirmasi);
                 session.setReportDetailPageParams(param);
             }
             else if (tag == "lvLostFound")
             {
                 LaporanLostFound selected = (LaporanLostFound)e.ClickedItem;
                 string jenis_laporan = selected.jenis_laporan == 0 ? "Penemuan " + selected.jenis_barang : "Kehilangan " + selected.jenis_barang;
-                ReportDetailPageParams param = new ReportDetailPageParams(selected.id_user_pelapor, selected.nama_user_pelapor, selected.id_laporan, selected.alamat_laporan, selected.tanggal_laporan, selected.waktu_laporan, selected.judul_laporan, jenis_laporan, selected.deskripsi_barang, selected.lat_laporan, selected.lng_laporan, "lostfound",selected.thumbnail_gambar,selected.status_laporan);
+                ReportDetailPageParams param = new ReportDetailPageParams(selected.id_user_pelapor, selected.nama_user_pelapor, selected.id_laporan, selected.alamat_laporan, selected.tanggal_laporan, selected.waktu_laporan, selected.judul_laporan, jenis_laporan, selected.deskripsi_barang, selected.lat_laporan, selected.lng_laporan, "lostfound",selected.thumbnail_gambar,selected.status_laporan,null);
                 session.setReportDetailPageParams(param);
             }
             this.Frame.Navigate(typeof(ReportDetailPage));
@@ -142,9 +143,10 @@ namespace SahabatSurabaya.Shared.Pages
             }
         }
 
-        protected override void OnNavigatedTo(NavigationEventArgs e)
+        protected async override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
+            var entry = this.Frame.BackStack.LastOrDefault();
         }
     }
 }

@@ -123,31 +123,12 @@ namespace SahabatSurabaya.Shared.Pages
                         new KeyValuePair<string, string>("id_user_pengirim", userLogin.id_user.ToString()),
                         new KeyValuePair<string, string>("nomor_tujuan", txtSearchNumber.Text)
                     });
-                    string responseData = await httpObject.PostRequestWithUrlEncoded("user/addEmergencyContact", content);
+                    string responseData = await httpObject.PostRequestUrlEncodedWithAuthorization("user/addEmergencyContact", content,session.getTokenAuthorization());
                     JObject json = JObject.Parse(responseData);
                     var message = new MessageDialog(json["message"].ToString());
                     await message.ShowAsync();
                     txtSearchNumber.Text = "";
                     updateListSentPendingContactRequest();
-                    //using (var client = new HttpClient())
-                    //{
-                    //    client.BaseAddress = new Uri(session.getApiURL());
-                    //    client.DefaultRequestHeaders.Accept.Clear();
-                    //    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                    //    MultipartFormDataContent form = new MultipartFormDataContent();
-                    //    form.Add(new StringContent(userLogin.id_user.ToString()), "id_user_pengirim");
-                    //    form.Add(new StringContent(txtSearchNumber.Text), "nomor_tujuan");
-                    //    HttpResponseMessage response = await client.PostAsync("user/addEmergencyContact", form);
-                    //    if (response.IsSuccessStatusCode)
-                    //    {
-                    //        var responseData = response.Content.ReadAsStringAsync().Result;
-                    //        JObject json = JObject.Parse(responseData);
-                    //        var message = new MessageDialog(json["message"].ToString());
-                    //        await message.ShowAsync();
-                    //        txtSearchNumber.Text = "";
-                    //        updateListSentPendingContactRequest();
-                    //    }
-                    //}
                 }
                 else
                 {
@@ -174,26 +155,6 @@ namespace SahabatSurabaya.Shared.Pages
                 updateListContact();
                 updateListPendingContactRequest();
             }
-            //using (var client = new HttpClient())
-            //{
-            //    client.BaseAddress = new Uri(session.getApiURL());
-            //    client.DefaultRequestHeaders.Accept.Clear();
-            //    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            //    HttpContent content = new StringContent("");
-            //    HttpResponseMessage response = await client.PutAsync("user/acceptContactRequest/" +id_daftar_kontak, content);
-            //    if (response.IsSuccessStatusCode)
-            //    {
-            //        var responseData = response.Content.ReadAsStringAsync().Result;
-            //        JObject json = JObject.Parse(responseData);
-            //        var message = new MessageDialog(json["message"].ToString());
-            //        await message.ShowAsync();
-            //        if (json["status"].ToString() == "1")
-            //        {
-            //            updateListContact();
-            //            updateListPendingContactRequest();
-            //        } 
-            //    }
-            //}
         }
 
         private async void declineRequest(object Sender, RoutedEventArgs e)
@@ -206,23 +167,6 @@ namespace SahabatSurabaya.Shared.Pages
                 updateListContact();
                 updateListPendingContactRequest();
             }
-            //using (var client = new HttpClient())
-            //{
-            //    client.BaseAddress = new Uri(session.getApiURL());
-            //    client.DefaultRequestHeaders.Accept.Clear();
-            //    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            //    HttpResponseMessage response = await client.DeleteAsync("user/declineContactRequest/" + id_daftar_kontak);
-            //    if (response.IsSuccessStatusCode)
-            //    {
-            //        var responseData = response.Content.ReadAsStringAsync().Result;
-            //        JObject json = JObject.Parse(responseData);
-            //        if (json["status"].ToString() == "1")
-            //        {
-            //            updateListContact();
-            //            updateListPendingContactRequest();
-            //        }
-            //    }
-            //}
         }
     }
 }

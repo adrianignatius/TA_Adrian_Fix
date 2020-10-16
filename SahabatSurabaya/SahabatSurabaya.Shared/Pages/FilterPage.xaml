@@ -6,75 +6,102 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
+    NavigationCacheMode="Required"
     Loaded="pageLoaded"
     RequestedTheme="Light"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-
     <Grid>
-        <Grid>
-            <Button Click="Back_Click" Style="{StaticResource NavigationBackButtonNormalStyle}" VerticalAlignment="Top" HorizontalAlignment="Left"></Button>
-            <Grid Margin="30,40,30,30">
-                <StackPanel Orientation="Vertical">
+        <ScrollViewer>
+            <StackPanel>
+                <Grid Margin="0,0,0,8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"></ColumnDefinition>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Button Click="Back_Click" Grid.Column="0" VerticalAlignment="Top" HorizontalAlignment="Left" Style="{StaticResource NavigationBackButtonNormalStyle}"></Button>
+                    <TextBlock Grid.Column="1" Text="Filter pencarian laporan" TextWrapping="WrapWholeWords" Margin="12,4,0,0" FontSize="24" FontWeight="Bold" ></TextBlock>
+                </Grid>
+                <StackPanel Name="stackLoading" Margin="0,140,0,0" Visibility="Collapsed">
+                    <ProgressRing Width="150" Height="150" IsActive="True"></ProgressRing>
+                    <TextBlock Foreground="Black" FontWeight="Bold" TextAlignment="Center" TextWrapping="WrapWholeWords" FontSize="20" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" Text="Sedang memuat data"></TextBlock>
+                </StackPanel>
+                <StackPanel Name="stackFilter" Margin="20" Orientation="Vertical">
                     <TextBlock FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" FontSize="20" Text="Range Tanggal"></TextBlock>
                     <DatePicker Name="dtTanggalAwal" Margin="0,12,0,0" Header="Tanggal awal" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" HorizontalAlignment="Stretch"></DatePicker>
-                    <DatePicker Name="dtTanggalAkhir" Margin="0,12,0,0" Header="Tanggal akhir" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" HorizontalAlignment="Stretch" Grid.Column="2"></DatePicker>
-                    <TextBlock Margin="0,8,0,0" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" FontSize="20" Text="Jenis Laporan"></TextBlock>
-                    <Grid Margin="0,4,0,0">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition></ColumnDefinition>
-                            <ColumnDefinition></ColumnDefinition>
-                        </Grid.ColumnDefinitions>
-                        <CheckBox Grid.Column="0" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" FontSize="14" >Kehilangan Barang</CheckBox>
-                        <CheckBox Grid.Column="1" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" FontSize="14" >Penemuan Barang</CheckBox>
-                    </Grid>
-                    <TextBlock Margin="0,8,0,0" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" FontSize="20" Text="Jenis Barang"></TextBlock>
-                    <Grid Margin="0,4,0,0">
-                        <Grid.RowDefinitions>
-                            <RowDefinition></RowDefinition>
-                            <RowDefinition></RowDefinition>
-                            <RowDefinition></RowDefinition>
-                            <RowDefinition></RowDefinition>
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition></ColumnDefinition>
-                            <ColumnDefinition></ColumnDefinition>
-                        </Grid.ColumnDefinitions>
-                        <CheckBox Checked="jenisBarangChecked" Unchecked="jenisBarangUnchecked" Tag="1" Grid.Row="0" Grid.Column="0" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" FontSize="14" >Handphone</CheckBox>
-                        <CheckBox Checked="jenisBarangChecked" Unchecked="jenisBarangUnchecked" Tag="2" Grid.Row="0" Grid.Column="1" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" FontSize="14" >Tas</CheckBox>
-                        <CheckBox Checked="jenisBarangChecked" Unchecked="jenisBarangUnchecked" Tag="3" Grid.Row="1" Grid.Column="0" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" FontSize="14" >Jam Tangan</CheckBox>
-                        <CheckBox Checked="jenisBarangChecked" Unchecked="jenisBarangUnchecked" Tag="4" Grid.Row="1" Grid.Column="1" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" FontSize="14" >Perhiasan</CheckBox>
-                        <CheckBox Checked="jenisBarangChecked" Unchecked="jenisBarangUnchecked" Tag="5" Grid.Row="2" Grid.Column="0" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" FontSize="14" >Sepatu</CheckBox>
-                        <CheckBox Checked="jenisBarangChecked" Unchecked="jenisBarangUnchecked" Tag="6" Grid.Row="2" Grid.Column="1" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" FontSize="14" >Hewan Peliharaan</CheckBox>
-                        <CheckBox Checked="jenisBarangChecked" Unchecked="jenisBarangUnchecked" Tag="7" Grid.Row="3" Grid.Column="0" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" FontSize="14" >Dompet</CheckBox>
-                    </Grid>
-                    <StackPanel Margin="0,8,0,0" Orientation="Horizontal">
-                        <TextBlock  FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" FontSize="20" Text="Kecamatan"></TextBlock>
-                        <Button Margin="4,0,0,0" CornerRadius="10" Foreground="White" Background="Green" Content="Pilih Lokasi">
-                            <Button.Flyout>
-                                <Flyout x:Name="flyoutKecamatan" Placement="Full">
-                                    <StackPanel Margin="10" Orientation="Vertical">
-                                        <GridView Name="gvKecamatan">
-                                            <GridView.ItemTemplate>
-                                                <DataTemplate>
-                                                    <CheckBox Tag="{Binding id_kecamatan}" Unchecked="kecamatanUnchecked" Checked="kecamatanChecked" Content="{Binding nama_kecamatan}" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" FontSize="14" ></CheckBox>
-                                                </DataTemplate>
-                                            </GridView.ItemTemplate>
-                                            <GridView.ItemsPanel>
-                                                <ItemsPanelTemplate>
-                                                    <ItemsWrapGrid MaximumRowsOrColumns="3" Orientation="Horizontal"/>
-                                                </ItemsPanelTemplate>
-                                            </GridView.ItemsPanel>
-                                        </GridView>
-                                        <Button Click="flyoutDone" CornerRadius="10" HorizontalAlignment="Stretch" Margin="0,10,0,0" Content="Simpan" Foreground="White" Background="Green"></Button>
-                                    </StackPanel>
-                                </Flyout>
-                            </Button.Flyout>
-                        </Button>
+                    <DatePicker Name="dtTanggalAkhir" Margin="0,12,0,0" Header="Tanggal akhir" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" HorizontalAlignment="Stretch"></DatePicker>
+                    <StackPanel Visibility="Collapsed" Name="stackJenisLaporan">
+                        <TextBlock Margin="0,8,0,0" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" FontSize="20" Text="Jenis Laporan"></TextBlock>
+                        <Grid Margin="0,4,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition></ColumnDefinition>
+                                <ColumnDefinition></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <CheckBox Name="cbJenis1" Checked="jenisLaporanChecked" Unchecked="jenisLaporanUnchecked" Tag="1" Grid.Column="0" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" FontSize="14" >Kehilangan Barang</CheckBox>
+                            <CheckBox Name="cbJenis2" Checked="jenisLaporanChecked" Unchecked="jenisLaporanUnchecked" Tag="0" Grid.Column="1" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" FontSize="14" >Penemuan Barang</CheckBox>
+                        </Grid>
                     </StackPanel>
+                    <StackPanel Visibility="Collapsed" Name="stackBarang">
+                        <TextBlock Margin="0,8,0,0" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" FontSize="20" Text="Jenis Barang"></TextBlock>
+                        <Grid Margin="0,4,0,0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition></ColumnDefinition>
+                                <ColumnDefinition></ColumnDefinition>
+                                <ColumnDefinition></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <CheckBox Name="cbBarang1" Checked="jenisBarangChecked" Unchecked="jenisBarangUnchecked" Tag="1" Grid.Row="0" Grid.Column="0" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" FontSize="14" >Handphone</CheckBox>
+                            <CheckBox Name="cbBarang2" Checked="jenisBarangChecked" Unchecked="jenisBarangUnchecked" Tag="2" Grid.Row="0" Grid.Column="1" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" FontSize="14" >Tas</CheckBox>
+                            <CheckBox Name="cbBarang3" Checked="jenisBarangChecked" Unchecked="jenisBarangUnchecked" Tag="3" Grid.Row="0" Grid.Column="2" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" FontSize="14" >Jam Tangan</CheckBox>
+                            <CheckBox Name="cbBarang4" Checked="jenisBarangChecked" Unchecked="jenisBarangUnchecked" Tag="4" Grid.Row="1" Grid.Column="0" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" FontSize="14" >Perhiasan</CheckBox>
+                            <CheckBox Name="cbBarang5" Checked="jenisBarangChecked" Unchecked="jenisBarangUnchecked" Tag="5" Grid.Row="1" Grid.Column="1" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" FontSize="14" >Sepatu</CheckBox>
+                            <CheckBox Name="cbBarang6" Checked="jenisBarangChecked" Unchecked="jenisBarangUnchecked" Tag="6" Grid.Row="1" Grid.Column="2" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" FontSize="14" >Hewan Peliharaan</CheckBox>
+                            <CheckBox Name="cbBarang7" Checked="jenisBarangChecked" Unchecked="jenisBarangUnchecked" Tag="7" Grid.Row="2" Grid.Column="0" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" FontSize="14" >Dompet</CheckBox>
+                        </Grid>
+                    </StackPanel>
+                    <StackPanel Visibility="Collapsed" Name="stackKejadian">
+                        <TextBlock Margin="0,8,0,0" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" FontSize="20" Text="Jenis Kejadian"></TextBlock>
+                        <Grid Margin="0,4,0,0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition></ColumnDefinition>
+                                <ColumnDefinition></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <CheckBox Name="cbKejadian1" Checked="jenisKejadianChecked" Unchecked="jenisKejadianUnchecked" Tag="1" Grid.Row="0" Grid.Column="0" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" FontSize="14" >Penculikkan</CheckBox>
+                            <CheckBox Name="cbKejadian2" Checked="jenisKejadianChecked" Unchecked="jenisKejadianUnchecked" Tag="2" Grid.Row="0" Grid.Column="1" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" FontSize="14" >Pencurian</CheckBox>
+                            <CheckBox Name="cbKejadian3" Checked="jenisKejadianChecked" Unchecked="jenisKejadianUnchecked" Tag="3" Grid.Row="1" Grid.Column="0" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" FontSize="14" >Perusakkan Fasilitas Umum</CheckBox>
+                            <CheckBox Name="cbKejadian4" Checked="jenisKejadianChecked" Unchecked="jenisKejadianUnchecked" Tag="4" Grid.Row="1" Grid.Column="1" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" FontSize="14" >Tabrak Lari</CheckBox>
+                            <CheckBox Name="cbKejadian5" Checked="jenisKejadianChecked" Unchecked="jenisKejadianUnchecked" Tag="5" Grid.Row="2" Grid.Column="0" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" FontSize="14" >Kekerasan</CheckBox>
+                            <CheckBox Name="cbKejadian6" Checked="jenisKejadianChecked" Unchecked="jenisKejadianUnchecked" Tag="6" Grid.Row="2" Grid.Column="1" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" FontSize="14" >Aktivitas Mencurigakan</CheckBox>
+                        </Grid>
+                    </StackPanel>
+                    <TextBlock Margin="0,8,0,0" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" FontSize="20" Text="Kecamatan"></TextBlock>
+                    <ComboBox FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" Margin="0,4,0,0" Name="cbKecamatan" HorizontalAlignment="Stretch"></ComboBox>
+
+                    <GridView HorizontalAlignment="Stretch" Name="gvKecamatan">
+                        <GridView.ItemTemplate>
+                            <DataTemplate>
+                                <CheckBox Tag="{Binding id_kecamatan}" Unchecked="kecamatanUnchecked" Checked="kecamatanChecked" Content="{Binding nama_kecamatan}" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" FontSize="14" ></CheckBox>
+                            </DataTemplate>
+                        </GridView.ItemTemplate>
+                        <GridView.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <ItemsWrapGrid MaximumRowsOrColumns="2" Orientation="Horizontal"/>
+                            </ItemsPanelTemplate>
+                        </GridView.ItemsPanel>
+                    </GridView>
                     <TextBlock TextWrapping="Wrap" Name="txtStackKecamatan" Margin="0,4,0,0" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" FontSize="14" ></TextBlock>
-                    <Button Click="setFilter" Margin="0,20,0,0" Content="Terapkan" HorizontalAlignment="Stretch" CornerRadius="10" Foreground="White" Background="Green" FontSize="16"></Button>
+                    <Button Click="setFilter" Margin="0,10,0,0" Content="Terapkan" HorizontalAlignment="Stretch" CornerRadius="10" Foreground="White" Background="Green" FontSize="16"></Button>
                 </StackPanel>
-            </Grid>
-        </Grid>
+            </StackPanel>
+        </ScrollViewer>
     </Grid>
 </Page>

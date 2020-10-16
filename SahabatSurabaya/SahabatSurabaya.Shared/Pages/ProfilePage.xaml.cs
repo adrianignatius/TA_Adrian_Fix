@@ -13,6 +13,7 @@ namespace SahabatSurabaya.Shared.Pages
     public sealed partial class ProfilePage : Page
     {
         Session session;
+        HttpObject httpObject;
         User userLogin;
         DispatcherTimer dispatcherTimer;
         string lat = null, lng = null, lokasiUser = null;
@@ -23,6 +24,7 @@ namespace SahabatSurabaya.Shared.Pages
         {
             this.InitializeComponent();
             session = new Session();
+            httpObject = new HttpObject();
             dispatcherTimer = new DispatcherTimer();
             dispatcherTimer.Interval = new TimeSpan(0, 0, 0, 0, 200);
             dispatcherTimer.Tick += DispatcherTimer_Tick;
@@ -38,40 +40,46 @@ namespace SahabatSurabaya.Shared.Pages
             if (isChosen && tick == 2) isChosen = false;
         }
 
+        private async void suggestionChosen(object sender, ItemClickEventArgs e)
+        {
+            isChosen = true;
+            AutocompleteAddress item = (AutocompleteAddress)e.ClickedItem;
+            txtAutocompleteAddress.Text = item.description;
+            string reqUri = "https://maps.googleapis.com/maps/api/geocode/json?address=" + item.description + "&key=AIzaSyA9rHJZEGWe6rX4nAHTGXFxCubmw-F0BBw";
+            string responseData = await httpObject.GetRequest(reqUri);
+            JObject json = JObject.Parse(responseData);
+            lat = json["results"][0]["geometry"]["location"]["lat"].ToString().Replace(",", ".");
+            lng = json["results"][0]["geometry"]["location"]["lng"].ToString().Replace(",", ".");
+            listAutoCompleteAddress.Clear();
+        }
+
         private async void searchAutocomplete()
         {
             string input = txtAutocompleteAddress.Text;
-            using (var client = new HttpClient())
+            string reqUri = "https://maps.googleapis.com/maps/api/place/autocomplete/json?input=" + input + "&types=geocode&location=-7.252115,112.752849&radius=20000&language=id&components=country:id&strictbounds&key=AIzaSyA9rHJZEGWe6rX4nAHTGXFxCubmw-F0BBw";
+            string responseData = await httpObject.GetRequest(reqUri);
+            JObject json = JObject.Parse(responseData);
+            if (json["status"].ToString() == "OK")
             {
-                string reqUri = "https://maps.googleapis.com/maps/api/place/autocomplete/json?input=" + input + "&types=geocode&location=-7.252115,112.752849&radius=20000&language=id&components=country:id&strictbounds&key=AIzaSyA9rHJZEGWe6rX4nAHTGXFxCubmw-F0BBw";
-                HttpResponseMessage response = await client.GetAsync(reqUri);
-                if (response.IsSuccessStatusCode)
+                listAutoCompleteAddress.Clear();
+                var token = JToken.Parse(responseData)["predictions"].ToList().Count;
+                for (int i = 0; i < token; i++)
                 {
-                    var jsonString = response.Content.ReadAsStringAsync().Result;
-                    JObject json = JObject.Parse(jsonString);
-                    if (json["status"].ToString() == "OK")
-                    {
-                        listAutoCompleteAddress.Clear();
-                        var token = JToken.Parse(jsonString)["predictions"].ToList().Count;
-                        for (int i = 0; i < token; i++)
-                        {
-                            string description = json["predictions"][i]["description"].ToString();
-                            string placeId = json["predictions"][i]["place_id"].ToString();
-                            listAutoCompleteAddress.Add(new AutocompleteAddress(description, placeId));
-                        }
-                        lvSuggestion.ItemsSource = listAutoCompleteAddress;
-                        lvSuggestion.IsItemClickEnabled = true;
-                    }
-                    else
-                    {
-                        if (txtAutocompleteAddress.Text.Length != 0)
-                        {
-                            listAutoCompleteAddress.Clear();
-                            listAutoCompleteAddress.Add(new AutocompleteAddress("Tidak ada hasil ditemukan", ""));
-                            lvSuggestion.ItemsSource = listAutoCompleteAddress;
-                            lvSuggestion.IsItemClickEnabled = false;
-                        }
-                    }
+                    string description = json["predictions"][i]["description"].ToString();
+                    string placeId = json["predictions"][i]["place_id"].ToString();
+                    listAutoCompleteAddress.Add(new AutocompleteAddress(description, placeId));
+                }
+                lvSuggestion.ItemsSource = listAutoCompleteAddress;
+                lvSuggestion.IsItemClickEnabled = true;
+            }
+            else
+            {
+                if (txtAutocompleteAddress.Text.Length != 0)
+                {
+                    listAutoCompleteAddress.Clear();
+                    listAutoCompleteAddress.Add(new AutocompleteAddress("Tidak ada hasil ditemukan", ""));
+                    lvSuggestion.ItemsSource = listAutoCompleteAddress;
+                    lvSuggestion.IsItemClickEnabled = false;
                 }
             }
         }
@@ -150,15 +158,26 @@ namespace SahabatSurabaya.Shared.Pages
             lng = null;
         }
 
-        private void editLokasi(object sender,RoutedEventArgs e)
+        private async void editLokasi(object sender,RoutedEventArgs e)
         {
-            lokasiUser = txtAutocompleteAddress.Text;
-            txtLabelLokasi.Text = lokasiUser;
-            btnEditLokasi.Tag = "update";
-            txtStatusLokasiAktif.Text = "(Sudah diatur)";
-            btnEditLokasi.Content = "Ubah";
-            btnDisableLokasi.Visibility = Visibility.Visible;
-            hideEditPanel(sender, e);
+            string responseData = await httpObject.GetRequest("settings/checkKecamatanAvailable?lat=" + lat + "&lng=" + lng);
+            JObject json = JObject.Parse(responseData);
+            if (json["status"].ToString() == "1")
+            {
+                lokasiUser = txtAutocompleteAddress.Text;
+                txtLabelLokasi.Text = lokasiUser;
+                btnEditLokasi.Tag = "update";
+                txtStatusLokasiAktif.Text = "(Sudah diatur)";
+                btnEditLokasi.Content = "Ubah";
+                btnDisableLokasi.Visibility = Visibility.Visible;
+                hideEditPanel(sender, e);
+            }
+            else
+            {
+                var message = new MessageDialog(json["message"].ToString());
+                await message.ShowAsync();
+            }
+            
         }
 
         private void txtAutocompleteAddressTextChanged(object sender, TextChangedEventArgs e)
@@ -174,25 +193,6 @@ namespace SahabatSurabaya.Shared.Pages
             tick = 0;
         }
 
-        private async void suggestionChosen(object sender, ItemClickEventArgs e)
-        {
-            isChosen = true;
-            AutocompleteAddress item = (AutocompleteAddress)e.ClickedItem;
-            txtAutocompleteAddress.Text = item.description;
-            using (var client = new HttpClient())
-            {
-                string reqUri = "https://maps.googleapis.com/maps/api/geocode/json?address=" + item.description + "&key=AIzaSyA9rHJZEGWe6rX4nAHTGXFxCubmw-F0BBw";
-                HttpResponseMessage response = await client.GetAsync(reqUri);
-                if (response.IsSuccessStatusCode)
-                {
-                    var jsonString = response.Content.ReadAsStringAsync().Result;
-                    JObject json = JObject.Parse(jsonString);
-                    lat = json["results"][0]["geometry"]["location"]["lat"].ToString().Replace(",", ".");
-                    lng = json["results"][0]["geometry"]["location"]["lng"].ToString().Replace(",", "."); ;
-                }
-            }
-            listAutoCompleteAddress.Clear();
-        }
 
         private void goToConfirmationPage(object sender,RoutedEventArgs e)
         {

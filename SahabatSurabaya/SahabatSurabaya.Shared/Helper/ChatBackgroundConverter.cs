@@ -6,7 +6,7 @@ using Windows.UI;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Media;
 
-namespace SahabatSurabaya.Shared
+namespace SahabatSurabaya.Shared.Helper
 {
     class ChatBackgroundConverter : IValueConverter
     {

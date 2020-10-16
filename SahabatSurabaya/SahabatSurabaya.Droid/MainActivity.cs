@@ -7,6 +7,7 @@ using Com.OneSignal;
 using Com.OneSignal.Abstractions;
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
+using Android.Content;
 
 namespace SahabatSurabaya.Droid
 {
@@ -27,8 +28,9 @@ namespace SahabatSurabaya.Droid
         {
             Xamarin.Essentials.Platform.OnRequestPermissionsResult(requestCode, permissions, grantResults);
             base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+            NotificationManager notificationManager = (NotificationManager)GetSystemService(Context.NotificationService);
         }
-        
+         
     }
     
 }

@@ -41,6 +41,8 @@
     <AndroidTlsProvider>btls</AndroidTlsProvider>
     <AndroidKeyStore>false</AndroidKeyStore>
     <EmbedAssembliesIntoApk>false</EmbedAssembliesIntoApk>
+    <AndroidLinkTool>r8</AndroidLinkTool>
+    <MandroidI18n />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>portable</DebugType>

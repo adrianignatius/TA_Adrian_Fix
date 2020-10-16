@@ -17,7 +17,6 @@ using Xamarin.Essentials;
 
 namespace SahabatSurabaya.Shared.Pages
 {
-
     public sealed partial class ReportDetailPage : Page
     {
         ReportDetailPageParams param;
@@ -35,7 +34,7 @@ namespace SahabatSurabaya.Shared.Pages
 
         private async void checkKonfirmasiLaporan()
         {
-            string responseData = await httpObject.GetRequestWithAuthorization("user/checkKonfirmasiLaporan?id_laporan=" + param.id_laporan + "&id_user=" + userLogin.id_user,session.getTokenAuthorization());
+            string responseData = await httpObject.GetRequestWithAuthorization("laporan/checkKonfirmasiLaporan?id_laporan=" + param.id_laporan + "&id_user=" + userLogin.id_user,session.getTokenAuthorization());
             JObject json = JObject.Parse(responseData);
             if (json["count"].ToString() == "0")
             {
@@ -54,15 +53,16 @@ namespace SahabatSurabaya.Shared.Pages
             string type = "";
             if (param.tag == "kriminalitas")
             {
-                type = "2";
+                txtJumlahKonfirmasiLaporan.Text = param.jumlah_konfirmasi.ToString();
                 checkKonfirmasiLaporan();
             }
             else
             {
                 btnKonfirmasi.Visibility = Visibility.Collapsed;
                 type = param.tag == "Penemuan barang" ? "0":"1";
+                stackKonfirmasiLaporan.Visibility = Visibility.Collapsed;
             }
-            if (userLogin.id_user == param.id_user_pelapor)
+            if ((userLogin.id_user == param.id_user_pelapor) || (userLogin.status_user==2))
             {
                 btnChatPage.Visibility = Visibility.Collapsed;
                 btnKonfirmasi.Visibility = Visibility.Collapsed;
@@ -106,11 +106,12 @@ namespace SahabatSurabaya.Shared.Pages
                     new KeyValuePair<string, string>("id_laporan", param.id_laporan),
                     new KeyValuePair<string, string>("id_user", userLogin.id_user.ToString())
                 });
-                string responseData = await httpObject.PostRequestWithUrlEncoded("user/konfirmasiLaporanKriminalitas", content);
+                string responseData = await httpObject.PostRequestWithUrlEncoded("laporan/konfirmasiLaporanKriminalitas", content);
                 JObject json = JObject.Parse(responseData);
                 var messageDialog = new MessageDialog(json["message"].ToString());
                 await messageDialog.ShowAsync();
                 btnKonfirmasi.IsEnabled = false;
+                txtJumlahKonfirmasiLaporan.Text = (Convert.ToInt32(txtJumlahKonfirmasiLaporan.Text) + 1).ToString();
             }
         }
 
@@ -138,17 +139,21 @@ namespace SahabatSurabaya.Shared.Pages
 
         public async void loadKomentarLaporan()
         {
-            string responseData = await httpObject.GetRequestWithAuthorization("getKomentarLaporan/" + param.id_laporan,session.getTokenAuthorization());
+            string responseData = await httpObject.GetRequestWithAuthorization("laporan/getKomentarLaporan/" + param.id_laporan,session.getTokenAuthorization());
             listKomentar = JsonConvert.DeserializeObject<ObservableCollection<KomentarLaporan>>(responseData);
             lvKomentarLaporan.ItemsSource = listKomentar;
         }
 
         private async void shareLaporan(object sender, RoutedEventArgs e)
         {
+            DateTime dt = DateTime.Parse(param.tanggal_laporan);
+            string tanggal_format=dt.ToString("dd MMMM yyyy", new System.Globalization.CultureInfo("id-ID"));
+            string message = "Terdapat laporan tentang " + param.jenis_laporan + " yang terjadi pada tanggal " + tanggal_format;
+            message = param.tag == "kriminalitas" ? message += " yang terjadi di " + param.alamat_laporan : message += ". Lokasi terakhir barang ada di " + param.alamat_laporan;
             await Share.RequestAsync(new ShareTextRequest
             {
-                Text = "asd",
-                Title = "Share Text"
+                Text = message,
+                Title = "Share informasi "+param.tag
             });
         }
         private async void goToChatPage(object sender, RoutedEventArgs e)
@@ -158,20 +163,6 @@ namespace SahabatSurabaya.Shared.Pages
             ChatPageParams chatParam = new ChatPageParams(Convert.ToInt32(json["id_chat"].ToString()), userLogin.id_user, param.id_user_pelapor, param.nama_user_pelapor);
             session.setChatPageParams(chatParam);
             this.Frame.Navigate(typeof(PersonalChatPage));
-            //using (var client = new HttpClient())
-            //{
-            //    client.BaseAddress = new Uri(session.getApiURL());
-            //    client.DefaultRequestHeaders.Accept.Clear();
-            //    HttpResponseMessage response = await client.GetAsync("/checkHeaderChat/" + userLogin.id_user+"/"+param.id_user_pelapor);
-            //    if (response.IsSuccessStatusCode)
-            //    {
-            //        var responseData = response.Content.ReadAsStringAsync().Result;
-            //        JObject json = JObject.Parse(responseData);
-            //        ChatPageParams chatParam = new ChatPageParams(Convert.ToInt32(json["id_chat"].ToString()), userLogin.id_user, param.id_user_pelapor, param.nama_user_pelapor);
-            //        session.setChatPageParams(chatParam);
-            //        this.Frame.Navigate(typeof(PersonalChatPage));
-            //    }
-            //}
         }
 
         private async void sendComment(object sender,RoutedEventArgs e)
@@ -190,8 +181,9 @@ namespace SahabatSurabaya.Shared.Pages
                 });
                 string responseData = await httpObject.PostRequestWithUrlEncoded("user/insertKomentarLaporan", content);
                 JObject json = JObject.Parse(responseData);
-                var messageDialog = new MessageDialog(json["message"].ToString());
-                await messageDialog.ShowAsync();
+                var message = new MessageDialog(json["message"].ToString());
+                await message.ShowAsync();
+                txtKomentar.Text = "";
                 loadKomentarLaporan();
             }
             else

@@ -36,7 +36,7 @@ namespace SahabatSurabaya.Shared.Pages
                 }); 
             }
             string origins = location.Latitude.ToString().Replace(",",".") + "," + location.Longitude.ToString().Replace(",", ".");
-            string responseData = await httpObject.GetRequestWithAuthorization("getAllKantorPolisi", session.getTokenAuthorization());
+            string responseData = await httpObject.GetRequestWithAuthorization("settings/getAllKantorPolisi", session.getTokenAuthorization());
             string destinations = "";
             listKantorPolisi = JsonConvert.DeserializeObject<ObservableCollection<KantorPolisi>>(responseData);
             for (int i = 0; i < listKantorPolisi.Count; i++)
