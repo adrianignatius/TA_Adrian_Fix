@@ -15,7 +15,7 @@
 
     <Page.Resources>
         <local:DatetimeConverter x:Key="dateTimeConverter"/>
-        <SolidColorBrush x:Key="brushTransparent" Color="Black" Opacity="0.4"></SolidColorBrush>
+        <SolidColorBrush x:Key="brushTransparent" Color="Black" Opacity="0.7"></SolidColorBrush>
         <local:ImageLaporanConverter x:Key="imageConverter"/>
         <local:IconVisibilityConverter x:Key="iconVisibilityConverter"></local:IconVisibilityConverter>
     </Page.Resources>

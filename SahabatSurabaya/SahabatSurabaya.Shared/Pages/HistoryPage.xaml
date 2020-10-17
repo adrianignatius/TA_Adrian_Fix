@@ -11,11 +11,13 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Page.Resources>
-        <SolidColorBrush x:Key="brushTransparent" Color="Black" Opacity="0.4"></SolidColorBrush>
+        <SolidColorBrush x:Key="brushTransparent" Color="Black" Opacity="0.7"></SolidColorBrush>
         <local:DatetimeConverter x:Key="dateTimeConverter"/>
         <local:StatusLaporanConverter x:Key="statusLaporanConverter"/>
         <local:ImageLaporanConverter x:Key="imageConverter"/>
+        <local:StatusLaporanButtonConverter x:Key="statusLaporanButtonConverter"></local:StatusLaporanButtonConverter>
         <local:StatusLaporanColorConverter x:Key="statusLaporanColorConverter"/>
+        <local:StatusLaporanHeightConverter x:Key="statusLaporanHeightConverter"/>
     </Page.Resources>
     
     <Grid>
@@ -31,7 +33,7 @@
                     <ColumnDefinition Width="*"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
                 <Button Grid.Column="0" Click="Back_Click" VerticalAlignment="Top" HorizontalAlignment="Left" Style="{StaticResource NavigationBackButtonNormalStyle}"></Button>
-                <TextBlock Grid.Column="1" Text="History laporan saya" TextWrapping="WrapWholeWords" Margin="12,4,0,0" FontSize="24" FontWeight="Bold" ></TextBlock>
+                <TextBlock FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" Grid.Column="1" Text="History laporan saya" TextWrapping="WrapWholeWords" Margin="12,4,0,0" FontSize="24" FontWeight="Bold" ></TextBlock>
             </Grid>
             <Grid Grid.Row="1" Margin="12,16,12,16">
                 <Grid.ColumnDefinitions>
@@ -52,7 +54,7 @@
                         <Border Margin="0,4,0,4" CornerRadius="10" BorderBrush="Gray" BorderThickness="1">
                             <Grid MaxHeight="280">
                                 <Image Source="{Binding thumbnail_gambar,Converter={StaticResource imageConverter}}" Stretch="UniformToFill"/>
-                                <StackPanel Orientation="Vertical" Height="80" VerticalAlignment="Bottom" Background="{StaticResource brushTransparent}" Padding="12">
+                                <StackPanel Orientation="Vertical" Height="{Binding status_laporan,Converter={StaticResource statusLaporanHeightConverter}}" VerticalAlignment="Bottom" Background="{StaticResource brushTransparent}" Padding="12">
                                     <TextBlock FontWeight="ExtraBold" Opacity="1" Foreground="White" FontSize="14" Text="{Binding judul_laporan }"/>
                                     <StackPanel Orientation="Horizontal">
                                         <TextBlock Opacity="1" Foreground="White" FontSize="14" Text="{Binding tanggal_laporan,Converter={StaticResource dateTimeConverter}}"></TextBlock>
@@ -61,8 +63,9 @@
                                     </StackPanel>
                                     <StackPanel Orientation="Horizontal">
                                         <TextBlock Opacity="1" Foreground="White" FontSize="14" Text="Status: "></TextBlock>
-                                        <TextBlock Margin="2,0,0,0" Opacity="1" Foreground="{Binding status_laporan,Converter={StaticResource statusLaporanColorConverter}}" FontSize="14" Text="{Binding status_laporan,Converter={StaticResource statusLaporanConverter}}"></TextBlock>
+                                        <TextBlock FontWeight="Bold" Margin="2,0,0,0" Opacity="1" Foreground="{Binding status_laporan,Converter={StaticResource statusLaporanColorConverter}}" FontSize="14" Text="{Binding status_laporan,Converter={StaticResource statusLaporanConverter}}"></TextBlock>
                                     </StackPanel>
+                                    <Button Margin="0,4,0,4" Foreground="White" Visibility="{Binding status_laporan, Converter={StaticResource statusLaporanButtonConverter}}" Background="Red" CornerRadius="10" Content="Batalkan laporan"></Button>
                                 </StackPanel>
                             </Grid>
                         </Border>

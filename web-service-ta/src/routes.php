@@ -370,6 +370,19 @@ return function (App $app) {
             }
         });
 
+        $app->put('/cancelLaporan/{kategori_laporan}/{id_laporan}',function($request,$response,$args){
+            $kategori_laporan=$args["kategori_laporan"];
+            $id_laporan=$args["id_laporan"];
+            $jenis_laporan=$kategori_laporan=="0"? "laporan_lostfound_barang" : "laporan_kriminalitas";
+            $sql="UPDATE ".$jenis_laporan." SET status_laporan=99 WHERE id_laporan=:id_laporan";
+            $stmt=$this->db->prepare($sql);
+            if($stmt->execute()){
+                return $response->withJson(["status"=>"1","message"=>"Berhasil membatalkan laporan"]);
+            }else{
+                return $response->withJson(["status"=>"400","message"=>"Gagal membatalkan laporan"]);
+            }
+        });
+
         $app->get('/getKomentarLaporan/{id_laporan}', function ($request, $response,$args) {
             $id_laporan=$args["id_laporan"];
             $sql = "SELECT kl.id_komentar,kl.id_laporan,kl.isi_komentar,kl.tanggal_komentar,kl.waktu_komentar,u.nama_user AS nama_user_komentar
