@@ -75,8 +75,6 @@ namespace SahabatSurabaya.Shared.Pages
             }
         }
 
-        
-
         public async void HomePageLoaded(object sender, RoutedEventArgs e)
         {
             userLogin = session.getUserLogin();
@@ -136,9 +134,19 @@ namespace SahabatSurabaya.Shared.Pages
             }
         }
 
-        private void emergencyAction(object sender, RoutedEventArgs e)
+        private async void emergencyAction(object sender, RoutedEventArgs e)
         {
-            sendNotification();
+            ContentDialog confirmDialog = new ContentDialog
+                {
+                    Title = "Apakah anda yakin ingin mengirim pesan darurat?",
+                    Content = "Pesan ini akan disampaikan kepada seluruh kontak anda",
+                    PrimaryButtonText = "Ya",
+                    CloseButtonText = "Tidak"
+                };
+            ContentDialogResult result = await confirmDialog.ShowAsync();
+            if(result==ContentDialogResult.Primary){
+                sendNotification();
+            } 
         }
 
         private async void sendNotification()
@@ -157,7 +165,6 @@ namespace SahabatSurabaya.Shared.Pages
                 string messageContent="Salah satu kontakmu, "+userLogin.nama_user+" sedang dalam keadaan darurat. Lokasi terakhirnya ada di "+address;
                 foreach (User user in listEmergencyContact)
                 {
-            
                     var content = new FormUrlEncodedContent(new[]
                     {
                         new KeyValuePair<string, string>("number", user.telpon_user),

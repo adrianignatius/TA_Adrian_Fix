@@ -20,6 +20,7 @@ namespace SahabatSurabaya.Shared.Pages
         List<string> listMonthExpired, listYearExpired;
         Session session;
         User userLogin;
+        HttpObject httpObject;
         public SubscriptionPage()
         {
             this.InitializeComponent();
@@ -37,6 +38,7 @@ namespace SahabatSurabaya.Shared.Pages
             cbExpiredMonth.ItemsSource = listMonthExpired;
             cbExpiredYear.ItemsSource = listYearExpired;
             session = new Session();
+            httpObject = new HttpObject();
             userLogin = session.getUserLogin();
         }
 
@@ -67,48 +69,69 @@ namespace SahabatSurabaya.Shared.Pages
                         var hasil = response.Content.ReadAsStringAsync().Result;
                         JObject json = JObject.Parse(hasil);
                         string tokenId = json["saved_token_id"].ToString();
-                        using (var client2 = new HttpClient())
+                        var content = new FormUrlEncodedContent(new[]{
+                            new KeyValuePair<string, string>("id_user", idUser),
+                            new KeyValuePair<string, string>("credit_card_token", tokenId),
+                        });
+                        string responseData = await httpObject.PutRequest("user/updateCreditCardToken", content, session.getTokenAuthorization());
+                        json = JObject.Parse(responseData);
+                        if (json["status"].ToString() == "1")
                         {
-                            client2.BaseAddress = new Uri(session.getApiURL());
-                            var content = new FormUrlEncodedContent(new[]
-                                {
-                                    new KeyValuePair<string, string>("id_user", idUser),
-                                    new KeyValuePair<string, string>("credit_card_token", tokenId),
-                                });
-                            HttpResponseMessage response2 = await client2.PutAsync("user/updateCreditCardToken", content);
-                            if (response2.IsSuccessStatusCode)
-                            {
-                                var content2 = new FormUrlEncodedContent(new[]
-                                {
-                                    new KeyValuePair<string, string>("id_user", idUser)
-                                });
-                                response2 = await client2.PostAsync("user/chargeUser", content2);
-                                if (response2.IsSuccessStatusCode)
-                                {
-                                    string subscribeResponse = response2.Content.ReadAsStringAsync().Result;
-                                    json = JObject.Parse(subscribeResponse);
-                                    var message = new MessageDialog(json["message"].ToString());
-                                    await message.ShowAsync();
-                                    if (json["status"].ToString() == "1")
-                                    {
-                                        userLogin.status_user = 1;
-                                        userLogin.premium_available_until = json["premium_available_until"].ToString();
-                                        this.Frame.GoBack();
-                                    }
-                                }
-                                else
-                                {
-                                    var message = new MessageDialog("Gagal Berlangganan");
-                                    await message.ShowAsync();
-                                }
-                            }
-                            else
-                            {
-                                var message = new MessageDialog(response2.StatusCode.ToString());
-                                await message.ShowAsync();
+                            var content2 = new FormUrlEncodedContent(new[]{
+                                new KeyValuePair<string, string>("id_user", idUser)
+                            });
+                            responseData = await httpObject.PostRequestUrlEncodedWithAuthorization("user/chargeUser", content2, session.getTokenAuthorization());
+                            json = JObject.Parse(responseData);
+                            var message = new MessageDialog(json["message"].ToString());
+                            await message.ShowAsync();
+                            if (json["status"].ToString() == "1"){
+                                userLogin.status_user = 1;
+                                userLogin.premium_available_until = json["premium_available_until"].ToString();
+                                this.Frame.GoBack();
                             }
                         }
-                    }
+                        //using (var client2 = new HttpClient())
+                        //{
+                        //    client2.BaseAddress = new Uri(session.getApiURL());
+                        //    var content = new FormUrlEncodedContent(new[]
+                        //        {
+                        //            new KeyValuePair<string, string>("id_user", idUser),
+                        //            new KeyValuePair<string, string>("credit_card_token", tokenId),
+                        //        });
+                        //    HttpResponseMessage response2 = await client2.PutAsync("user/updateCreditCardToken", content);
+                        //    if (response2.IsSuccessStatusCode)
+                        //    {
+                        //        var content2 = new FormUrlEncodedContent(new[]
+                        //        {
+                        //            new KeyValuePair<string, string>("id_user", idUser)
+                        //        });
+                        //        response2 = await client2.PostAsync("user/chargeUser", content2);
+                        //        if (response2.IsSuccessStatusCode)
+                        //        {
+                        //            string subscribeResponse = response2.Content.ReadAsStringAsync().Result;
+                        //            json = JObject.Parse(subscribeResponse);
+                        //            var message = new MessageDialog(json["message"].ToString());
+                        //            await message.ShowAsync();
+                        //            if (json["status"].ToString() == "1")
+                        //            {
+                        //                userLogin.status_user = 1;
+                        //                userLogin.premium_available_until = json["premium_available_until"].ToString();
+                        //                this.Frame.GoBack();
+                        //            }
+                        //        }
+                        //        else
+                        //        {
+                        //            var message = new MessageDialog("Gagal Berlangganan");
+                        //            await message.ShowAsync();
+                        //        }
+                        //    }
+                        //    else
+                        //    {
+                        //        var message = new MessageDialog(response2.StatusCode.ToString());
+                        //        await message.ShowAsync();
+                        //    }
+                        //}
+                        }
                     else
                     {
                         var message = new MessageDialog(response.StatusCode.ToString());

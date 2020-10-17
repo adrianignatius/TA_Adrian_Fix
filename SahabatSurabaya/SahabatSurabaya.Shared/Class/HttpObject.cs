@@ -73,13 +73,13 @@ namespace SahabatSurabaya.Shared
             }
         }
 
-        public async Task<string> PostRequest(string url, MultipartFormDataContent form)
+        public async Task<string> PostRequestWithMultipartFormData(string url, MultipartFormDataContent form,string token)
         {
             using (var client=new HttpClient())
             {
                 client.BaseAddress = new Uri(API_URL);
                 //client.BaseAddress = new Uri(URL_DEBUG);
-                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Add("Authorization", token);
                 HttpResponseMessage response = await client.PostAsync(url, form);
                 if (response.IsSuccessStatusCode)
                 {

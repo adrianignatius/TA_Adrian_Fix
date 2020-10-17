@@ -936,9 +936,9 @@ return function (App $app) {
                 ":id_user"=>$body["id_user"]
             ];
             if($stmt->execute($data)){
-                return $response->withJson(["status" => "success", "data" => "1"], 200);
+                return $response->withJson(["status" => "1"]);
             }else{
-                return $response->withJson(["status" => "failed", "data" => "0"], 200);
+                return $response->withJson(["status" => "400"]);
             }
         });
 
