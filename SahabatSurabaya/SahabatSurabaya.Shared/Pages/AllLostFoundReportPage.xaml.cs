@@ -122,7 +122,7 @@ namespace SahabatSurabaya.Shared.Pages
                 string reqUri = "laporan/getLaporanLostFoundWithFilter?tanggal_awal=" + param.tanggal_awal + "&tanggal_akhir=" + param.tanggal_akhir + "&jenis_laporan=" + param.getArrayJenisLaporan() + "&id_barang=" + param.getArrayIdKategori() + "&id_kecamatan=" + param.id_kecamatan;
                 string responseData = await httpObject.GetRequestWithAuthorization(reqUri, session.getTokenAuthorization());
                 listLaporanLostFound = JsonConvert.DeserializeObject<ObservableCollection<LaporanLostFound>>(responseData);
-                if (listLaporanLostFound.Count == 0)
+                if (listLaporanLostFound.Count == 0)    
                 {
                     stackEmpty.Visibility = Visibility.Visible;
                     svListView.Visibility = Visibility.Collapsed;

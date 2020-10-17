@@ -17,7 +17,6 @@ namespace SahabatSurabaya.Shared.Pages
     public sealed partial class FilterPage : Page
     {
         static int mode;
-        int id_kecamatan = 0;
         ObservableCollection<Kecamatan> listKecamatan;
         List<Kecamatan> listKecamatanSelected;
         List<int> listIdBarangSelected;
@@ -47,6 +46,7 @@ namespace SahabatSurabaya.Shared.Pages
             dtTanggalAkhir.MinYear = new DateTime(2020, 1, 31);
             dtTanggalAwal.Date = before;
             dtTanggalAkhir.Date = now;
+            rbAllKecamatan.IsChecked = true;
         }
 
         private void Back_Click(object sender, RoutedEventArgs e)
@@ -56,20 +56,19 @@ namespace SahabatSurabaya.Shared.Pages
 
         private async void setFilter(object sender,RoutedEventArgs e)
         {
-            var message = new MessageDialog(listIdKejadianSelected.Count.ToString());
-            await message.ShowAsync();
             if (validateInput() == true)
             {
                 DateTime tanggal_awal = dtTanggalAwal.Date.DateTime;
                 DateTime tanggal_akhir = dtTanggalAkhir.Date.DateTime;
                 if (DateTime.Compare(tanggal_awal, tanggal_akhir) > 0)
                 {
-                    message = new MessageDialog("Tanggal awal tidak boleh lebih besar dari tanggal akhir");
+                    var message = new MessageDialog("Tanggal awal tidak boleh lebih besar dari tanggal akhir");
                     await message.ShowAsync();
                 }
                 else
                 {
-                    int id_kecamatan = Convert.ToInt32(cbKecamatan.SelectedValue.ToString());
+
+                    int id_kecamatan = rbSelectKecamatan.IsChecked == true ? Convert.ToInt32(cbKecamatan.SelectedValue.ToString()) : 0;
                     if (mode == 0)
                     {
                         FilterParams param = new FilterParams(tanggal_awal.ToString("yyyy-MM-dd"), tanggal_akhir.ToString("yyyy-MM-dd"), listJenisLaporan, listIdBarangSelected, id_kecamatan);
@@ -100,7 +99,7 @@ namespace SahabatSurabaya.Shared.Pages
             else
             {
                 if (mode == 0) {
-                    if (listJenisLaporan.Count == 0 || listIdBarangSelected.Count == 0 || cbKecamatan.SelectedIndex == -1)
+                    if (listJenisLaporan.Count == 0 || listIdBarangSelected.Count == 0)
                     {
                         return false;
                     }
@@ -110,7 +109,7 @@ namespace SahabatSurabaya.Shared.Pages
                     }
                 }
                 else {
-                    if (listIdKejadianSelected.Count == 0 || cbKecamatan.SelectedIndex==-1)
+                    if (listIdKejadianSelected.Count == 0)
                     {
                         return false;
                     }
@@ -154,7 +153,7 @@ namespace SahabatSurabaya.Shared.Pages
             listIdBarangSelected.Add(id_barang);
         }
 
-        private async void jenisBarangUnchecked(object sender, RoutedEventArgs e)
+        private void jenisBarangUnchecked(object sender, RoutedEventArgs e)
         {
             int id_barang = Convert.ToInt32((sender as CheckBox).Tag.ToString());
             listIdBarangSelected.Remove(id_barang);
@@ -198,8 +197,19 @@ namespace SahabatSurabaya.Shared.Pages
             cbKecamatan.ItemsSource = listKecamatan;
             cbKecamatan.DisplayMemberPath = "nama_kecamatan";
             cbKecamatan.SelectedValuePath = "id_kecamatan";
+            cbKecamatan.SelectedIndex = 0;
             stackLoading.Visibility = Visibility.Collapsed;
             stackFilter.Visibility = Visibility.Visible;
+        }
+        
+        private void rbAllKecamatanChecked(object sender,RoutedEventArgs e)
+        {
+            cbKecamatan.Visibility = Visibility.Collapsed;
+        }
+
+        private void rbSelectKecamatanChecked(object sender, RoutedEventArgs e)
+        {
+            cbKecamatan.Visibility = Visibility.Visible;
         }
     }
 }

@@ -84,9 +84,12 @@
                         </Grid>
                     </StackPanel>
                     <TextBlock Margin="0,8,0,0" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" FontSize="20" Text="Kecamatan"></TextBlock>
+                    <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                        <RadioButton Checked="rbAllKecamatanChecked" Name="rbAllKecamatan" FontSize="17" Margin="0,0,20,0">Semua Kecamatan</RadioButton>
+                        <RadioButton Checked="rbSelectKecamatanChecked" Name="rbSelectKecamatan" FontSize="17">Pilih Kecamatan</RadioButton>
+                    </StackPanel>
                     <ComboBox FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" Margin="0,4,0,0" Name="cbKecamatan" HorizontalAlignment="Stretch"></ComboBox>
-
-                    <GridView HorizontalAlignment="Stretch" Name="gvKecamatan">
+                        <GridView HorizontalAlignment="Stretch" Name="gvKecamatan">
                         <GridView.ItemTemplate>
                             <DataTemplate>
                                 <CheckBox Tag="{Binding id_kecamatan}" Unchecked="kecamatanUnchecked" Checked="kecamatanChecked" Content="{Binding nama_kecamatan}" FontFamily="ms-appx:///Assets/Fonts/Alata-Regular.ttf#Alata" FontSize="14" ></CheckBox>

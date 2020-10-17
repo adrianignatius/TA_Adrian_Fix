@@ -46,7 +46,7 @@ namespace SahabatSurabaya
 #endif
         }
 
-        private async static void HandleNotificationOpened(OSNotificationOpenedResult result)
+        private static void HandleNotificationOpened(OSNotificationOpenedResult result)
         {
             Session session = new Session();
             OSNotificationPayload payload = result.notification.payload;

@@ -14,7 +14,10 @@ namespace SahabatSurabaya.Shared.Helper
             {
                 return "Belum diverifikasi";
             }
-            else
+            else if (status == 99)
+            {
+                return "Dibatalkan";
+            }else
             {
                 return "Sudah diverifikasi";
             }

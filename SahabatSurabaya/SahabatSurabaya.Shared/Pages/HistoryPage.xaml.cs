@@ -64,6 +64,14 @@ namespace SahabatSurabaya.Shared
             JObject json = JObject.Parse(responseData);
             var message = new MessageDialog(json["message"].ToString());
             await message.ShowAsync();
+            if (jenis_laporan == "0")
+            {
+                loadLaporanLostFound();
+            }
+            else
+            {
+                loadLaporanKriminalitas();
+            }
         }
 
         private void setListViewLostFound()
@@ -84,10 +92,8 @@ namespace SahabatSurabaya.Shared
 
         private async void loadLaporanLostFound()
         {
-            if (listHistoryLaporanLostFound.Count == 0){
-                string responseData = await httpObject.GetRequestWithAuthorization("user/getHistoryLaporanLostFound/"+userLogin.id_user,session.getTokenAuthorization());
-                listHistoryLaporanLostFound = JsonConvert.DeserializeObject<ObservableCollection<LaporanLostFound>>(responseData);
-            }
+           string responseData = await httpObject.GetRequestWithAuthorization("user/getHistoryLaporanLostFound/"+userLogin.id_user,session.getTokenAuthorization());
+           listHistoryLaporanLostFound = JsonConvert.DeserializeObject<ObservableCollection<LaporanLostFound>>(responseData);
             if (listHistoryLaporanLostFound.Count == 0){
                 stackEmpty.Visibility = Visibility.Visible;
                 lvHistory.Visibility = Visibility.Collapsed;
@@ -97,10 +103,8 @@ namespace SahabatSurabaya.Shared
 
         private async void loadLaporanKriminalitas()
         {
-            if (listHistoryLaporanKriminalitas.Count == 0){
-                string responseData = await httpObject.GetRequestWithAuthorization("user/getHistoryLaporanKriminalitas/"+userLogin.id_user,session.getTokenAuthorization());
-                listHistoryLaporanKriminalitas = JsonConvert.DeserializeObject<ObservableCollection<LaporanKriminalitas>>(responseData);
-            }
+            string responseData = await httpObject.GetRequestWithAuthorization("user/getHistoryLaporanKriminalitas/"+userLogin.id_user,session.getTokenAuthorization());
+            listHistoryLaporanKriminalitas = JsonConvert.DeserializeObject<ObservableCollection<LaporanKriminalitas>>(responseData);          
             if (listHistoryLaporanLostFound.Count == 0){
                 stackEmpty.Visibility = Visibility.Visible;
                 lvHistory.Visibility = Visibility.Collapsed;
