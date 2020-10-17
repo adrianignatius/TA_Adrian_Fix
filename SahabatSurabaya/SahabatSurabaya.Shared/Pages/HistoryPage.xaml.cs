@@ -58,20 +58,31 @@ namespace SahabatSurabaya.Shared
 
         private async void cancelLaporan(object sender,RoutedEventArgs e)
         {
-            string id_laporan = (sender as Button).Tag.ToString();
-            string jenis_laporan = id_laporan.Substring(0, 1) == "L" ? "0" : "1";
-            string responseData = await httpObject.PutRequest("laporan/cancelLaporan/" + jenis_laporan + "/" + id_laporan, null, session.getTokenAuthorization());
-            JObject json = JObject.Parse(responseData);
-            var message = new MessageDialog(json["message"].ToString());
-            await message.ShowAsync();
-            if (jenis_laporan == "0")
+            ContentDialog confirmDialog = new ContentDialog
             {
-                loadLaporanLostFound();
+                Title = "Apakah anda yakin ingin membatalkan laporan ini?",
+                Content = "Laporan ini akan dibatalkan dan tidak akan terlihat oleh pengguna lainnya",
+                PrimaryButtonText = "Ya",
+                CloseButtonText = "Tidak"
+            };
+            ContentDialogResult result = await confirmDialog.ShowAsync();
+            if (result == ContentDialogResult.Primary){
+                string id_laporan = (sender as Button).Tag.ToString();
+                string jenis_laporan = id_laporan.Substring(0, 1) == "L" ? "0" : "1";
+                string responseData = await httpObject.PutRequest("laporan/cancelLaporan/" + jenis_laporan + "/" + id_laporan, null, session.getTokenAuthorization());
+                JObject json = JObject.Parse(responseData);
+                var message = new MessageDialog(json["message"].ToString());
+                await message.ShowAsync();
+                if (jenis_laporan == "0")
+                {
+                    loadLaporanLostFound();
+                }
+                else
+                {
+                    loadLaporanKriminalitas();
+                }
             }
-            else
-            {
-                loadLaporanKriminalitas();
-            }
+            
         }
 
         private void setListViewLostFound()

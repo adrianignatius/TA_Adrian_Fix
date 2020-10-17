@@ -90,50 +90,7 @@ namespace SahabatSurabaya.Shared.Pages
                                 this.Frame.GoBack();
                             }
                         }
-                        //using (var client2 = new HttpClient())
-                        //{
-                        //    client2.BaseAddress = new Uri(session.getApiURL());
-                        //    var content = new FormUrlEncodedContent(new[]
-                        //        {
-                        //            new KeyValuePair<string, string>("id_user", idUser),
-                        //            new KeyValuePair<string, string>("credit_card_token", tokenId),
-                        //        });
-                        //    HttpResponseMessage response2 = await client2.PutAsync("user/updateCreditCardToken", content);
-                        //    if (response2.IsSuccessStatusCode)
-                        //    {
-                        //        var content2 = new FormUrlEncodedContent(new[]
-                        //        {
-                        //            new KeyValuePair<string, string>("id_user", idUser)
-                        //        });
-                        //        response2 = await client2.PostAsync("user/chargeUser", content2);
-                        //        if (response2.IsSuccessStatusCode)
-                        //        {
-                        //            string subscribeResponse = response2.Content.ReadAsStringAsync().Result;
-                        //            json = JObject.Parse(subscribeResponse);
-                        //            var message = new MessageDialog(json["message"].ToString());
-                        //            await message.ShowAsync();
-                        //            if (json["status"].ToString() == "1")
-                        //            {
-                        //                userLogin.status_user = 1;
-                        //                userLogin.premium_available_until = json["premium_available_until"].ToString();
-                        //                this.Frame.GoBack();
-                        //            }
-                        //        }
-                        //        else
-                        //        {
-                        //            var message = new MessageDialog("Gagal Berlangganan");
-                        //            await message.ShowAsync();
-                        //        }
-                        //    }
-                        //    else
-                        //    {
-                        //        var message = new MessageDialog(response2.StatusCode.ToString());
-                        //        await message.ShowAsync();
-                        //    }
-                        //}
-                        }
-                    else
-                    {
+                    }else{
                         var message = new MessageDialog(response.StatusCode.ToString());
                         await message.ShowAsync();
                     }
