@@ -376,7 +376,7 @@ return function (App $app) {
             $jenis_laporan=$kategori_laporan=="0"? "laporan_lostfound_barang" : "laporan_kriminalitas";
             $sql="UPDATE ".$jenis_laporan." SET status_laporan=99 WHERE id_laporan=:id_laporan";
             $stmt=$this->db->prepare($sql);
-            if($stmt->execute()){
+            if($stmt->execute([":id_laporan"=>$id_laporan])){
                 return $response->withJson(["status"=>"1","message"=>"Berhasil membatalkan laporan"]);
             }else{
                 return $response->withJson(["status"=>"400","message"=>"Gagal membatalkan laporan"]);

@@ -65,7 +65,7 @@
                                         <TextBlock Opacity="1" Foreground="White" FontSize="14" Text="Status: "></TextBlock>
                                         <TextBlock FontWeight="Bold" Margin="2,0,0,0" Opacity="1" Foreground="{Binding status_laporan,Converter={StaticResource statusLaporanColorConverter}}" FontSize="14" Text="{Binding status_laporan,Converter={StaticResource statusLaporanConverter}}"></TextBlock>
                                     </StackPanel>
-                                    <Button Margin="0,4,0,4" Foreground="White" Visibility="{Binding status_laporan, Converter={StaticResource statusLaporanButtonConverter}}" Background="Red" CornerRadius="10" Content="Batalkan laporan"></Button>
+                                    <Button Tag="{Binding id_laporan}" Click="cancelLaporan" Margin="0,4,0,4" Foreground="White" Visibility="{Binding status_laporan, Converter={StaticResource statusLaporanButtonConverter}}" Background="Red" CornerRadius="10" Content="Batalkan laporan"></Button>
                                 </StackPanel>
                             </Grid>
                         </Border>

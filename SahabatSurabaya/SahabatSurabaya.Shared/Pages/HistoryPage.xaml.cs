@@ -1,14 +1,16 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using SahabatSurabaya.Shared.Pages;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-
+using Windows.UI.Xaml.Data;
 
 namespace SahabatSurabaya.Shared
 {
@@ -52,6 +54,16 @@ namespace SahabatSurabaya.Shared
                 session.setReportDetailPageParams(param);
             }
             this.Frame.Navigate(typeof(ReportDetailPage));
+        }
+
+        private async void cancelLaporan(object sender,RoutedEventArgs e)
+        {
+            string id_laporan = (sender as Button).Tag.ToString();
+            string jenis_laporan = id_laporan.Substring(0, 1) == "L" ? "0" : "1";
+            string responseData = await httpObject.PutRequest("laporan/cancelLaporan/" + jenis_laporan + "/" + id_laporan, null, session.getTokenAuthorization());
+            JObject json = JObject.Parse(responseData);
+            var message = new MessageDialog(json["message"].ToString());
+            await message.ShowAsync();
         }
 
         private void setListViewLostFound()
