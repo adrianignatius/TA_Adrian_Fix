@@ -121,17 +121,6 @@ namespace SahabatSurabaya.Shared.Pages
                 this.Frame.BackStack.RemoveAt(this.Frame.BackStackDepth - 1);
                 this.Frame.BackStack.RemoveAt(this.Frame.BackStackDepth - 1);
                 string reqUri = "laporan/getLaporanLostFoundWithFilter?tanggal_awal=" + param.tanggal_awal + "&tanggal_akhir=" + param.tanggal_akhir + "&jenis_laporan=" + param.getArrayJenisLaporan() + "&id_barang=" + param.getArrayIdKategori() + "&id_kecamatan=" + param.id_kecamatan;
-                //using (var client = new HttpClient())
-                //{
-                //    client.BaseAddress = new Uri("http://localhost:8080/");
-                //    client.DefaultRequestHeaders.Add("Authorization", session.getTokenAuthorization());
-                //    HttpResponseMessage response= await client.GetAsync(reqUri);
-                //    if (response.IsSuccessStatusCode)
-                //    {
-                //        var message = new MessageDialog(response.Content.ReadAsStringAsync().Result);
-                //        await message.ShowAsync();  
-                //    }
-                //}
                 string responseData = await httpObject.GetRequestWithAuthorization(reqUri, session.getTokenAuthorization());
                 listLaporanLostFound = JsonConvert.DeserializeObject<ObservableCollection<LaporanLostFound>>(responseData);
                 if (listLaporanLostFound.Count == 0)
