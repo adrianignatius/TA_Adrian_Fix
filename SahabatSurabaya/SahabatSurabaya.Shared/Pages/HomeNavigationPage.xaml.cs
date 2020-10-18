@@ -76,9 +76,9 @@ namespace SahabatSurabaya.Shared.Pages
                     break;
 
                 case "PoliceStationPage":
-                    ContentFrame.Navigate(typeof(PoliceStationPage));
+                    this.Frame.Navigate(typeof(PoliceStationPage));
                     break;
-
+                        
                 case "ProfilePage":
                     ContentFrame.Navigate(typeof(ProfilePage));
                     break;

@@ -1,30 +1,17 @@
 ﻿using Newtonsoft.Json.Linq;
 using SahabatSurabaya.Shared;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net.Http;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
-using Windows.UI.Xaml.Navigation;
 
-// The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
 namespace SahabatSurabaya.Shared.Pages
 {
-    /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
-    /// </summary>
+
     public sealed partial class ConfirmReportPage : Page
     {
         Session session;
@@ -82,8 +69,6 @@ namespace SahabatSurabaya.Shared.Pages
             {
                 this.Frame.Navigate(typeof(MakeLostFoundReportPage));
             }
-            
-            //On_BackRequested();
         }
 
         private bool On_BackRequested()
@@ -115,7 +100,7 @@ namespace SahabatSurabaya.Shared.Pages
                 if (param.image_laporan != null){
                     form.Add(new StreamContent(new MemoryStream(param.image_laporan.image)), "image", "image.jpg");
                 }
-                responseData = await httpObject.PostRequest("laporan/insertLaporanKriminalitas", form);
+                responseData = await httpObject.PostRequestWithMultipartFormData("laporan/insertLaporanKriminalitas", form,session.getTokenAuthorization());
             }
             else
             {
@@ -123,7 +108,7 @@ namespace SahabatSurabaya.Shared.Pages
                 form.Add(new StringContent(param.jenis_laporan.ToString()), "jenis_laporan");
                 form.Add(new StringContent(param.deskripsi_laporan), "deskripsi_barang");
                 form.Add(new StreamContent(new MemoryStream(param.image_laporan.image)), "image", "image.jpg");
-                responseData = await httpObject.PostRequest("laporan/insertLaporanLostFound", form);
+                responseData = await httpObject.PostRequestWithMultipartFormData("laporan/insertLaporanLostFound", form,session.getTokenAuthorization());
             }
             JObject json = JObject.Parse(responseData);
             var message = new MessageDialog(json["message"].ToString());

@@ -5,21 +5,18 @@ using Windows.UI.Xaml.Data;
 
 namespace SahabatSurabaya.Shared.Helper
 {
-    class StatusLaporanConverter:IValueConverter
+    class StatusLaporanHeightConverter:IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
             int status = (int)value;
             if (status == 0)
             {
-                return "Belum diverifikasi";
+                return 110;
             }
-            else if (status == 99)
+            else
             {
-                return "Dibatalkan";
-            }else
-            {
-                return "Sudah diverifikasi";
+                return 80;
             }
         }
 

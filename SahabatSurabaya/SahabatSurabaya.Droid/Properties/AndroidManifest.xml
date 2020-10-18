@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="SahabatSurabaya.SahabatSurabaya" android:versionCode="1" android:versionName="1.0" android:installLocation="auto">
-	<uses-sdk android:minSdkVersion="19" android:targetSdkVersion="29" />
+	<uses-sdk android:minSdkVersion="23" android:targetSdkVersion="28" />
 	<uses-permission android:name="android.permission.INTERNET" />
 	<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -9,7 +9,7 @@
 	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 	<permission android:name="SahabatSurabaya.SahabatSurabaya.permission.C2D_MESSAGE" android:protectionLevel="signature" />
 	<uses-permission android:name="SahabatSurabaya.SahabatSurabaya.permission.C2D_MESSAGE" />
-	<application android:icon="@drawable/applogo" android:label="Suroboyo Maju" android:usesCleartextTraffic="true">
+	<application android:label="Suroboyo Maju" android:usesCleartextTraffic="true" android:icon="@drawable/applogo">
 		<receiver android:name="com.onesignal.GcmBroadcastReceiver" android:permission="com.google.android.c2dm.permission.SEND">
 			<intent-filter>
 				<action android:name="com.google.android.c2dm.intent.RECEIVE" />

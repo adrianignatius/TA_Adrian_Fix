@@ -1,14 +1,16 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using SahabatSurabaya.Shared.Pages;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-
+using Windows.UI.Xaml.Data;
 
 namespace SahabatSurabaya.Shared
 {
@@ -54,6 +56,35 @@ namespace SahabatSurabaya.Shared
             this.Frame.Navigate(typeof(ReportDetailPage));
         }
 
+        private async void cancelLaporan(object sender,RoutedEventArgs e)
+        {
+            ContentDialog confirmDialog = new ContentDialog
+            {
+                Title = "Apakah anda yakin ingin membatalkan laporan ini?",
+                Content = "Laporan ini akan dibatalkan dan tidak akan terlihat oleh pengguna lainnya",
+                PrimaryButtonText = "Ya",
+                CloseButtonText = "Tidak"
+            };
+            ContentDialogResult result = await confirmDialog.ShowAsync();
+            if (result == ContentDialogResult.Primary){
+                string id_laporan = (sender as Button).Tag.ToString();
+                string jenis_laporan = id_laporan.Substring(0, 1) == "L" ? "0" : "1";
+                string responseData = await httpObject.PutRequest("laporan/cancelLaporan/" + jenis_laporan + "/" + id_laporan, null, session.getTokenAuthorization());
+                JObject json = JObject.Parse(responseData);
+                var message = new MessageDialog(json["message"].ToString());
+                await message.ShowAsync();
+                if (jenis_laporan == "0")
+                {
+                    loadLaporanLostFound();
+                }
+                else
+                {
+                    loadLaporanKriminalitas();
+                }
+            }
+            
+        }
+
         private void setListViewLostFound()
         {
             btnSelectionLaporanLostFound.IsEnabled = false;
@@ -72,10 +103,8 @@ namespace SahabatSurabaya.Shared
 
         private async void loadLaporanLostFound()
         {
-            if (listHistoryLaporanLostFound.Count == 0){
-                string responseData = await httpObject.GetRequestWithAuthorization("user/getHistoryLaporanLostFound/"+userLogin.id_user,session.getTokenAuthorization());
-                listHistoryLaporanLostFound = JsonConvert.DeserializeObject<ObservableCollection<LaporanLostFound>>(responseData);
-            }
+           string responseData = await httpObject.GetRequestWithAuthorization("user/getHistoryLaporanLostFound/"+userLogin.id_user,session.getTokenAuthorization());
+           listHistoryLaporanLostFound = JsonConvert.DeserializeObject<ObservableCollection<LaporanLostFound>>(responseData);
             if (listHistoryLaporanLostFound.Count == 0){
                 stackEmpty.Visibility = Visibility.Visible;
                 lvHistory.Visibility = Visibility.Collapsed;
@@ -85,10 +114,8 @@ namespace SahabatSurabaya.Shared
 
         private async void loadLaporanKriminalitas()
         {
-            if (listHistoryLaporanKriminalitas.Count == 0){
-                string responseData = await httpObject.GetRequestWithAuthorization("user/getHistoryLaporanKriminalitas/"+userLogin.id_user,session.getTokenAuthorization());
-                listHistoryLaporanKriminalitas = JsonConvert.DeserializeObject<ObservableCollection<LaporanKriminalitas>>(responseData);
-            }
+            string responseData = await httpObject.GetRequestWithAuthorization("user/getHistoryLaporanKriminalitas/"+userLogin.id_user,session.getTokenAuthorization());
+            listHistoryLaporanKriminalitas = JsonConvert.DeserializeObject<ObservableCollection<LaporanKriminalitas>>(responseData);          
             if (listHistoryLaporanLostFound.Count == 0){
                 stackEmpty.Visibility = Visibility.Visible;
                 lvHistory.Visibility = Visibility.Collapsed;

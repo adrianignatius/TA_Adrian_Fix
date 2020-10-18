@@ -11,7 +11,7 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Page.Resources>
-        <SolidColorBrush x:Key="brushTransparent" Color="Black" Opacity="0.4"></SolidColorBrush>
+        <SolidColorBrush x:Key="brushTransparent" Color="Black" Opacity="0.7"></SolidColorBrush>
         <local:DatetimeConverter x:Key="dateTimeConverter"/>
         <local:ImageLaporanConverter x:Key="imageConverter"/>
     </Page.Resources>

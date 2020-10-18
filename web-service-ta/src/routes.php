@@ -370,6 +370,19 @@ return function (App $app) {
             }
         });
 
+        $app->put('/cancelLaporan/{kategori_laporan}/{id_laporan}',function($request,$response,$args){
+            $kategori_laporan=$args["kategori_laporan"];
+            $id_laporan=$args["id_laporan"];
+            $jenis_laporan=$kategori_laporan=="0"? "laporan_lostfound_barang" : "laporan_kriminalitas";
+            $sql="UPDATE ".$jenis_laporan." SET status_laporan=99 WHERE id_laporan=:id_laporan";
+            $stmt=$this->db->prepare($sql);
+            if($stmt->execute([":id_laporan"=>$id_laporan])){
+                return $response->withJson(["status"=>"1","message"=>"Berhasil membatalkan laporan"]);
+            }else{
+                return $response->withJson(["status"=>"400","message"=>"Gagal membatalkan laporan"]);
+            }
+        });
+
         $app->get('/getKomentarLaporan/{id_laporan}', function ($request, $response,$args) {
             $id_laporan=$args["id_laporan"];
             $sql = "SELECT kl.id_komentar,kl.id_laporan,kl.isi_komentar,kl.tanggal_komentar,kl.waktu_komentar,u.nama_user AS nama_user_komentar
@@ -457,16 +470,16 @@ return function (App $app) {
             $tanggal_akhir=$request->getQueryParam('tanggal_akhir');
             $array_barang=$request->getQueryParam('id_barang');
             $id_kecamatan=$request->getQueryParam('id_kecamatan');
+            $filter_kecamatan=$id_kecamatan=="0" ? " IS NOT NULL" : "=$id_kecamatan";
             $jenis_laporan=$request->getQueryParam('jenis_laporan');
             $sql = "SELECT lf.id_laporan,lf.judul_laporan,lf.jenis_laporan,lf.status_laporan,lf.tanggal_laporan,lf.waktu_laporan,lf.alamat_laporan,lf.lat_laporan,lf.lng_laporan,lf.deskripsi_barang,lf.deskripsi_barang,lf.id_user_pelapor,u.nama_user AS nama_user_pelapor,count(kl.id_laporan) AS jumlah_komentar,lf.thumbnail_gambar AS thumbnail_gambar FROM laporan_lostfound_barang lf 
                     JOIN user u ON lf.id_user_pelapor=u.id_user 
                     LEFT JOIN komentar_laporan kl ON lf.id_laporan=kl.id_laporan
-                    WHERE lf.status_laporan=1 AND lf.jenis_laporan IN ($jenis_laporan) AND lf.id_kategori_barang IN ($array_barang) AND lf.id_kecamatan=:id_kecamatan AND (lf.tanggal_laporan BETWEEN :tanggal_awal AND :tanggal_akhir)
+                    WHERE lf.status_laporan=1 AND lf.jenis_laporan IN ($jenis_laporan) AND lf.id_kategori_barang IN ($array_barang) AND lf.id_kecamatan ".$filter_kecamatan." AND (lf.tanggal_laporan BETWEEN :tanggal_awal AND :tanggal_akhir)
                     GROUP BY lf.id_laporan 
                     ORDER BY lf.tanggal_laporan DESC, lf.waktu_laporan DESC";
             $stmt = $this->db->prepare($sql);
             $data=[
-                ":id_kecamatan"=>$id_kecamatan,
                 ":tanggal_awal"=>$tanggal_awal,
                 ":tanggal_akhir"=>$tanggal_akhir
             ];
@@ -491,15 +504,15 @@ return function (App $app) {
             $tanggal_akhir=$request->getQueryParam('tanggal_akhir');
             $array_kejadian=$request->getQueryParam('id_kejadian');
             $id_kecamatan=$request->getQueryParam('id_kecamatan');
+            $filter_kecamatan=$id_kecamatan=="0" ? " IS NOT NULL" : "=$id_kecamatan";
             $sql = "SELECT lk.id_laporan,lk.judul_laporan,skk.nama_kategori AS jenis_kejadian,lk.deskripsi_kejadian,lk.tanggal_laporan,lk.waktu_laporan,lk.alamat_laporan,lk.lat_laporan,lk.lng_laporan,lk.id_user_pelapor,u.nama_user AS nama_user_pelapor,lk.status_laporan,COUNT(klk.id_laporan) AS jumlah_konfirmasi,lk.thumbnail_gambar AS thumbnail_gambar FROM user u 
                     JOIN laporan_kriminalitas lk ON lk.id_user_pelapor=u.id_user 
                     LEFT JOIN konfirmasi_laporan_kriminalitas klk ON lk.id_laporan=klk.id_laporan 
                     JOIN setting_kategori_kriminalitas skk on skk.id_kategori=lk.id_kategori_kejadian 
-                    WHERE lk.status_laporan=1 AND lk.id_kategori_kejadian IN ($array_kejadian) AND lk.id_kecamatan=:id_kecamatan AND (lk.tanggal_laporan BETWEEN :tanggal_awal AND :tanggal_akhir)
+                    WHERE lk.status_laporan=1 AND lk.id_kategori_kejadian IN ($array_kejadian) AND lk.id_kecamatan" .$filter_kecamatan." AND (lk.tanggal_laporan BETWEEN :tanggal_awal AND :tanggal_akhir)
                     GROUP BY lk.id_laporan ORDER BY lk.tanggal_laporan DESC, lk.waktu_laporan DESC";
             $stmt = $this->db->prepare($sql);
             $data=[
-                ":id_kecamatan"=>$id_kecamatan,
                 ":tanggal_awal"=>$tanggal_awal,
                 ":tanggal_akhir"=>$tanggal_akhir
             ];
@@ -923,9 +936,9 @@ return function (App $app) {
                 ":id_user"=>$body["id_user"]
             ];
             if($stmt->execute($data)){
-                return $response->withJson(["status" => "success", "data" => "1"], 200);
+                return $response->withJson(["status" => "1"]);
             }else{
-                return $response->withJson(["status" => "failed", "data" => "0"], 200);
+                return $response->withJson(["status" => "400"]);
             }
         });
 

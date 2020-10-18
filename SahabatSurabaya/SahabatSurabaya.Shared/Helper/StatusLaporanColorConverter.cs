@@ -12,13 +12,13 @@ namespace SahabatSurabaya.Shared.Helper
         public object Convert(object value, Type targetType, object parameter, string language)
         {
             int statusLaporan = (int)value;
-            if (statusLaporan == 0)
+            if (statusLaporan == 1)
             {
-                return new SolidColorBrush(Colors.Red);
+                return new SolidColorBrush(Colors.Green);
             }
             else
             {
-                return new SolidColorBrush(Colors.Green);
+                return new SolidColorBrush(Colors.Red);
             }
         }
 

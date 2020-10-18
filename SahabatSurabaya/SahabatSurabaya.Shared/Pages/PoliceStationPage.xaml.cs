@@ -67,5 +67,10 @@ namespace SahabatSurabaya.Shared.Pages
             session.setKantorPolisi(selected);
             this.Frame.Navigate(typeof(PoliceStationDetailPage));
         }
+        private void Back_Click(object sender, RoutedEventArgs e)
+        {
+
+            this.Frame.GoBack();
+        }
     }
 }
