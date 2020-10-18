@@ -607,7 +607,6 @@ return function (App $app) {
                      skk.nama_kategori AS jenis_kejadian,lk.id_kecamatan,COUNT(klk.id_laporan) AS jumlah_konfirmasi 
                      FROM laporan_kriminalitas lk LEFT JOIN konfirmasi_laporan_kriminalitas klk ON klk.id_laporan=lk.id_laporan 
                      JOIN setting_kategori_kriminalitas skk ON lk.id_kategori_kejadian=skk.id_kategori JOIN user u ON lk.id_user_pelapor=u.id_user WHERE lk.id_laporan=:id_laporan";
-                //$sql="SELECT lk.lat_laporan,lk.lng_laporan,lk.alamat_laporan,skk.nama_kategori AS jenis_kejadian,lk.id_kecamatan FROM laporan_kriminalitas lk,setting_kategori_kriminalitas skk WHERE lk.id_laporan=:id_laporan AND lk.id_kategori_kejadian=skk.id_kategori;";
                 $stmt= $this->db->prepare($sql);
                 $stmt->execute(["id_laporan"=>$id_laporan]);
                 $laporan=$stmt->fetch();
