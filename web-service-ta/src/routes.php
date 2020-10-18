@@ -593,6 +593,9 @@ return function (App $app) {
                 return $response->withJson(["status"=>"400","message"=>"Laporan gagal dikonfirmasi"]);  
             }
         });
+        $app->put('/declineLaporanLostFound/{id_laporan}',function ($request,$response,$args){
+            
+        });
 
         $app->put('/verifikasiLaporanKriminalitas/{id_laporan}',function ($request,$response,$args){
             $id_laporan=$args["id_laporan"];
