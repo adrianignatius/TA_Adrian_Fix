@@ -655,16 +655,28 @@ return function (App $app) {
         });
     
         $app->get('/getLaporanLostFoundVerify',function ($request,$response){
-            $sql="SELECT id_laporan,judul_laporan,jenis_laporan,jenis_barang,tanggal_laporan,waktu_laporan,alamat_laporan,kecamatan FROM laporan_lostfound_barang";
+            $sql="SELECT lf.id_laporan,lf.judul_laporan,lf.jenis_laporan,lf.tanggal_laporan,lf.waktu_laporan,lf.alamat_laporan,skl.nama_kategori AS jenis_barang,k.nama_kecamatan AS kecamatan FROM laporan_lostfound_barang lf, setting_kategori_lostfound skl,kecamatan k WHERE lf.status_laporan=0 AND lf.id_kategori_barang=skl.id_kategori AND lf.id_kecamatan=k.id_kecamatan";
             $stmt = $this->db->prepare($sql);
             $stmt->execute();
             $result = $stmt->fetchAll();
-            return $response->withJson($result, 200);
+            return $response->withJson($result);
+        });
+
+        $app->put('/acceptUser/{id_user}',function ($request,$response,$args){
+            $id_user=$args["id_user"];
+            $sql="UPDATE user SET status_aktif_user=1 WHERE id_user=:id_user";
+            $stmt = $this->db->prepare($sql);
+            if($stmt->execute([":id_user"=>$id_user])){
+                return $response->withJson(["status"=>"1","message"=>"Berhasil mengubah status pending user"]);
+            }else{
+                return $response->withJson(["status"=>"400","message"=>"Gagal mengubah status pending user"]);
+            }
+
         });
 
         $app->get('/getDetailLaporanLostFound/{id_laporan}',function ($request,$response,$args){
             $id_laporan=$args['id_laporan'];
-            $sql="SELECT * FROM laporan_lostfound_barang WHERE id_laporan=:id_laporan";
+            $sql="SELECT lf.id_laporan,lf.judul_laporan,lf.jenis_laporan,lf.tanggal_laporan,lf.waktu_laporan,lf.alamat_laporan,lf.thumbnail_gambar,lf.deskripsi_barang,skl.nama_kategori AS jenis_barang,k.nama_kecamatan AS kecamatan FROM laporan_lostfound_barang lf, setting_kategori_lostfound skl,kecamatan k WHERE lf.id_laporan=:id_laporan AND lf.id_kategori_barang=skl.id_kategori AND lf.id_kecamatan=k.id_kecamatan";
             $stmt = $this->db->prepare($sql);
             $stmt->execute([":id_laporan" => $id_laporan]);
             $result = $stmt->fetch();
@@ -681,7 +693,7 @@ return function (App $app) {
         });
 
         $app->get('/getLaporanKriminalitasVerify',function ($request,$response){
-            $sql="SELECT id_laporan,judul_laporan,jenis_laporan,tanggal_laporan,waktu_laporan,alamat_laporan,kecamatan FROM laporan_lostfound_barang";
+            $sql="SELECT lk.id_laporan,lk.judul_laporan,lk.tanggal_laporan,lk.waktu_laporan,lk.alamat_laporan,skk.nama_kategori AS jenis_kejadian,k.nama_kecamatan AS kecamatan FROM laporan_kriminalitas lk, setting_kategori_kriminalitas skk,kecamatan k WHERE lk.status_laporan=0 AND lk.id_kategori_kejadian=skk.id_kategori AND lk.id_kecamatan=k.id_kecamatan";
             $stmt = $this->db->prepare($sql);
             $stmt->execute();
             $result = $stmt->fetchAll();
@@ -689,11 +701,11 @@ return function (App $app) {
         });
         
         $app->get('/getKepalaKeamanan',function ($request,$response){
-            $sql="SELECT * FROM user where status_user=2";
+            $sql="SELECT u.id_user,u.nama_user,u.telpon_user,u.status_aktif_user,k.nama_kecamatan AS kecamatan_user FROM user u, kecamatan k WHERE u.id_kecamatan_user=k.id_kecamatan AND u.status_user=2";
             $stmt = $this->db->prepare($sql);
             $stmt->execute();
             $result = $stmt->fetchAll();
-            return $response->withJson($result, 200);
+            return $response->withJson($result);
         });
         
         $app->put('/activateUser/{id_user}',function ($request,$response,$args){
