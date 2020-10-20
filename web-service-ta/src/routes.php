@@ -848,7 +848,7 @@ return function (App $app) {
                 ":telpon_user"=>$body["number"]
             ];
             if($stmt->execute($data)){
-                return $response->withJson(["status" => "1","message"=>"Kode OTP telah dikirimkan ke nomor anda"]);
+                return $response->withJson(["status" => "1","message"=>$res]);
             }else{
                 return $response->withJson(["status" => "400","message"=>"Gagal mengirimkan kode OTP, silahkan coba beberapa saat lagi"]);
             }
