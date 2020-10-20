@@ -1137,6 +1137,10 @@ return function (App $app) {
             $number=$body["number"];
             $heading=$body["heading"];
             $message=$body["content"];
+            $id_chat=$body["id_chat"];
+            $id_user_pengirim=$body["id_user_pengirim"];
+            $id_user_penerima=$body["id_user_penerima"];
+            $nama_display=$body["nama_display"];
             $curl = curl_init();
             $content = array(
                 "en" => $message
@@ -1145,7 +1149,11 @@ return function (App $app) {
                 "en" => $heading 
             );
             $data=[
-                "page"=>"2"
+                "page"=>"2",
+                "id_chat"=>$id_chat,
+                "id_user_pengirim"=>$id_user_pengirim,
+                "id_user_penerima"=>$id_user_penerima,
+                "nama_display"=>$nama_display
             ];
             sendOneSignalNotification($number,$content,$heading,$data);
             return $response->withJson(["status"=>"1"]);

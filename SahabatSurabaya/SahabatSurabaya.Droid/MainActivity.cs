@@ -30,7 +30,7 @@ namespace SahabatSurabaya.Droid
             base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
             NotificationManager notificationManager = (NotificationManager)GetSystemService(Context.NotificationService);
         }
-         
+
     }
     
 }
