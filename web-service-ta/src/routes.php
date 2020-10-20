@@ -823,20 +823,20 @@ return function (App $app) {
             $code=rand(1000,9999);
             $message="Masukkan nomor ".$code.". Mohon tidak menginformasikan nomor ini kepada siapa pun";
             $api_url=$url."&numbers=".$body["number"]."&content=".rawurlencode($message);
-            // $ch= curl_init();
-            // curl_setopt($ch, CURLOPT_URL, $api_url);
-            // curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            // curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-            //     'Content-Type:application/json',
-            //     'Accept:application/json'
-            // ));
-            // curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
-            // curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-            // curl_setopt($ch, CURLOPT_HEADER        , FALSE);
+            $ch= curl_init();
+            curl_setopt($ch, CURLOPT_URL, $api_url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+                'Content-Type:application/json',
+                'Accept:application/json'
+            ));
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+            curl_setopt($ch, CURLOPT_HEADER        , FALSE);
     
-            // $res = curl_exec($ch);
-            // $httpCode= curl_getinfo($ch, CURLINFO_HTTP_CODE);
-            // curl_close($ch);
+            $res = curl_exec($ch);
+            $httpCode= curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
 
             $new_date = (new DateTime())->modify('+5 minutes');
             $expiredToken = $new_date->format('Y/m/d H:i:s'); 
