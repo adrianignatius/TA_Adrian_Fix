@@ -832,7 +832,7 @@ return function (App $app) {
             ));
             curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-            curl_setopt($ch, CURLOPT_HEADER        , FALSE);
+            curl_setopt($ch, CURLOPT_HEADER, FALSE);
     
             $res = curl_exec($ch);
             $httpCode= curl_getinfo($ch, CURLINFO_HTTP_CODE);
