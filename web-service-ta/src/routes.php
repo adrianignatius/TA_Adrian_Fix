@@ -173,7 +173,7 @@ return function (App $app) {
                 ":lng_user"=>$lng_user,
                 ":lokasi_aktif_user"=>$lokasi_aktif_user,
                 ":geohash_lokasi_aktif_user"=>$geohash_lokasi_aktif_user,
-                ":status_aktif_user"=>99
+                ":status_aktif_user"=>1
             ];
             if($stmt->execute($data)){
                 $sql="SELECT * FROM user WHERE id_user=:id_user";
@@ -848,7 +848,7 @@ return function (App $app) {
                 ":telpon_user"=>$body["number"]
             ];
             if($stmt->execute($data)){
-                return $response->withJson(["status" => "1","message"=>$res]);
+                return $response->withJson(["status" => "1","message"=>"Kode OTP telah dikirimkan ke nomor anda"]);
             }else{
                 return $response->withJson(["status" => "400","message"=>"Gagal mengirimkan kode OTP, silahkan coba beberapa saat lagi"]);
             }
