@@ -30,7 +30,7 @@ function getKecamatan($lat,$lng){
 function sendOneSignalNotification($number,$content,$heading,$data){
     $curl = curl_init();
     $fields = array(
-        'app_id' => "6fd226ba-1d41-4c7b-9f8b-a973a8fd436b",
+        'app_id' => "0cb6cb66-8111-4e25-868e-a5875ca6ed05",
         'filters' => array(array("field" => "tag", "key" => "no_handphone", "relation" => "=", "value" => $number)),
         'contents' => $content,
         'headings' => $heading,
@@ -40,7 +40,7 @@ function sendOneSignalNotification($number,$content,$heading,$data){
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, "https://onesignal.com/api/v1/notifications");
     curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json; charset=utf-8',
-                                            'Authorization: Basic MDUyNjhlOGEtNDQ4NC00YTYwLWIxYmYtMDZjYTc2OGUwNDc4'));
+                                            'Authorization: Basic ZWIwNGI3OWEtZjVmYi00Njg5LWJmYWItMjVlY2ExNjE5NmMy'));
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
     curl_setopt($ch, CURLOPT_HEADER, FALSE);
     curl_setopt($ch, CURLOPT_POST, TRUE);
@@ -1005,7 +1005,7 @@ return function (App $app) {
                 ),
             ));
             $curl_response = curl_exec($curl);  
-            $json = json_decode(utf8_encode($curl_response), true);
+            $json = json_decode(utf8_encode($curl_response), true); 
             curl_close($curl);
             if($json["status_code"]=="200"){
                  $datetime=date('Y-m-d');
@@ -1149,19 +1149,6 @@ return function (App $app) {
             ];
             sendOneSignalNotification($number,$content,$heading,$data);
             return $response->withJson(["status"=>"1"]);
-            // $fields = json_encode($fields);
-            // $ch = curl_init();
-            // curl_setopt($ch, CURLOPT_URL, "https://onesignal.com/api/v1/notifications");
-            // curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json; charset=utf-8',
-            //                                         'Authorization: Basic MDUyNjhlOGEtNDQ4NC00YTYwLWIxYmYtMDZjYTc2OGUwNDc4'));
-            // curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-            // curl_setopt($ch, CURLOPT_HEADER, FALSE);
-            // curl_setopt($ch, CURLOPT_POST, TRUE);
-            // curl_setopt($ch, CURLOPT_POSTFIELDS, $fields);
-            // curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-            // $res = curl_exec($ch);
-            // curl_close($ch);
-            // return $response->withJson($res);
         });
 
         $app->get('/checkHeaderChat', function ($request, $response,$args) {   
