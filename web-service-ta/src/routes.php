@@ -173,7 +173,7 @@ return function (App $app) {
                 ":lng_user"=>$lng_user,
                 ":lokasi_aktif_user"=>$lokasi_aktif_user,
                 ":geohash_lokasi_aktif_user"=>$geohash_lokasi_aktif_user,
-                ":status_aktif_user"=>99
+                ":status_aktif_user"=>1
             ];
             if($stmt->execute($data)){
                 $sql="SELECT * FROM user WHERE id_user=:id_user";
@@ -823,20 +823,20 @@ return function (App $app) {
             $code=rand(1000,9999);
             $message="Masukkan nomor ".$code.". Mohon tidak menginformasikan nomor ini kepada siapa pun";
             $api_url=$url."&numbers=".$body["number"]."&content=".rawurlencode($message);
-            // $ch= curl_init();
-            // curl_setopt($ch, CURLOPT_URL, $api_url);
-            // curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            // curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-            //     'Content-Type:application/json',
-            //     'Accept:application/json'
-            // ));
-            // curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
-            // curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-            // curl_setopt($ch, CURLOPT_HEADER        , FALSE);
+            $ch= curl_init();
+            curl_setopt($ch, CURLOPT_URL, $api_url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+                'Content-Type:application/json',
+                'Accept:application/json'
+            ));
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+            curl_setopt($ch, CURLOPT_HEADER, FALSE);
     
-            // $res = curl_exec($ch);
-            // $httpCode= curl_getinfo($ch, CURLINFO_HTTP_CODE);
-            // curl_close($ch);
+            $res = curl_exec($ch);
+            $httpCode= curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
 
             $new_date = (new DateTime())->modify('+5 minutes');
             $expiredToken = $new_date->format('Y/m/d H:i:s'); 
@@ -1137,6 +1137,10 @@ return function (App $app) {
             $number=$body["number"];
             $heading=$body["heading"];
             $message=$body["content"];
+            $id_chat=$body["id_chat"];
+            $id_user_pengirim=$body["id_user_pengirim"];
+            $id_user_penerima=$body["id_user_penerima"];
+            $nama_display=$body["nama_display"];
             $curl = curl_init();
             $content = array(
                 "en" => $message
@@ -1145,7 +1149,11 @@ return function (App $app) {
                 "en" => $heading 
             );
             $data=[
-                "page"=>"2"
+                "page"=>"2",
+                "id_chat"=>$id_chat,
+                "id_user_pengirim"=>$id_user_pengirim,
+                "id_user_penerima"=>$id_user_penerima,
+                "nama_display"=>$nama_display
             ];
             sendOneSignalNotification($number,$content,$heading,$data);
             return $response->withJson(["status"=>"1"]);
