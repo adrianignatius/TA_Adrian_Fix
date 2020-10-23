@@ -84,6 +84,10 @@ return function (App $app) {
             return $response->withJson($result);
         });
 
+        $app->get('/coba',function ($request,$response){
+            return $response->withJson("asd");
+        });
+
         $app->get('/getKategoriLostFound', function ($request, $response) {
             $sql="SELECT * FROM setting_kategori_lostfound";
             $stmt=$this->db->prepare($sql);
