@@ -610,7 +610,14 @@ return function (App $app) {
             }
         });
         $app->put('/declineLaporanLostFound/{id_laporan}',function ($request,$response,$args){
-            
+            $id_laporan=$args["id_laporan"];
+            $sql="UPDATE laporan_lostfound_barang SET status_laporan=99 WHERE id_laporan=:id_laporan";
+            $stmt = $this->db->prepare($sql);
+            if($stmt->execute(["id_laporan"=>$id_laporan])){
+                return $response->withJson(["status"=>"1","message"=>"Laporan berhasil ditolak"]);
+            }else{
+                return $response->withJson(["status"=>"1","message"=>"Laporan gagal ditolak"]);
+            }
         });
 
         $app->put('/verifikasiLaporanKriminalitas/{id_laporan}',function ($request,$response,$args){
@@ -698,16 +705,16 @@ return function (App $app) {
             $stmt = $this->db->prepare($sql);
             $stmt->execute([":id_laporan" => $id_laporan]);
             $result = $stmt->fetch();
-            return $response->withJson($result, 200);
+            return $response->withJson($result);
         });
 
         $app->get('/getDetailLaporanKriminalitas/{id_laporan}',function ($request,$response,$args){
             $id_laporan=$args['id_laporan'];
-            $sql="SELECT * FROM laporan_kriminalitas WHERE id_laporan=:id_laporan";
+            $sql="SELECT lk.id_laporan,lk.judul_laporan,lk.tanggal_laporan,lk.waktu_laporan,lk.alamat_laporan,lk.thumbnail_gambar,lk.deskripsi_kejadian,skk.nama_kategori AS jenis_kejadian,k.nama_kecamatan AS kecamatan FROM laporan_kriminalitas lk, setting_kategori_kriminalitas skk,kecamatan k WHERE lk.id_laporan=:id_laporan AND lk.id_kategori_kejadian=skk.id_kategori AND lk.id_kecamatan=k.id_kecamatan;";
             $stmt = $this->db->prepare($sql);
             $stmt->execute([":id_laporan" => $id_laporan]);
-            $result = $stmt->fetchAll();
-            return $response->withJson($result, 200);
+            $result = $stmt->fetch();
+            return $response->withJson($result);
         });
 
         $app->get('/getLaporanKriminalitasVerify',function ($request,$response){
@@ -715,7 +722,7 @@ return function (App $app) {
             $stmt = $this->db->prepare($sql);
             $stmt->execute();
             $result = $stmt->fetchAll();
-            return $response->withJson($result, 200);
+            return $response->withJson($result);
         });
         
         $app->get('/getKepalaKeamanan',function ($request,$response){
