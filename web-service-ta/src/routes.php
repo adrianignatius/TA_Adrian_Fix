@@ -357,7 +357,7 @@ return function (App $app) {
             $kategori_laporan=$args["kategori_laporan"];
             $id_laporan=$args["id_laporan"];
             $jenis_laporan=$kategori_laporan=="0"? "laporan_lostfound_barang" : "laporan_kriminalitas";
-            $sql="UPDATE ".$jenis_laporan." SET status_laporan=99 WHERE id_laporan=:id_laporan";
+            $sql="UPDATE ".$jenis_laporan." SET status_laporan=2 WHERE id_laporan=:id_laporan";
             $stmt=$this->db->prepare($sql);
             if($stmt->execute([":id_laporan"=>$id_laporan])){
                 return $response->withJson(["status"=>"1","message"=>"Berhasil membatalkan laporan"]);
@@ -485,6 +485,13 @@ return function (App $app) {
             $stmt->execute($data);
             $result = $stmt->fetchAll();
             return $response->withJson($result);
+        });
+
+        $app->get('/getJumlahLaporanKriminalitas',function ($request,$response,$args){
+            $sql="SELECT COUNT(*) from laporan_kriminalitas WHERE status_laporan=1";
+            $stmt->execute();
+            $result = $stmt->fetchColumn();
+            return $response->withJson(["count"=>$result]);
         });
 
         $app->get('/getLaporanKriminalitas/{page}', function ($request, $response,$args) {
