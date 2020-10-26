@@ -489,6 +489,15 @@ return function (App $app) {
 
         $app->get('/getJumlahLaporanKriminalitas',function ($request,$response,$args){
             $sql="SELECT COUNT(*) from laporan_kriminalitas WHERE status_laporan=1";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute();
+            $result = $stmt->fetchColumn();
+            return $response->withJson(["count"=>$result]);
+        });
+
+        $app->get('/getJumlahLaporanLostFound',function ($request,$response,$args){
+            $sql="SELECT COUNT(*) from laporan_lostfound_barang WHERE status_laporan=1";
+            $stmt = $this->db->prepare($sql);
             $stmt->execute();
             $result = $stmt->fetchColumn();
             return $response->withJson(["count"=>$result]);
