@@ -50,17 +50,6 @@ function sendOneSignalNotification($number,$content,$heading,$data){
     curl_close($ch);
 }
 
-// function sendNotificationToKepalaKeamanan($array_kepala_keamanan){
-//     $content = array(
-//         "en" => $message
-//     );
-//     $heading = array(
-//         "en" => "Ada laporan baru di daerah pengawasan anda!"
-//     );
-//     foreach($array_kepala_keamanan as $kepala_keamanan){
-        
-//     }
-// }
 return function (App $app) {
     $container = $app->getContainer();
     $container['upload_directory'] = __DIR__ . '/uploads';
@@ -115,7 +104,7 @@ return function (App $app) {
             }
         });
     });
-
+    
     $app->post('/checkLogin', function ($request, $response) {
         $body = $request->getParsedBody();
         $sql = "SELECT u.id_user,u.password_user,u.nama_user,u.telpon_user,u.status_user,u.premium_available_until,u.lokasi_aktif_user,u.id_kecamatan_user,k.nama_kecamatan AS kecamatan_user ,u.status_aktif_user
@@ -209,30 +198,24 @@ return function (App $app) {
             return $response->withJson(["status"=>"400","message"=>"Token not verified"]);
         }
     });
-    // $app->get('/getHeadlineLaporanLostFound', function ($request, $response) {
-    //     $sql = "SELECT lf.id_laporan,lf.judul_laporan,lf.jenis_laporan,lf.tanggal_laporan,lf.waktu_laporan,lf.alamat_laporan,lf.lat_laporan,lf.lng_laporan,lf.deskripsi_barang,lf.deskripsi_barang,lf.id_user_pelapor,u.nama_user as nama_user_pelapor,count(kl.id_laporan) AS jumlah_komentar,gf.nama_file AS thumbnail_gambar FROM laporan_lostfound_barang lf 
-    //             JOIN user u ON lf.id_user_pelapor=u.id_user 
-    //             LEFT JOIN komentar_laporan kl ON lf.id_laporan=kl.id_laporan
-    //             JOIN gambar_lostfound_barang gf ON lf.id_laporan=gf.id_laporan
-    //             GROUP BY lf.id_laporan 
-    //             ORDER BY lf.tanggal_laporan DESC, lf.waktu_laporan DESC LIMIT 5";
-    //     $stmt = $this->db->prepare($sql);
-    //     $stmt->execute();
-    //     $result = $stmt->fetchAll();
-    //     return $response->withJson($result);
-    // });
-
-    // $app->get('/getHeadlineLaporanKriminalitas', function ($request, $response) {
-    //     $sql = "SELECT lk.id_laporan,lk.judul_laporan,lk.jenis_kejadian,lk.deskripsi_kejadian,lk.tanggal_laporan,lk.waktu_laporan,lk.alamat_laporan,lk.lat_laporan,lk.lng_laporan,lk.id_user_pelapor,u.nama_user AS nama_user_pelapor, COUNT(kl.id_laporan) AS jumlah_komentar,gk.nama_file AS thumbnail_gambar FROM user u 
-    //             JOIN laporan_kriminalitas lk ON lk.id_user_pelapor=u.id_user 
-    //             LEFT JOIN komentar_laporan kl ON lk.id_laporan=kl.id_laporan 
-    //             JOIN gambar_kriminalitas gk ON lk.id_laporan=gk.id_laporan
-    //             GROUP BY lk.id_laporan ORDER BY lk.tanggal_laporan DESC, lk.waktu_laporan DESC LIMIT 5";
-    //     $stmt = $this->db->prepare($sql);
-    //     $stmt->execute();
-    //     $result = $stmt->fetchAll();
-    //     return $response->withJson($result);
-    // });
+   
+    $app->post('/loginAdmin',function($request,$response){
+        $body=$request->getParsedBody();
+        $email=$body["username"];
+        $password=$body["password"];
+        if($email=="adrianignatius27" && $password="AdRiAn"){
+            $payload = array(
+                "iss" => "slim-framework",
+                "sub" =>"admin",
+                "iat" => time(),
+                "exp" => time()+3600
+            );
+            $token = Token::customPayload($payload, $_ENV['JWT_SECRET']);
+            return $response->withJson(["status" => "200","token"=>$token]);
+        }else{
+            return $response->withJson(["status"=>"400","message"=>"Username atau password salah"]);
+        }  
+    });
 
     
     
@@ -385,14 +368,14 @@ return function (App $app) {
 
         $app->get('/getKomentarLaporan/{id_laporan}', function ($request, $response,$args) {
             $id_laporan=$args["id_laporan"];
-            $sql = "SELECT kl.id_komentar,kl.id_laporan,kl.isi_komentar,kl.tanggal_komentar,kl.waktu_komentar,u.nama_user AS nama_user_komentar
+            $sql = "SELECT kl.id_komentar,kl.id_laporan,kl.isi_komentar,kl.waktu_komentar,u.nama_user AS nama_user_komentar
                     FROM komentar_laporan kl, user u 
                     WHERE kl.id_user_komentar=u.id_user and kl.id_laporan=:id_laporan
-                    ORDER BY kl.tanggal_komentar DESC, kl.waktu_komentar DESC";
+                    ORDER BY kl.waktu_komentar DESC";
             $stmt = $this->db->prepare($sql);
             $stmt->execute([":id_laporan" => $id_laporan]);
             $result = $stmt->fetchAll();
-            return $response->withJson($result, 200);
+            return $response->withJson($result);
         });
 
         $app->get('/getHeadlineLaporanKriminalitas', function ($request, $response) {
@@ -633,11 +616,11 @@ return function (App $app) {
                 $stmt= $this->db->prepare($sql);
                 $stmt->execute(["id_laporan"=>$id_laporan]);
                 $laporan=$stmt->fetch();
-                $sql="SELECT telpon_user FROM user WHERE id_kecamatan_user=:id_kecamatan_user";
+                $sql="SELECT telpon_user FROM user WHERE id_kecamatan_user=:id_kecamatan_user AND status_user=2";
                 $stmt= $this->db->prepare($sql);
                 $stmt->execute([":id_kecamatan_user"=>$laporan["id_kecamatan"]]);
                 $result=$stmt->fetchAll();
-                $message="Ada user yang telah membuat laporan tentang ".$laporan["jenis_kejadian"]." di area pengawasanmu. Lokasi kejadian di ".$laporan["alamat_laporan"];
+                $message="Ada masyarakat yang telah membuat laporan tentang ".$laporan["jenis_kejadian"]." di area pengawasanmu. Lokasi kejadian di ".$laporan["alamat_laporan"];
                 $content = array(
                     "en" => $message
                 );
@@ -662,9 +645,10 @@ return function (App $app) {
                     "thumbnail_gambar"=>$laporan["thumbnail_gambar"],
                     "jumlah_konfirmasi"=>$laporan["jumlah_konfirmasi"]
                 );
-                foreach($result as $user){
-                    sendOneSignalNotification($user["telpon_user"],$content,$heading,$data);
+                foreach($result as $kepala_keamanan){
+                    sendOneSignalNotification($kepala_keamanan["telpon_user"],$content,$heading,$data);
                 }
+               
                 return $response->withJson(["status"=>"1","message"=>"Laporan berhasil dikonfirmasi"]);
             }else{
                 return $response->withJson(["status"=>"400","message"=>"Laporan gagal dikonfirmasi"]);
@@ -758,12 +742,12 @@ return function (App $app) {
         $app->put('/updateKepalaKeamanan/{id_user}',function ($request,$response,$args){
             $id_user=$args["id_user"];
             $body=$request->getParsedBody();
-            $sql="UPDATE user SET nama_user=:nama_user,kecamatan_user=:kecamatan_user WHERE id_user=:id_user";
+            $sql="UPDATE user SET nama_user=:nama_user,id_kecamatan_user=:id_kecamatan_user WHERE id_user=:id_user";
             $stmt = $this->db->prepare($sql);
             $data = [
                 ":id_user" =>$id_user,
                 ":nama_user" => $body["nama_user"],
-                ":kecamatan_user"=>$body["kecamatan_user"]
+                ":id_kecamatan_user"=>$body["id_kecamatan_user"]
             ];
             if($stmt->execute($data)){
                 return $response->withJson(["status"=>"1","message"=>"Berhasil mengubah data kepala keamanan"]);
@@ -779,14 +763,14 @@ return function (App $app) {
             $stmt->execute([":telpon_user" => $body["telpon_user"]]);
             $result=$stmt->fetchColumn();
             if($result==0){
-                $sql = "INSERT INTO user (password_user, nama_user, telpon_user, status_user,kecamatan_user) VALUE (:password_user, :nama_user, :telpon_user, :status_user,:kecamatan_user)";
+                $sql = "INSERT INTO user (password_user, nama_user, telpon_user, status_user,id_kecamatan_user) VALUE (:password_user, :nama_user, :telpon_user, :status_user,:id_kecamatan_user)";
                 $stmt = $this->db->prepare($sql);
                 $data = [
                     ":password_user"=>password_hash($body["password_user"], PASSWORD_BCRYPT),
                     ":nama_user" => $body["nama_user"],
                     ":telpon_user" => $body["telpon_user"],
                     ":status_user"=>2,
-                    ":kecamatan_user"=>$body["kecamatan_user"]
+                    ":id_kecamatan_user"=>$body["id_kecamatan_user"]
                 ];
                 if($stmt->execute($data)){
                     return $response->withJson(["status"=>"1","message"=>"Tambah kepala keamanan berhasil"]);
@@ -795,6 +779,25 @@ return function (App $app) {
                 }     
             }else{
                 return $response->withJson(["status"=>"400","message"=>"Nomor handphone sudah terdaftar"]);
+            }
+        });
+        $app->get('/getKomentarLaporan',function($request,$response){
+            $sql="SELECT kl.id_komentar,kl.id_laporan,kl.isi_komentar,kl.waktu_komentar,kl.id_user_komentar,u.nama_user AS nama_user_komentar,CASE WHEN substring(kl.id_laporan,1,1)='C' THEN lk.judul_laporan ELSE lf.judul_laporan END AS judul_laporan FROM komentar_laporan kl LEFT JOIN laporan_kriminalitas lk ON lk.id_laporan=kl.id_laporan LEFT JOIN laporan_lostfound_barang lf ON lf.id_laporan=kl.id_laporan JOIN user u ON u.id_user=kl.id_user_komentar 
+                ORDER BY kl.waktu_komentar DESC";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute();
+            $result = $stmt->fetchAll();
+            return $response->withJson($result);    
+        });
+
+        $app->delete('/deleteKomentarLaporan/{id_komentar}',function($request,$response,$args){
+            $id_komentar=$args["id_komentar"];
+            $sql="DELETE FROM komentar_laporan WHERE id_komentar=:id_komentar";
+            $stmt = $this->db->prepare($sql);
+            if($stmt->execute(["id_komentar"=>$id_komentar])){
+                return $response->withJson(["status"=>"1","message"=>"Berhasil menghapus komentar"]); 
+            }else{
+                return $response->withJson(["status"=>"400","message"=>"Gagal menghapus komentar"]);
             }
         });
     });
@@ -927,7 +930,7 @@ return function (App $app) {
 
         $app->get('/getUser/{id}', function ($request, $response,$args) {
             $id=$args["id"];
-            $sql = "SELECT id_user,nama_user,telpon_user,status_user,premium_available_until,lokasi_aktif_user,kecamatan_user,status_aktif_user FROM user where id_user=:id";
+            $sql = "SELECT id_user,nama_user,telpon_user,status_user,premium_available_until,lokasi_aktif_user,id_kecamatan_user,status_aktif_user FROM user where id_user=:id";
             $stmt = $this->db->prepare($sql);
             $stmt->execute([":id" => $id]);
             $result = $stmt->fetch();
@@ -1212,18 +1215,18 @@ return function (App $app) {
 
         $app->post('/insertKomentarLaporan', function ($request, $response) {
             $new_komentar = $request->getParsedBody();
-            $datetime = DateTime::createFromFormat('d/m/Y', $new_komentar["tanggal_komentar"]);
-            $day=$datetime->format('d');
-            $month=$datetime->format('m');
-            $year=$datetime->format('Y');
-            $formatDate=$year.$month.$day;
-            $sql = "INSERT INTO komentar_laporan(id_laporan,isi_komentar, tanggal_komentar, waktu_komentar,id_user_komentar) VALUE (:id_laporan,:isi_komentar, :tanggal_komentar, :waktu_komentar, :id_user_komentar)";
+            $datetime = date("Y/m/d H:i:s");
+            // $datetime = DateTime::createFromFormat('d/m/Y', $new_komentar["tanggal_komentar"]);
+            // $day=$datetime->format('d');
+            // $month=$datetime->format('m');
+            // $year=$datetime->format('Y');
+            // $formatDate=$year.$month.$day;
+            $sql = "INSERT INTO komentar_laporan(id_laporan,isi_komentar, waktu_komentar,id_user_komentar) VALUE (:id_laporan,:isi_komentar, :waktu_komentar, :id_user_komentar)";
             $stmt = $this->db->prepare($sql);
             $data = [
                 ":id_laporan" => $new_komentar["id_laporan"],
                 ":isi_komentar"=>$new_komentar["isi_komentar"],
-                ":tanggal_komentar" => $formatDate,
-                ":waktu_komentar" => $new_komentar["waktu_komentar"],
+                ":waktu_komentar" => $datetime,
                 ":id_user_komentar" => $new_komentar["id_user_komentar"]
             ];
             if($stmt->execute($data)){
