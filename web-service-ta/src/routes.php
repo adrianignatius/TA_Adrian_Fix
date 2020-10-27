@@ -104,14 +104,6 @@ return function (App $app) {
             }
         });
     });
-
-    $app->get('/coba', function ($request, $response) {
-        $sql="SELECT * FROM laporan_lostfound_barang";
-        $stmt=$this->db->prepare($sql);
-        $stmt->execute();
-        $count=$stmt->rowCount();
-        return $response->withJson($count);
-    });
     
     $app->post('/checkLogin', function ($request, $response) {
         $body = $request->getParsedBody();
@@ -458,19 +450,21 @@ return function (App $app) {
             return $response->withJson($result);
         });
     
-        $app->get('/getLaporanLostFoundWithFilter', function ($request, $response) {
+        $app->get('/getLaporanLostFoundWithFilter/{page}', function ($request, $response,$args) {
             $tanggal_awal=$request->getQueryParam('tanggal_awal');
             $tanggal_akhir=$request->getQueryParam('tanggal_akhir');
             $array_barang=$request->getQueryParam('id_barang');
             $id_kecamatan=$request->getQueryParam('id_kecamatan');
             $filter_kecamatan=$id_kecamatan=="0" ? " IS NOT NULL" : "=$id_kecamatan";
             $jenis_laporan=$request->getQueryParam('jenis_laporan');
+            $page=$args["page"];
+            $offset= intval($page)*5;
             $sql = "SELECT lf.id_laporan,lf.judul_laporan,lf.jenis_laporan,lf.status_laporan,lf.tanggal_laporan,lf.waktu_laporan,lf.alamat_laporan,lf.lat_laporan,lf.lng_laporan,lf.deskripsi_barang,lf.deskripsi_barang,lf.id_user_pelapor,u.nama_user AS nama_user_pelapor,count(kl.id_laporan) AS jumlah_komentar,lf.thumbnail_gambar AS thumbnail_gambar FROM laporan_lostfound_barang lf 
                     JOIN user u ON lf.id_user_pelapor=u.id_user 
                     LEFT JOIN komentar_laporan kl ON lf.id_laporan=kl.id_laporan
                     WHERE lf.status_laporan=1 AND lf.jenis_laporan IN ($jenis_laporan) AND lf.id_kategori_barang IN ($array_barang) AND lf.id_kecamatan ".$filter_kecamatan." AND (lf.tanggal_laporan BETWEEN :tanggal_awal AND :tanggal_akhir)
                     GROUP BY lf.id_laporan 
-                    ORDER BY lf.tanggal_laporan DESC, lf.waktu_laporan DESC";
+                    ORDER BY lf.tanggal_laporan DESC, lf.waktu_laporan DESC LIMIT 5 OFFSET $offset";
             $stmt = $this->db->prepare($sql);
             $data=[
                 ":tanggal_awal"=>$tanggal_awal,
@@ -493,6 +487,24 @@ return function (App $app) {
             $sql="SELECT COUNT(*) from laporan_lostfound_barang WHERE status_laporan=1";
             $stmt = $this->db->prepare($sql);
             $stmt->execute();
+            $result = $stmt->fetchColumn();
+            return $response->withJson(["count"=>$result]);
+        });
+
+        $app->get('/getJumlahLaporanLostFoundWithFilter',function ($request,$response,$args){
+            $tanggal_awal=$request->getQueryParam('tanggal_awal');
+            $tanggal_akhir=$request->getQueryParam('tanggal_akhir');
+            $array_barang=$request->getQueryParam('id_barang');
+            $id_kecamatan=$request->getQueryParam('id_kecamatan');
+            $jenis_laporan=$request->getQueryParam('jenis_laporan');
+            $filter_kecamatan=$id_kecamatan=="0" ? " IS NOT NULL" : "=$id_kecamatan";
+            $sql="SELECT COUNT(*) from laporan_lostfound_barang WHERE status_laporan=1 AND jenis_laporan IN ($jenis_laporan) AND id_kategori_barang IN ($array_barang) AND id_kecamatan ".$filter_kecamatan." AND (tanggal_laporan BETWEEN :tanggal_awal AND :tanggal_akhir) ";
+            $data=[
+                ":tanggal_awal"=>$tanggal_awal,
+                ":tanggal_akhir"=>$tanggal_akhir
+            ];
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute($data);
             $result = $stmt->fetchColumn();
             return $response->withJson(["count"=>$result]);
         });
