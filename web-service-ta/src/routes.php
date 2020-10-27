@@ -528,18 +528,20 @@ return function (App $app) {
             return $response->withJson($result);
         });
 
-        $app->get('/getLaporanKriminalitasWithFilter', function ($request, $response) {
+        $app->get('/getLaporanKriminalitasWithFilter/{page}', function ($request, $response,$args) {
             $tanggal_awal=$request->getQueryParam('tanggal_awal');
             $tanggal_akhir=$request->getQueryParam('tanggal_akhir');
             $array_kejadian=$request->getQueryParam('id_kejadian');
             $id_kecamatan=$request->getQueryParam('id_kecamatan');
+            $page=$args["page"];
+            $offset= intval($page)*5;
             $filter_kecamatan=$id_kecamatan=="0" ? " IS NOT NULL" : "=$id_kecamatan";
             $sql = "SELECT lk.id_laporan,lk.judul_laporan,skk.nama_kategori AS jenis_kejadian,lk.deskripsi_kejadian,lk.tanggal_laporan,lk.waktu_laporan,lk.alamat_laporan,lk.lat_laporan,lk.lng_laporan,lk.id_user_pelapor,u.nama_user AS nama_user_pelapor,lk.status_laporan,COUNT(klk.id_laporan) AS jumlah_konfirmasi,lk.thumbnail_gambar AS thumbnail_gambar FROM user u 
                     JOIN laporan_kriminalitas lk ON lk.id_user_pelapor=u.id_user 
                     LEFT JOIN konfirmasi_laporan_kriminalitas klk ON lk.id_laporan=klk.id_laporan 
                     JOIN setting_kategori_kriminalitas skk on skk.id_kategori=lk.id_kategori_kejadian 
                     WHERE lk.status_laporan=1 AND lk.id_kategori_kejadian IN ($array_kejadian) AND lk.id_kecamatan" .$filter_kecamatan." AND (lk.tanggal_laporan BETWEEN :tanggal_awal AND :tanggal_akhir)
-                    GROUP BY lk.id_laporan ORDER BY lk.tanggal_laporan DESC, lk.waktu_laporan DESC";
+                    GROUP BY lk.id_laporan ORDER BY lk.tanggal_laporan DESC, lk.waktu_laporan DESC LIMIT 5 OFFSET $offset";
             $stmt = $this->db->prepare($sql);
             $data=[
                 ":tanggal_awal"=>$tanggal_awal,
