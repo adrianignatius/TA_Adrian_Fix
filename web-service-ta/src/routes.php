@@ -235,14 +235,25 @@ return function (App $app) {
             return $response->withJson($result);
         });
 
-        $app->get('/getLaporanKriminalitas/{id_kecamatan}',function($request,$response,$args){
+        $app->get('/getJumlahLaporanKriminalitasKecamatan/{id_kecamatan}',function($request,$response,$args){
             $id_kecamatan=$args["id_kecamatan"];
+            $sql="SELECT COUNT(*) FROM laporan_kriminalitas WHERE id_kecamatan=:id_kecamatan AND status_laporan=1";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([":id_kecamatan"=>$id_kecamatan]);
+            $result=$stmt->fetchColumn();
+            return $response->withJson(["count"=>$result]);
+        });
+
+        $app->get('/getLaporanKriminalitas/{id_kecamatan}/{page}',function($request,$response,$args){
+            $id_kecamatan=$args["id_kecamatan"];
+            $page=$args["page"];
+            $offset= intval($page)*5;
             $sql="SELECT lk.id_laporan,lk.judul_laporan,lk.status_laporan,skk.nama_kategori AS jenis_kejadian,lk.deskripsi_kejadian,lk.tanggal_laporan,lk.waktu_laporan,lk.alamat_laporan,lk.lat_laporan,lk.lng_laporan,lk.id_user_pelapor,u.nama_user AS nama_user_pelapor, COUNT(kl.id_laporan) AS jumlah_komentar,lk.thumbnail_gambar AS thumbnail_gambar FROM user u 
                 JOIN laporan_kriminalitas lk ON lk.id_user_pelapor=u.id_user 
                 LEFT JOIN komentar_laporan kl ON lk.id_laporan=kl.id_laporan
                 JOIN setting_kategori_kriminalitas skk on skk.id_kategori=lk.id_kategori_kejadian
                 WHERE lk.id_kecamatan=:id_kecamatan AND lk.status_laporan=1
-                GROUP BY lk.id_laporan ORDER BY lk.tanggal_laporan DESC, lk.waktu_laporan DESC";
+                GROUP BY lk.id_laporan ORDER BY lk.tanggal_laporan DESC, lk.waktu_laporan DESC LIMIT 5 OFFSET $offset";
             $stmt = $this->db->prepare($sql);
             $stmt->execute([":id_kecamatan"=>$id_kecamatan]);
             $result=$stmt->fetchAll();
@@ -491,7 +502,7 @@ return function (App $app) {
             return $response->withJson(["count"=>$result]);
         });
 
-        $app->get('/getJumlahLaporanLostFoundWithFilter',function ($request,$response,$args){
+        $app->get('/getJumlahLaporanLostFoundWithFilter',function ($request,$response){
             $tanggal_awal=$request->getQueryParam('tanggal_awal');
             $tanggal_akhir=$request->getQueryParam('tanggal_akhir');
             $array_barang=$request->getQueryParam('id_barang');
