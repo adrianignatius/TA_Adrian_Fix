@@ -30,7 +30,7 @@ function getKecamatan($lat,$lng){
 function sendOneSignalNotification($number,$content,$heading,$data){
     $curl = curl_init();
     $fields = array(
-        'app_id' => "0cb6cb66-8111-4e25-868e-a5875ca6ed05",
+        'app_id' => "6fd226ba-1d41-4c7b-9f8b-a973a8fd436b",
         'filters' => array(array("field" => "tag", "key" => "no_handphone", "relation" => "=", "value" => $number)),
         'contents' => $content,
         'headings' => $heading,
@@ -40,7 +40,7 @@ function sendOneSignalNotification($number,$content,$heading,$data){
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, "https://onesignal.com/api/v1/notifications");
     curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json; charset=utf-8',
-                                            'Authorization: Basic ZWIwNGI3OWEtZjVmYi00Njg5LWJmYWItMjVlY2ExNjE5NmMy'));
+                                            'Authorization: Basic MDUyNjhlOGEtNDQ4NC00YTYwLWIxYmYtMDZjYTc2OGUwNDc4'));
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
     curl_setopt($ch, CURLOPT_HEADER, FALSE);
     curl_setopt($ch, CURLOPT_POST, TRUE);
@@ -858,6 +858,25 @@ return function (App $app) {
     });
 
     $app->group('/user', function () use ($app) {
+        $app->put('/updateLocation/{id_user}',function ($request, $response,$args){
+            $lat=$request->getQueryParam('lat');
+            $lng=$request->getQueryParam('lng');
+            $id_user=$args["id_user"];
+            $sql="UPDATE user SET lat_lokasi_terakhir_user=:lat,lng_lokasi_terakhir_user=:lng WHERE id_user=:id_user";
+            $stmt = $this->db->prepare($sql);
+            $data=[
+                ":lat"=>$lat,
+                ":lng"=>$lng,
+                ":id_user"=>$id_user
+            ];
+            if($stmt->execute($data)){
+                return $response->withJson(["status"=>"1"]);
+            }else{
+                return $response->withJson(["status"=>"400"]);
+            }
+        });
+
+
         $app->put('/updateProfile',function ($request, $response){
             $body=$request->getParsedBody();
             $id_user=$body["id_user"];
