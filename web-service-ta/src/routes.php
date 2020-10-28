@@ -151,15 +151,15 @@ return function (App $app) {
                 $lokasi_aktif_user=$new_user["lokasi_aktif_user"];
                 $geohash_lokasi_aktif_user=$geohash->encode(floatval($lat_user), floatval($lng_user), 8);
             }
-            $sql = "INSERT INTO user (telpon_user, password_user, nama_user, status_user, lat_user,lng_user,lokasi_aktif_user,geohash_lokasi_aktif_user,status_aktif_user) VALUE (:telpon_user, :password_user, :nama_user, :status_user, :lat_user,:lng_user,:lokasi_aktif_user,:geohash_lokasi_aktif_user,:status_aktif_user)";
+            $sql = "INSERT INTO user (telpon_user, password_user, nama_user, status_user, lat_lokasi_aktif_user,lng_lokasi_aktif_user,lokasi_aktif_user,geohash_lokasi_aktif_user,status_aktif_user) VALUE (:telpon_user, :password_user, :nama_user, :status_user, :lat_lokasi_aktif_user,:lng_lokasi_aktif_user,:lokasi_aktif_user,:geohash_lokasi_aktif_user,:status_aktif_user)";
             $stmt = $this->db->prepare($sql);
             $data = [
                 ":password_user"=>password_hash($new_user["password_user"], PASSWORD_BCRYPT),
                 ":nama_user" => $new_user["nama_user"],
                 ":telpon_user" => $new_user["telpon_user"],
                 ":status_user"=>0,
-                ":lat_user"=>$lat_user,
-                ":lng_user"=>$lng_user,
+                ":lat_lokasi_aktif_user"=>$lat_user,
+                ":lng_lokasi_aktif_user"=>$lng_user,
                 ":lokasi_aktif_user"=>$lokasi_aktif_user,
                 ":geohash_lokasi_aktif_user"=>$geohash_lokasi_aktif_user,
                 ":status_aktif_user"=>1
@@ -603,7 +603,7 @@ return function (App $app) {
                 $stmt= $this->db->prepare($sql);
                 $stmt->execute(["id_laporan"=>$id_laporan]);
                 $laporan=$stmt->fetch();
-                $sql="SELECT telpon_user FROM user WHERE calcDistance(lat_user,lng_user,:lat_laporan,:lng_laporan)<=3000";
+                $sql="SELECT telpon_user FROM user WHERE calcDistance(lat_lokasi_aktif_user,lng_lokasi_aktif_user,:lat_laporan,:lng_laporan)<=3000";
                 $stmt= $this->db->prepare($sql);
                 $data=[
                     ":lat_laporan"=>$laporan["lat_laporan"],
@@ -878,7 +878,7 @@ return function (App $app) {
                     $lokasi_aktif_user=$body["lokasi_aktif_user"];
                     $geohash_lokasi_aktif_user=$geohash->encode(floatval($lat_user), floatval($lng_user), 8);
                 }
-                $sql="UPDATE user SET nama_user=:nama_user, lat_user=:lat_user, lng_user=:lng_user, lokasi_aktif_user=:lokasi_aktif_user, geohash_lokasi_aktif_user=:geohash_lokasi_aktif_user WHERE id_user=:id_user";
+                $sql="UPDATE user SET nama_user=:nama_user, lat_lokasi_aktif_user=:lat_user, lng_lokasi_aktif_user=:lng_user, lokasi_aktif_user=:lokasi_aktif_user, geohash_lokasi_aktif_user=:geohash_lokasi_aktif_user WHERE id_user=:id_user";
                 $stmt=$this->db->prepare($sql); 
                 $data=[
                     ":id_user"=>$id_user,

@@ -82,7 +82,6 @@ namespace SahabatSurabaya.Shared
                     loadLaporanKriminalitas();
                 }
             }
-            
         }
 
         private void setListViewLostFound()
