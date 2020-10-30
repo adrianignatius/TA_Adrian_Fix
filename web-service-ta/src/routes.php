@@ -1044,6 +1044,38 @@ return function (App $app) {
             return $response->withJson($result);
         });
 
+        $app->post('/registerCard', function ($request, $response) {
+            $body = $request->getParsedBody();
+            $card_number=$body["card_number"];
+            $card_exp_month=$body["card_exp_month"];
+            $card_exp_year=$body["card_exp_year"];
+            $client_key = "SB-Mid-client-J4xpVwGv_HmNID-g";
+            $API_URL="https://api.sandbox.midtrans.com/v2/card/register?card_number=".$card_number."&card_exp_month=".$card_exp_month."&card_exp_year=".$card_exp_year."&client_key=".$client_key;
+            $ch = curl_init(); 
+            curl_setopt($ch, CURLOPT_URL, $API_URL); 
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+            curl_setopt($ch,CURLOPT_HTTPHEADER,array (
+                "Accept: application/json",
+                "Authorization: Basic U0ItTWlkLXNlcnZlci1GQjRNSERieVhlcFc5OFNRWjY0SHhNeEU="
+            ));
+            $curl_response = curl_exec($ch);  
+            $json = json_decode(utf8_encode($curl_response), true); 
+            curl_close($ch);
+            if($json["status_code"]=="200"){
+                $sql = "UPDATE user set credit_card_token=:credit_card_token where id_user=:id_user";
+                $stmt = $this->db->prepare($sql);
+                $data = [
+                    ":credit_card_token" => $json["saved_token_id"],
+                    ":id_user"=>$body["id_user"]
+                ];
+                if($stmt->execute($data)){
+                    return $response->withJson(["status" => "1"]);
+                }
+            }else{
+                return $response->withJson(["status"=>"400","message"=>"Nomor kartu tidak valid"]);
+            }
+        });
+
         $app->put('/updateCreditCardToken', function ($request, $response) {
             $body = $request->getParsedBody();
             $sql = "UPDATE user set credit_card_token=:credit_card_token where id_user=:id_user";
