@@ -404,16 +404,16 @@ return function (App $app) {
 
         $app->post('/konfirmasiLaporanKriminalitas',function ($request,$response){
             $body = $request->getParsedBody();
-            $sql="INSERT INTO konfirmasi_laporan_kriminalitas VALUES(:id_laporan,:id_user)";
+            $sql="INSERT INTO konfirmasi_laporan_kriminalitas(id_laporan,id_user) VALUES(:id_laporan,:id_user)";
             $stmt = $this->db->prepare($sql);
             $data=[
                 ":id_laporan"=>$body["id_laporan"],
                 ":id_user"=>$body["id_user"]
             ];
             if($stmt->execute($data)){
-                return $response->withJson(["status" => "1", "message" => "Konfirmasi Laporan Berhasil"], 200);
+                return $response->withJson(["status" => "1", "message" => "Konfirmasi Laporan Berhasil"]);
             }else{
-                return $response->withJson(["status" => "400", "message" => "Konfirmasi Laporan Gagal"], 200);
+                return $response->withJson(["status" => "400", "message" => "Konfirmasi Laporan Gagal"]);
             }
         });
 
