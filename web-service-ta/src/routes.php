@@ -1112,11 +1112,12 @@ return function (App $app) {
             curl_close($curl);
             if($json["status_code"]=="200"){
                  $datetime=date('Y-m-d');
-                $sql = "INSERT INTO order_subscription(id_order,order_ammount, order_date) VALUE (:id_order,:order_ammount,:order_date)";
+                $sql = "INSERT INTO order_subscription(id_order,order_ammount, order_date,id_user) VALUE (:id_order,:order_ammount,:order_date,:id_user)";
                 $data = [
                     ":id_order" => $id_order,
                     ":order_ammount"=>50000,
-                    ":order_date" => $datetime
+                    ":order_date" => $datetime,
+                    ":id_user"=>id_user
                 ];
                 $stmt=$this->db->prepare($sql);
                 $stmt->execute($data);
