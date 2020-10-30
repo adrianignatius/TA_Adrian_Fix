@@ -328,7 +328,7 @@ return function (App $app) {
         });
 
         $app->post('/insertLaporanKriminalitas', function(Request $request, Response $response,$args) {
-            $new_laporan = $request->getParsedBody();
+            $body = $request->getParsedBody();
             $waktu=$body["waktu_laporan"];
             $tanggal=$body["tanggal_laporan"];
             $date=strtotime($tanggal);
@@ -345,22 +345,21 @@ return function (App $app) {
                 $extension = pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION);
                 $filename=$id_laporan.".".$extension;
             }      
-            $kecamatan=getKecamatan($new_laporan["lat_laporan"],$new_laporan["lng_laporan"]);
             $sql = "INSERT INTO laporan_kriminalitas VALUES(:id_laporan,:judul_laporan,:id_kategori_kejadian,:deskripsi_kejadian,:tanggal_laporan,:waktu_laporan,:alamat_laporan,:lat_laporan,:lng_laporan,:id_user_pelapor,:status_laporan,:id_kecamatan,:thumbnail_gambar) ";
             $stmt = $this->db->prepare($sql);
             $data = [
                 ":id_laporan" => $id_laporan,
-                ":judul_laporan"=>$new_laporan["judul_laporan"],
-                ":id_kategori_kejadian" => $new_laporan["id_kategori_kejadian"],
-                ":deskripsi_kejadian"=>$new_laporan["deskripsi_kejadian"],
+                ":judul_laporan"=>$body["judul_laporan"],
+                ":id_kategori_kejadian" => $body["id_kategori_kejadian"],
+                ":deskripsi_kejadian"=>$body["deskripsi_kejadian"],
                 ":tanggal_laporan"=>$tanggal,
                 ":waktu_laporan"=>$waktu,
-                ":alamat_laporan"=>$new_laporan["alamat_laporan"],
-                ":lat_laporan"=>$new_laporan["lat_laporan"],
-                ":lng_laporan"=>$new_laporan["lng_laporan"],
-                ":id_user_pelapor"=>$new_laporan["id_user_pelapor"],
+                ":alamat_laporan"=>$body["alamat_laporan"],
+                ":lat_laporan"=>$body["lat_laporan"],
+                ":lng_laporan"=>$body["lng_laporan"],
+                ":id_user_pelapor"=>$body["id_user_pelapor"],
                 ":status_laporan"=>0,
-                ":id_kecamatan"=>$new_laporan["id_kecamatan"],
+                ":id_kecamatan"=>$body["id_kecamatan"],
                 ":thumbnail_gambar"=>$filename
             ];
             if($stmt->execute($data)){
