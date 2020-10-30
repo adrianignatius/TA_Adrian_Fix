@@ -277,9 +277,9 @@ return function (App $app) {
 
     $app->group('/laporan', function() use($app){
         $app->post('/insertLaporanLostFound', function(Request $request, Response $response) {
-            $new_laporan = $request->getParsedBody();
-            $time=date('H:i');
-            $formatDate=date('Y').date('m').date('d');
+            $body = $request->getParsedBody();
+            $waktu=$body["waktu_laporan"];
+            $tanggal=$body["tanggal_laporan"];
             $id_laporan="LF".date('d').date('m').date('Y');
             $sql="SELECT COUNT(*)+1 from laporan_lostfound_barang where id_laporan like'%$id_laporan%'";
             $stmt = $this->db->prepare($sql);
@@ -294,18 +294,18 @@ return function (App $app) {
             $stmt = $this->db->prepare($sql);
             $data = [
                 ":id_laporan" => $id_laporan,
-                ":judul_laporan"=>$new_laporan["judul_laporan"],
-                ":jenis_laporan" => $new_laporan["jenis_laporan"],
-                ":id_kategori_barang"=> $new_laporan["id_kategori_barang"],
-                ":tanggal_laporan"=>$formatDate,
-                ":waktu_laporan"=>$time,
-                ":alamat_laporan"=>$new_laporan["alamat_laporan"],
-                ":lat_laporan"=>$new_laporan["lat_laporan"],
-                ":lng_laporan"=>$new_laporan["lng_laporan"],
-                ":deskripsi_barang"=>$new_laporan["deskripsi_barang"],
-                ":id_user_pelapor"=>$new_laporan["id_user_pelapor"],
+                ":judul_laporan"=>$body["judul_laporan"],
+                ":jenis_laporan" => $body["jenis_laporan"],
+                ":id_kategori_barang"=> $body["id_kategori_barang"],
+                ":tanggal_laporan"=>$tanggal,
+                ":waktu_laporan"=>$waktu,
+                ":alamat_laporan"=>$body["alamat_laporan"],
+                ":lat_laporan"=>$body["lat_laporan"],
+                ":lng_laporan"=>$body["lng_laporan"],
+                ":deskripsi_barang"=>$body["deskripsi_barang"],
+                ":id_user_pelapor"=>$body["id_user_pelapor"],
                 ":status_laporan"=>0,
-                ":id_kecamatan"=>$new_laporan["id_kecamatan"],
+                ":id_kecamatan"=>$body["id_kecamatan"],
                 ":thumbnail_gambar"=>$filename
             ];
             if($stmt->execute($data)){
@@ -321,8 +321,8 @@ return function (App $app) {
 
         $app->post('/insertLaporanKriminalitas', function(Request $request, Response $response,$args) {
             $new_laporan = $request->getParsedBody();
-            $time=date('H:i');
-            $formatDate=date('Y').date('m').date('d');
+            $waktu=$body["waktu_laporan"];
+            $tanggal=$body["tanggal_laporan"];
             $id_laporan="CR".date('d').date('m').date('Y');
             $sql="SELECT COUNT(*)+1 from laporan_kriminalitas where id_laporan like'%$id_laporan%'";
             $stmt = $this->db->prepare($sql);
@@ -344,8 +344,8 @@ return function (App $app) {
                 ":judul_laporan"=>$new_laporan["judul_laporan"],
                 ":id_kategori_kejadian" => $new_laporan["id_kategori_kejadian"],
                 ":deskripsi_kejadian"=>$new_laporan["deskripsi_kejadian"],
-                ":tanggal_laporan"=>$formatDate,
-                ":waktu_laporan"=>$time,
+                ":tanggal_laporan"=>$waktu,
+                ":waktu_laporan"=>$tanggal,
                 ":alamat_laporan"=>$new_laporan["alamat_laporan"],
                 ":lat_laporan"=>$new_laporan["lat_laporan"],
                 ":lng_laporan"=>$new_laporan["lng_laporan"],
