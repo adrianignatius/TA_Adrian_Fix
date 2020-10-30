@@ -151,7 +151,8 @@ return function (App $app) {
                 $lokasi_aktif_user=$new_user["lokasi_aktif_user"];
                 $geohash_lokasi_aktif_user=$geohash->encode(floatval($lat_user), floatval($lng_user), 8);
             }
-            $sql = "INSERT INTO user (telpon_user, password_user, nama_user, status_user, active_lat_user,active_lng_user,lokasi_aktif_user,geohash_lokasi_aktif_user,status_aktif_user) VALUE (:telpon_user, :password_user, :nama_user, :status_user, :lat,:lng,:lokasi,:geohash,:status)";
+            $date=date('Y').date('m').date('d');
+            $sql = "INSERT INTO user (telpon_user, password_user, nama_user, status_user, active_lat_user,active_lng_user,lokasi_aktif_user,created_at,status_aktif_user) VALUE (:telpon_user, :password_user, :nama_user, :status_user, :lat,:lng,:lokasi,:created_at,:status)";
             $stmt = $this->db->prepare($sql);
             $data = [
                 ":password_user"=>password_hash($new_user["password_user"], PASSWORD_BCRYPT),
@@ -161,7 +162,7 @@ return function (App $app) {
                 ":lat"=>$lat_user,
                 ":lng"=>$lng_user,
                 ":lokasi"=>$lokasi_aktif_user,
-                ":geohash"=>$geohash_lokasi_aktif_user,
+                ":created_at"=>$date,
                 ":status"=>1
             ];
             if($stmt->execute($data)){
@@ -937,18 +938,20 @@ return function (App $app) {
             $res = curl_exec($ch);
             $httpCode= curl_getinfo($ch, CURLINFO_HTTP_CODE);
             curl_close($ch);
-
-            $new_date = (new DateTime())->modify('+5 minutes');
-            $expiredToken = $new_date->format('Y/m/d H:i:s'); 
-            $sql = "UPDATE user set otp_code=:otp_code,otp_code_available_until=:otp_code_available_until where telpon_user=:telpon_user";
-            $stmt = $this->db->prepare($sql);
-            $data = [
-                ":otp_code_available_until"=>$expiredToken,
-                ":otp_code" => $code,
-                ":telpon_user"=>$body["number"]
-            ];
-            if($stmt->execute($data)){
-                return $response->withJson(["status" => "1","message"=>"Kode OTP telah dikirimkan ke nomor anda"]);
+            $json = json_decode(utf8_encode($res), true); 
+            if($json["status"]==1){
+                $new_date = (new DateTime())->modify('+5 minutes');
+                $expiredToken = $new_date->format('Y/m/d H:i:s'); 
+                $sql = "UPDATE user set otp_code=:otp_code,otp_code_available_until=:otp_code_available_until where telpon_user=:telpon_user";
+                $stmt = $this->db->prepare($sql);
+                $data = [
+                    ":otp_code_available_until"=>$expiredToken,
+                    ":otp_code" => $code,
+                    ":telpon_user"=>$body["number"]
+                ];
+                if($stmt->execute($data)){
+                    return $response->withJson(["status" => "1","message"=>"Kode OTP telah dikirimkan ke nomor anda"]);
+                }
             }else{
                 return $response->withJson(["status" => "400","message"=>"Gagal mengirimkan kode OTP, silahkan coba beberapa saat lagi"]);
             }
