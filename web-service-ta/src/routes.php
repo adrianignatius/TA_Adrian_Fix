@@ -55,6 +55,7 @@ return function (App $app) {
     $container['upload_directory'] = __DIR__ . '/uploads';
     $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
     $dotenv->load();
+    
 
     $app->group('/settings', function() use($app){
         $app->get('/getAllKantorPolisi', function ($request, $response) {   
@@ -71,6 +72,12 @@ return function (App $app) {
             $stmt->execute();
             $result = $stmt->fetchAll();
             return $response->withJson($result);
+        });
+
+        $app->get('/coba',function ($request,$response){
+            $body=$request->getParsedBody();
+            $date=strtotime($body["a"]);
+            return $response->withJson(date('Y',$date));
         });
 
         $app->get('/getKategoriLostFound', function ($request, $response) {
@@ -280,7 +287,8 @@ return function (App $app) {
             $body = $request->getParsedBody();
             $waktu=$body["waktu_laporan"];
             $tanggal=$body["tanggal_laporan"];
-            $id_laporan="LF".date('d').date('m').date('Y');
+            $date=strtotime($tanggal);
+            $id_laporan="LF".date('d',$date).date('m',$date).date('Y',$date);
             $sql="SELECT COUNT(*)+1 from laporan_lostfound_barang where id_laporan like'%$id_laporan%'";
             $stmt = $this->db->prepare($sql);
             $stmt->execute();
@@ -323,7 +331,8 @@ return function (App $app) {
             $new_laporan = $request->getParsedBody();
             $waktu=$body["waktu_laporan"];
             $tanggal=$body["tanggal_laporan"];
-            $id_laporan="CR".date('d').date('m').date('Y');
+            $date=strtotime($tanggal);
+            $id_laporan="CR".date('d',$date).date('m',$date).date('Y',$date);
             $sql="SELECT COUNT(*)+1 from laporan_kriminalitas where id_laporan like'%$id_laporan%'";
             $stmt = $this->db->prepare($sql);
             $stmt->execute();
@@ -344,8 +353,8 @@ return function (App $app) {
                 ":judul_laporan"=>$new_laporan["judul_laporan"],
                 ":id_kategori_kejadian" => $new_laporan["id_kategori_kejadian"],
                 ":deskripsi_kejadian"=>$new_laporan["deskripsi_kejadian"],
-                ":tanggal_laporan"=>$waktu,
-                ":waktu_laporan"=>$tanggal,
+                ":tanggal_laporan"=>$tanggal,
+                ":waktu_laporan"=>$waktu,
                 ":alamat_laporan"=>$new_laporan["alamat_laporan"],
                 ":lat_laporan"=>$new_laporan["lat_laporan"],
                 ":lng_laporan"=>$new_laporan["lng_laporan"],
