@@ -1091,9 +1091,9 @@ return function (App $app) {
             }
         });
 
-        $app->post('/chargeUser', function ($request, $response) {
+        $app->post('/chargeUser/{id_user}', function ($request, $response,$args) {
             $body = $request->getParsedBody();
-            $id_user=$body["id_user"];
+            $id_user=$args["id_user"];
             $sql = "SELECT * FROM user where id_user='$id_user'";
             $stmt = $this->db->prepare($sql);
             $stmt->execute();
@@ -1149,7 +1149,7 @@ return function (App $app) {
                     ":id_order" => $id_order,
                     ":order_ammount"=>50000,
                     ":order_date" => $datetime,
-                    ":id_user"=>id_user
+                    ":id_user"=>$id_user
                 ];
                 $stmt=$this->db->prepare($sql);
                 $stmt->execute($data);
