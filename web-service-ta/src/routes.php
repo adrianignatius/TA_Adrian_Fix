@@ -600,6 +600,22 @@ return function (App $app) {
     });
 
     $app->group('/admin', function() use($app){
+        $app->get('/getJumlahLaporanKriminalitas',function ($request,$response,$args){
+            $sql="SELECT COUNT(*) from laporan_kriminalitas WHERE status_laporan=1";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute();
+            $result = $stmt->fetchColumn();
+            return $response->withJson(["count"=>$result]);
+        });
+
+        $app->get('/getJumlahLaporanLostFound',function ($request,$response,$args){
+            $sql="SELECT COUNT(*) from laporan_lostfound_barang";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute();
+            $result = $stmt->fetchColumn();
+            return $response->withJson(["count"=>$result]);
+        });
+        
         $app->put('/verifikasiLaporanLostFound/{id_laporan}',function ($request,$response,$args){
             $id_laporan=$args["id_laporan"];
             $sql="UPDATE laporan_lostfound_barang SET status_laporan=1 WHERE id_laporan=:id_laporan";
@@ -726,9 +742,31 @@ return function (App $app) {
             $result = $stmt->fetchAll();
             return $response->withJson($result);
         });
+
+        $app->get('/getJumlahLaporanLostFoundKecamatan', function ($request, $response) {
+            $sql = "SELECT k.nama_kecamatan,COUNT(lf.id_kecamatan) as jumlah_laporan from kecamatan k LEFT JOIN laporan_lostfound_barang lf ON k.id_kecamatan=lf.id_kecamatan group by k.id_kecamatan;";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute();
+            $result = $stmt->fetchAll();
+            $max=0;
+            foreach($result as $k){
+                if($k["jumlah_laporan"]>$max){
+                    $max=$k["jumlah_laporan"];
+                }
+            }
+            return $response->withJson(["data"=>$result,"max"=>$max]);
+        });
     
         $app->get('/getLaporanLostFoundVerify',function ($request,$response){
             $sql="SELECT lf.id_laporan,lf.judul_laporan,lf.jenis_laporan,lf.tanggal_laporan,lf.waktu_laporan,lf.alamat_laporan,skl.nama_kategori AS jenis_barang,k.nama_kecamatan AS kecamatan FROM laporan_lostfound_barang lf, setting_kategori_lostfound skl,kecamatan k WHERE lf.status_laporan=0 AND lf.id_kategori_barang=skl.id_kategori AND lf.id_kecamatan=k.id_kecamatan";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute();
+            $result = $stmt->fetchAll();
+            return $response->withJson($result);
+        });
+
+        $app->get('/getMarkerLocationLaporanLostFound',function ($request,$response){
+            $sql="SELECT lat_laporan AS lat,lng_laporan AS lng from laporan_lostfound_barang";
             $stmt = $this->db->prepare($sql);
             $stmt->execute();
             $result = $stmt->fetchAll();
