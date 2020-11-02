@@ -600,6 +600,45 @@ return function (App $app) {
     });
 
     $app->group('/admin', function() use($app){
+        
+        $app->get('/getJumlahLaporanKriminalitas', function ($request, $response) {
+            $sql = "SELECT COUNT(*) from laporan_kriminalitas WHERE status_laporan=1";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute();
+            $result = $stmt->fetchColumn();
+            return $response->withJson(["count"=>$count]);
+        });
+
+        $app->get('/getJumlahLaporanLostFound', function ($request, $response) {
+            $sql = "SELECT COUNT(*) from laporan_lostfound_barang WHERE status_laporan=1";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute();
+            $result = $stmt->fetchColumn();
+            return $response->withJson(["count"=>$count]);
+        });
+
+        $app->get('/getMarkerLocationLaporanLostFound', function ($request, $response) {
+            $sql = "SELECT lat_laporan AS lat, lng_laporan AS lng from laporan_lostfound_barang WHERE status_laporan=1";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute();
+            $result = $stmt->fetchAll();
+            return $response->withJson($result);
+        });
+
+        $app->get('/getJumlahLaporanLostFoundKecamatan', function ($request, $response) {
+            $sql = "SELECT k.nama_kecamatan,COUNT(lf.id_kecamatan) AS jumlah_laporan FROM kecamatan k LEFT JOIN laporan_lostfound_barang lf ON k.id_kecamatan=lf.id_kecamatan GROUP BY k.id_kecamatan";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute();
+            $result = $stmt->fetchAll();
+            $max=0;
+            foreach($result as $k){
+                if($k["jumlah_laporan"]>$max){
+                    $max=$k["jumlah_laporan"];
+                }
+            }
+            return $response->withJson(["data"=>$result,"max"=>$max]);
+        });
+        
         $app->put('/verifikasiLaporanLostFound/{id_laporan}',function ($request,$response,$args){
             $id_laporan=$args["id_laporan"];
             $sql="UPDATE laporan_lostfound_barang SET status_laporan=1 WHERE id_laporan=:id_laporan";
