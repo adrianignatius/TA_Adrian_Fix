@@ -1052,7 +1052,7 @@ return function (App $app) {
             return $response->withJson($result);
         });
 
-        $app->post('/registerCard', function ($request, $response) {
+        $app->post('/registerCard/{id_user}', function ($request, $response,$args) {
             $body = $request->getParsedBody();
             $card_number=$body["card_number"];
             $card_exp_month=$body["card_exp_month"];
@@ -1074,7 +1074,7 @@ return function (App $app) {
                 $stmt = $this->db->prepare($sql);
                 $data = [
                     ":credit_card_token" => $json["saved_token_id"],
-                    ":id_user"=>$body["id_user"]
+                    ":id_user"=>$args["id_user"]
                 ];
                 if($stmt->execute($data)){
                     return $response->withJson(["status" => "1"]);
