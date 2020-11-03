@@ -603,7 +603,15 @@ return function (App $app) {
     });
 
     $app->group('/admin', function() use($app){
-        
+
+        $app->get('/getJumlahLaporanLostFoundPerItem', function ($request, $response) {
+            $sql = "SELECT skl.id_kategori, skl.nama_kategori, count(lf.id_kategori_barang) as jumlah_laporan from setting_kategori_lostfound skl LEFT JOIN laporan_lostfound_barang lf ON skl.id_kategori=lf.id_kategori_barang GROUP BY skl.id_kategori";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute();
+            $result = $stmt->fetchAll();
+            return $response->withJson($result);
+        });
+
         $app->get('/getJumlahLaporanKriminalitas', function ($request, $response) {
             $sql = "SELECT COUNT(*) from laporan_kriminalitas WHERE status_laporan=1";
             $stmt = $this->db->prepare($sql);
