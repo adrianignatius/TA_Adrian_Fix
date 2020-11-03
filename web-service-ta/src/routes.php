@@ -74,12 +74,6 @@ return function (App $app) {
             return $response->withJson($result);
         });
 
-        $app->get('/coba',function ($request,$response){
-            $body=$request->getParsedBody();
-            $date=strtotime($body["a"]);
-            return $response->withJson(date('Y',$date));
-        });
-
         $app->get('/getKategoriLostFound', function ($request, $response) {
             $sql="SELECT * FROM setting_kategori_lostfound";
             $stmt=$this->db->prepare($sql);
@@ -146,7 +140,6 @@ return function (App $app) {
         if($telpon_kembar==1){
             return $response->withJson(["status"=>"400","message"=>"No. Handphone yang dimasukkan telah terpakai"]);
         }else{
-            $geohash=new Geohash();
             $alamat_available=$new_user["alamat_available"];
             $lat_user=null;
             $lng_user=null;
@@ -156,7 +149,6 @@ return function (App $app) {
                 $lat_user=$new_user["lat_user"];
                 $lng_user=$new_user["lng_user"];
                 $lokasi_aktif_user=$new_user["lokasi_aktif_user"];
-                $geohash_lokasi_aktif_user=$geohash->encode(floatval($lat_user), floatval($lng_user), 8);
             }
             $date=date('Y').date('m').date('d');
             $sql = "INSERT INTO user (telpon_user, password_user, nama_user, status_user, active_lat_user,active_lng_user,lokasi_aktif_user,created_at,status_aktif_user) VALUE (:telpon_user, :password_user, :nama_user, :status_user, :lat,:lng,:lokasi,:created_at,:status)";
@@ -224,8 +216,6 @@ return function (App $app) {
             return $response->withJson(["status"=>"400","message"=>"Username atau password salah"]);
         }  
     });
-
-    
     
     $app->group('/kepalaKeamanan',function() use($app){
         $app->get('/getLaporanLostFound/{id_kecamatan}',function($request,$response,$args){
@@ -604,6 +594,14 @@ return function (App $app) {
 
     $app->group('/admin', function() use($app){
 
+        $app->get('/getJumlahLaporanLostFoundPerKecamatanTerbanyak', function ($request, $response) {
+            $sql = "SELECT k.nama_kecamatan,COUNT(lf.id_kecamatan) AS jumlah_laporan FROM kecamatan k LEFT JOIN laporan_lostfound_barang lf ON k.id_kecamatan=lf.id_kecamatan GROUP BY k.id_kecamatan ORDER BY jumlah_laporan DESC LIMIT 5";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute();
+            $result = $stmt->fetchAll();
+            return $response->withJson($result);
+        });
+
         $app->get('/getJumlahLaporanLostFoundPerItem', function ($request, $response) {
             $sql = "SELECT skl.id_kategori, skl.nama_kategori, count(lf.id_kategori_barang) as jumlah_laporan from setting_kategori_lostfound skl LEFT JOIN laporan_lostfound_barang lf ON skl.id_kategori=lf.id_kategori_barang GROUP BY skl.id_kategori";
             $stmt = $this->db->prepare($sql);
@@ -794,7 +792,6 @@ return function (App $app) {
             }else{
                 return $response->withJson(["status"=>"400","message"=>"Gagal mengubah status pending user"]);
             }
-
         });
 
         $app->get('/getDetailLaporanLostFound/{id_laporan}',function ($request,$response,$args){
@@ -945,26 +942,21 @@ return function (App $app) {
             $stmt->execute([":id_user" => $id_user]);
             $result=$stmt->fetchColumn();
             if(password_verify($password_user,$result)){
-                $geohash=new Geohash();
                 $lat_user=null;
                 $lng_user=null;
                 $lokasi_aktif_user=null;
-                $geohash_lokasi_aktif_user=null;
                 if($body["lokasi_available"]=="1"){
                     $lat_user=$body["lat_user"];
                     $lng_user=$body["lng_user"];
                     $lokasi_aktif_user=$body["lokasi_aktif_user"];
-                    $geohash_lokasi_aktif_user=$geohash->encode(floatval($lat_user), floatval($lng_user), 8);
                 }
-                $sql="UPDATE user SET nama_user=:nama_user, active_lat_user=:lat_user, active_lng_user=:lng_user, lokasi_aktif_user=:lokasi_aktif_user, geohash_lokasi_aktif_user=:geohash_lokasi_aktif_user WHERE id_user=:id_user";
+                $sql="UPDATE user SET nama_user=:nama_user, active_lat_user=:lat_user, active_lng_user=:lng_user WHERE id_user=:id_user";
                 $stmt=$this->db->prepare($sql); 
                 $data=[
                     ":id_user"=>$id_user,
                     ":nama_user"=>$body["nama_user"],
                     ":lat_user"=>$lat_user,
                     ":lng_user"=>$lng_user,
-                    ":lokasi_aktif_user"=>$lokasi_aktif_user,
-                    ":geohash_lokasi_aktif_user"=>$geohash_lokasi_aktif_user
                 ];
                 if($stmt->execute($data)){
                     return $response->withJson(["status"=>"1","message"=>"Berhasil memperbarui informasi"]);
@@ -992,7 +984,6 @@ return function (App $app) {
             curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
             curl_setopt($ch, CURLOPT_HEADER, FALSE);
-    
             $res = curl_exec($ch);
             $httpCode= curl_getinfo($ch, CURLINFO_HTTP_CODE);
             curl_close($ch);
@@ -1095,7 +1086,6 @@ return function (App $app) {
                 JOIN setting_kategori_kriminalitas skk on skk.id_kategori=lk.id_kategori_kejadian
                 WHERE lk.id_user_pelapor=:id_user
                 GROUP BY lk.id_laporan ORDER BY lk.tanggal_laporan DESC, lk.waktu_laporan DESC";
-            //$sql = "SELECT * FROM laporan_kriminalitas where id_user_pelapor=:id_user";
             $stmt = $this->db->prepare($sql);
             $stmt->execute([":id_user" => $id_user]);
             $result = $stmt->fetchAll();
@@ -1384,11 +1374,6 @@ return function (App $app) {
         $app->post('/insertKomentarLaporan', function ($request, $response) {
             $new_komentar = $request->getParsedBody();
             $datetime = date("Y/m/d H:i:s");
-            // $datetime = DateTime::createFromFormat('d/m/Y', $new_komentar["tanggal_komentar"]);
-            // $day=$datetime->format('d');
-            // $month=$datetime->format('m');
-            // $year=$datetime->format('Y');
-            // $formatDate=$year.$month.$day;
             $sql = "INSERT INTO komentar_laporan(id_laporan,isi_komentar, waktu_komentar,id_user_komentar) VALUE (:id_laporan,:isi_komentar, :waktu_komentar, :id_user_komentar)";
             $stmt = $this->db->prepare($sql);
             $data = [
@@ -1468,8 +1453,6 @@ return function (App $app) {
                 return $response->withJson(400);
             }
         });
-        
-
         $app->post('/insertDetailChat', function ($request, $response) {
             $new_chat = $request->getParsedBody();
             $datetime = date("Y/m/d H:i");
