@@ -704,6 +704,18 @@ return function (App $app) {
                 return $response->withJson(["status"=>"400","message"=>"Laporan gagal dikonfirmasi"]);  
             }
         });
+
+        $app->put('/declineLaporanKriminalitas/{id_laporan}',function ($request,$response,$args){
+            $id_laporan=$args["id_laporan"];
+            $sql="UPDATE laporan_kriminalitas SET status_laporan=99 WHERE id_laporan=:id_laporan";
+            $stmt = $this->db->prepare($sql);
+            if($stmt->execute(["id_laporan"=>$id_laporan])){
+                return $response->withJson(["status"=>"1","message"=>"Laporan berhasil ditolak"]);
+            }else{
+                return $response->withJson(["status"=>"400","message"=>"Laporan gagal ditolak"]);
+            }
+        });
+
         $app->put('/declineLaporanLostFound/{id_laporan}',function ($request,$response,$args){
             $id_laporan=$args["id_laporan"];
             $sql="UPDATE laporan_lostfound_barang SET status_laporan=99 WHERE id_laporan=:id_laporan";
@@ -711,7 +723,7 @@ return function (App $app) {
             if($stmt->execute(["id_laporan"=>$id_laporan])){
                 return $response->withJson(["status"=>"1","message"=>"Laporan berhasil ditolak"]);
             }else{
-                return $response->withJson(["status"=>"1","message"=>"Laporan gagal ditolak"]);
+                return $response->withJson(["status"=>"400","message"=>"Laporan gagal ditolak"]);
             }
         });
 
