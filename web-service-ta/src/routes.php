@@ -594,7 +594,7 @@ return function (App $app) {
 
     $app->group('/admin', function() use($app){
 
-        $app->get('/getJumlahLaporanLostFoundPerKecamatanTerbanyak', function ($request, $response) {
+        $app->get('/getDataLaporanLostFoundForChartKecamatan', function ($request, $response) {
             $sql = "SELECT k.nama_kecamatan,COUNT(lf.id_kecamatan) AS jumlah_laporan FROM kecamatan k LEFT JOIN laporan_lostfound_barang lf ON k.id_kecamatan=lf.id_kecamatan GROUP BY k.id_kecamatan ORDER BY jumlah_laporan DESC LIMIT 5";
             $stmt = $this->db->prepare($sql);
             $stmt->execute();
@@ -604,6 +604,14 @@ return function (App $app) {
 
         $app->get('/getJumlahLaporanLostFoundPerItem', function ($request, $response) {
             $sql = "SELECT skl.id_kategori, skl.nama_kategori, count(lf.id_kategori_barang) as jumlah_laporan from setting_kategori_lostfound skl LEFT JOIN laporan_lostfound_barang lf ON skl.id_kategori=lf.id_kategori_barang GROUP BY skl.id_kategori";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute();
+            $result = $stmt->fetchAll();
+            return $response->withJson($result);
+        });
+
+        $app->get('/getJumlahLaporanKriminalitasPerKejadian', function ($request, $response) {
+            $sql = "SELECT skk.id_kategori, skk.nama_kategori, count(lk.id_kategori_kejadian) as jumlah_laporan from setting_kategori_kriminalitas skk LEFT JOIN laporan_kriminalitas lk ON skk.id_kategori=lk.id_kategori_kejadian GROUP BY skk.id_kategori";
             $stmt = $this->db->prepare($sql);
             $stmt->execute();
             $result = $stmt->fetchAll();
@@ -632,6 +640,20 @@ return function (App $app) {
             $stmt->execute();
             $result = $stmt->fetchAll();
             return $response->withJson($result);
+        });
+
+        $app->get('/getJumlahLaporanKriminalitasKecamatan', function ($request, $response) {
+            $sql = "SELECT k.nama_kecamatan,COUNT(lk.id_kecamatan) AS jumlah_laporan FROM kecamatan k LEFT JOIN laporan_kriminalitas lk ON k.id_kecamatan=lk.id_kecamatan GROUP BY k.id_kecamatan";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute();
+            $result = $stmt->fetchAll();
+            $max=0;
+            foreach($result as $k){
+                if($k["jumlah_laporan"]>$max){
+                    $max=$k["jumlah_laporan"];
+                }
+            }
+            return $response->withJson(["data"=>$result,"max"=>$max]);
         });
 
         $app->get('/getJumlahLaporanLostFoundKecamatan', function ($request, $response) {
@@ -980,12 +1002,11 @@ return function (App $app) {
             }
         });
 
-        $app->post('/sendOTP', function($request,$response){
-            $body = $request->getParsedBody();
+        $app->post('/sendOTP/{number}', function($request,$response,$args){
             $url = "https://numberic1.tcastsms.net:20005/sendsms?account=def_robby3&password=123456";
             $code=rand(1000,9999);
             $message="Masukkan nomor ".$code.". Mohon tidak menginformasikan nomor ini kepada siapa pun";
-            $api_url=$url."&numbers=".$body["number"]."&content=".rawurlencode($message);
+            $api_url=$url."&numbers=".$args["number"]."&content=".rawurlencode($message);
             $ch= curl_init();
             curl_setopt($ch, CURLOPT_URL, $api_url);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -1008,7 +1029,7 @@ return function (App $app) {
                 $data = [
                     ":otp_code_available_until"=>$expiredToken,
                     ":otp_code" => $code,
-                    ":telpon_user"=>$body["number"]
+                    ":telpon_user"=>$args["number"]
                 ];
                 if($stmt->execute($data)){
                     return $response->withJson(["status" => "1","message"=>"Kode OTP telah dikirimkan ke nomor anda"]);
