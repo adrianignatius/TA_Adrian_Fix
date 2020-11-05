@@ -1007,7 +1007,22 @@ return function (App $app) {
             $code=rand(1000,9999);
             $message="Masukkan nomor ".$code."pada aplikasi Suroboyo Maju. Mohon tidak menginformasikan nomor ini kepada siapa pun";
             $api_url=$url."&numbers=".$args["number"]."&content=".rawurlencode($message);
-            $new_date = (new DateTime())->modify('+5 minutes');
+            $ch= curl_init();
+            curl_setopt($ch, CURLOPT_URL, $api_url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+                'Content-Type:application/json',
+                'Accept:application/json'
+            ));
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+            curl_setopt($ch, CURLOPT_HEADER, FALSE);
+            $res = curl_exec($ch);
+            $httpCode= curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
+            $json = json_decode(utf8_encode($res), true); 
+            if($json["status"]==1){
+                $new_date = (new DateTime())->modify('+5 minutes');
                 $expiredToken = $new_date->format('Y/m/d H:i:s'); 
                 $sql = "UPDATE user set otp_code=:otp_code,otp_code_available_until=:otp_code_available_until where telpon_user=:telpon_user";
                 $stmt = $this->db->prepare($sql);
@@ -1019,36 +1034,9 @@ return function (App $app) {
                 if($stmt->execute($data)){
                     return $response->withJson(["status" => "1","message"=>"Kode OTP telah dikirimkan ke nomor anda"]);
                 }
-            // $ch= curl_init();
-            // curl_setopt($ch, CURLOPT_URL, $api_url);
-            // curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            // curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-            //     'Content-Type:application/json',
-            //     'Accept:application/json'
-            // ));
-            // curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
-            // curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-            // curl_setopt($ch, CURLOPT_HEADER, FALSE);
-            // $res = curl_exec($ch);
-            // $httpCode= curl_getinfo($ch, CURLINFO_HTTP_CODE);
-            // curl_close($ch);
-            // $json = json_decode(utf8_encode($res), true); 
-            // if($json["status"]==1){
-            //     $new_date = (new DateTime())->modify('+5 minutes');
-            //     $expiredToken = $new_date->format('Y/m/d H:i:s'); 
-            //     $sql = "UPDATE user set otp_code=:otp_code,otp_code_available_until=:otp_code_available_until where telpon_user=:telpon_user";
-            //     $stmt = $this->db->prepare($sql);
-            //     $data = [
-            //         ":otp_code_available_until"=>$expiredToken,
-            //         ":otp_code" => $code,
-            //         ":telpon_user"=>$args["number"]
-            //     ];
-            //     if($stmt->execute($data)){
-            //         return $response->withJson(["status" => "1","message"=>"Kode OTP telah dikirimkan ke nomor anda"]);
-            //     }
-            // }else{
-            //     return $response->withJson(["status" => "400","message"=>"Gagal mengirimkan kode OTP, silahkan coba beberapa saat lagi"]);
-            // }
+            }else{
+                return $response->withJson(["status" => "400","message"=>"Gagal mengirimkan kode OTP, silahkan coba beberapa saat lagi"]);
+            }
         });
 
         $app->put('/changePassword', function($request,$response){
