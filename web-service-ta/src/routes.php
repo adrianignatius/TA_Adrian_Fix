@@ -1021,7 +1021,7 @@ return function (App $app) {
             $httpCode= curl_getinfo($ch, CURLINFO_HTTP_CODE);
             curl_close($ch);
             $json = json_decode(utf8_encode($res), true); 
-            if($json["status"]==1){
+            if($json["status"]==0){
                 $new_date = (new DateTime())->modify('+5 minutes');
                 $expiredToken = $new_date->format('Y/m/d H:i:s'); 
                 $sql = "UPDATE user set otp_code=:otp_code,otp_code_available_until=:otp_code_available_until where telpon_user=:telpon_user";
