@@ -602,6 +602,22 @@ return function (App $app) {
             return $response->withJson(["count"=>$result]);
         });
 
+        $app->get('/getJumlahLaporanLostFound', function ($request, $response) {
+            $sql = "SELECT COUNT(*) FROM laporan_lostfound_barang";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute();
+            $result = $stmt->fetchColumn();
+            return $response->withJson(["count"=>$result]);
+        });
+
+        $app->get('/getJumlahLaporanKriminalitas', function ($request, $response) {
+            $sql = "SELECT COUNT(*) FROM laporan_kriminalitas";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute();
+            $result = $stmt->fetchColumn();
+            return $response->withJson(["count"=>$result]);
+        });
+
         $app->get('/getDataLaporanLostFoundForChartKecamatan', function ($request, $response) {
             $sql = "SELECT k.nama_kecamatan,COUNT(lf.id_kecamatan) AS jumlah_laporan FROM kecamatan k LEFT JOIN laporan_lostfound_barang lf ON k.id_kecamatan=lf.id_kecamatan GROUP BY k.id_kecamatan ORDER BY jumlah_laporan DESC LIMIT 5";
             $stmt = $this->db->prepare($sql);
