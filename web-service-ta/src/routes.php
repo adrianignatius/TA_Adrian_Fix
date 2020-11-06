@@ -603,7 +603,7 @@ return function (App $app) {
         });
 
         $app->get('/getDataLaporanKriminalitasForChartKecamatan', function ($request, $response) {
-            $sql = "SELECT k.nama_kecamatan,COUNT(lf.id_kecamatan) AS jumlah_laporan FROM kecamatan k LEFT JOIN laporan_kriminalitas lk ON k.id_kecamatan=lk.id_kecamatan GROUP BY k.id_kecamatan ORDER BY jumlah_laporan DESC LIMIT 5";
+            $sql = "SELECT k.nama_kecamatan,COUNT(lk.id_kecamatan) AS jumlah_laporan FROM kecamatan k LEFT JOIN laporan_kriminalitas lk ON k.id_kecamatan=lk.id_kecamatan GROUP BY k.id_kecamatan ORDER BY jumlah_laporan DESC LIMIT 5";
             $stmt = $this->db->prepare($sql);
             $stmt->execute();
             $result = $stmt->fetchAll();
