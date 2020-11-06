@@ -606,8 +606,8 @@ return function (App $app) {
             $sql = "SELECT CASE WHEN lf.jenis_laporan=0 THEN 'Penemuan Barang' ELSE 'Kehilangan Barang' END as kategori_laporan ,COUNT(lf.jenis_laporan) as jumlah_laporan from laporan_lostfound_barang lf  group by lf.jenis_laporan";
             $stmt = $this->db->prepare($sql);
             $stmt->execute();
-            $result = $stmt->fetchColumn();
-            return $response->withJson(["count"=>$result]);
+            $result = $stmt->fetchAll();
+            return $response->withJson($result);
         });
 
         $app->get('/getTotalLaporanLostFound', function ($request, $response) {
