@@ -599,7 +599,7 @@ return function (App $app) {
             $stmt = $this->db->prepare($sql);
             $stmt->execute();
             $result = $stmt->fetchColumn();
-            return $response->withJson(["count"=>$count]);
+            return $response->withJson(["count"=>$result]);
         });
 
         $app->get('/getDataLaporanLostFoundForChartKecamatan', function ($request, $response) {
