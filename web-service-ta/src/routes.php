@@ -213,7 +213,7 @@ return function (App $app) {
                 "iss" => "slim-framework",
                 "sub" =>"admin",
                 "iat" => time(),
-                "exp" => time()+3600
+                "exp" => time()+7200
             );
             $token = Token::customPayload($payload, $_ENV['JWT_SECRET']);
             return $response->withJson(["status" => "200","token"=>$token]);
