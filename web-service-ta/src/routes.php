@@ -74,6 +74,11 @@ return function (App $app) {
             return $response->withJson($result);
         });
 
+        $app->get('/coba',function ($request,$response){
+            $milliseconds = round(microtime(true) * 1000);
+            return $response->withJson($milliseconds);
+        });
+
         $app->get('/getKategoriLostFound', function ($request, $response) {
             $sql="SELECT * FROM setting_kategori_lostfound";
             $stmt=$this->db->prepare($sql);
@@ -593,6 +598,14 @@ return function (App $app) {
     });
 
     $app->group('/admin', function() use($app){
+
+        $app->get('/getReportTransaksi', function ($request, $response) {
+            $sql = "SELECT * FROM order_subscription ORDER BY order_date DESC";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute();
+            $result = $stmt->fetchAll();
+            return $response->withJson($result);
+        });
 
         $app->get('/getJumlahUser', function ($request, $response) {
             $sql = "SELECT COUNT(*) FROM user";
