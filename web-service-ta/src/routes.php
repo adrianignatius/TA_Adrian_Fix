@@ -602,7 +602,7 @@ return function (App $app) {
             return $response->withJson(["count"=>$result]);
         });
 
-        $app->get('/getTotalLaporanKriminalitas', function ($request, $response) {
+        $app->get('/getTotalLaporanLostFound', function ($request, $response) {
             $sql = "SELECT COUNT(*) FROM laporan_lostfound_barang";
             $stmt = $this->db->prepare($sql);
             $stmt->execute();
