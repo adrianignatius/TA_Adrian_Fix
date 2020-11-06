@@ -30,7 +30,7 @@ function getKecamatan($lat,$lng){
 function sendOneSignalNotification($number,$content,$heading,$data){
     $curl = curl_init();
     $fields = array(
-        'app_id' => "6fd226ba-1d41-4c7b-9f8b-a973a8fd436b",
+        'app_id' => "bba49751-5018-421d-82f5-fe83cc866ce6",
         'filters' => array(array("field" => "tag", "key" => "no_handphone", "relation" => "=", "value" => $number)),
         'contents' => $content,
         'headings' => $heading,
@@ -40,7 +40,7 @@ function sendOneSignalNotification($number,$content,$heading,$data){
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, "https://onesignal.com/api/v1/notifications");
     curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json; charset=utf-8',
-                                            'Authorization: Basic MDUyNjhlOGEtNDQ4NC00YTYwLWIxYmYtMDZjYTc2OGUwNDc4'));
+                                            'Authorization: Basic YjAwNDM5MTQtNjJmZS00ZjMxLWFiMTUtYjRjYTU4MjhlMWQ5'));
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
     curl_setopt($ch, CURLOPT_HEADER, FALSE);
     curl_setopt($ch, CURLOPT_POST, TRUE);
