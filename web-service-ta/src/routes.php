@@ -600,7 +600,7 @@ return function (App $app) {
     $app->group('/admin', function() use($app){
 
         $app->get('/getReportTransaksi', function ($request, $response) {
-            $sql = "SELECT os.id_order,os.order_ammount,os.order_date,u.nama_user AS nama_user,u.telpon_user AS telpon_user FROM order_subscription os, user u WHERE u.id_user=os.id_user";
+            $sql = "SELECT os.id_order,os.order_ammount,os.order_date,u.nama_user AS nama_user,u.telpon_user AS telpon_user FROM order_subscription os, user u WHERE u.id_user=os.id_user ORDER BY os.order_date DESC";
             $stmt = $this->db->prepare($sql);
             $stmt->execute();
             $result = $stmt->fetchAll();
