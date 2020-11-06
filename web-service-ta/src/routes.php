@@ -602,6 +602,14 @@ return function (App $app) {
             return $response->withJson($result);
         });
 
+        $app->get('/getDataLaporanKriminalitasForChartKecamatan', function ($request, $response) {
+            $sql = "SELECT k.nama_kecamatan,COUNT(lf.id_kecamatan) AS jumlah_laporan FROM kecamatan k LEFT JOIN laporan_lostfound_barang lf ON k.id_kecamatan=lf.id_kecamatan GROUP BY k.id_kecamatan ORDER BY jumlah_laporan DESC LIMIT 5";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute();
+            $result = $stmt->fetchAll();
+            return $response->withJson($result);
+        });
+
         $app->get('/getJumlahLaporanLostFoundPerItem', function ($request, $response) {
             $sql = "SELECT skl.id_kategori, skl.nama_kategori, count(lf.id_kategori_barang) as jumlah_laporan from setting_kategori_lostfound skl LEFT JOIN laporan_lostfound_barang lf ON skl.id_kategori=lf.id_kategori_barang GROUP BY skl.id_kategori";
             $stmt = $this->db->prepare($sql);
@@ -632,6 +640,14 @@ return function (App $app) {
             $stmt->execute();
             $result = $stmt->fetchColumn();
             return $response->withJson(["count"=>$result]);
+        });
+
+        $app->get('/getMarkerLocationLaporanKriminalitas', function ($request, $response) {
+            $sql = "SELECT lat_laporan AS lat, lng_laporan AS lng from laporan_kriminalitas WHERE status_laporan=1";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute();
+            $result = $stmt->fetchAll();
+            return $response->withJson($result);
         });
 
         $app->get('/getMarkerLocationLaporanLostFound', function ($request, $response) {
