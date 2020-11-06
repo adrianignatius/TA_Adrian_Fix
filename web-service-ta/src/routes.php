@@ -956,14 +956,15 @@ return function (App $app) {
             $stmt->execute([":telpon_user" => $body["telpon_user"]]);
             $result=$stmt->fetchColumn();
             if($result==0){
-                $sql = "INSERT INTO user (password_user, nama_user, telpon_user, status_user,id_kecamatan_user) VALUE (:password_user, :nama_user, :telpon_user, :status_user,:id_kecamatan_user)";
+                $sql = "INSERT INTO user (password_user, nama_user, telpon_user, status_user,id_kecamatan_user,status_aktif_user) VALUE (:password_user, :nama_user, :telpon_user, :status_user,:id_kecamatan_user,:status_aktif_user)";
                 $stmt = $this->db->prepare($sql);
                 $data = [
                     ":password_user"=>password_hash($body["password_user"], PASSWORD_BCRYPT),
                     ":nama_user" => $body["nama_user"],
                     ":telpon_user" => $body["telpon_user"],
                     ":status_user"=>2,
-                    ":id_kecamatan_user"=>$body["id_kecamatan_user"]
+                    ":id_kecamatan_user"=>$body["id_kecamatan_user"],
+                    ":status_aktif_user"=>1
                 ];
                 if($stmt->execute($data)){
                     return $response->withJson(["status"=>"1","message"=>"Tambah kepala keamanan berhasil"]);
