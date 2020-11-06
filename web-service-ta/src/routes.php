@@ -956,7 +956,7 @@ return function (App $app) {
             $stmt->execute([":telpon_user" => $body["telpon_user"]]);
             $result=$stmt->fetchColumn();
             if($result==0){
-                $sql = "INSERT INTO user (password_user, nama_user, telpon_user, status_user,id_kecamatan_user,status_aktif_user) VALUE (:password_user, :nama_user, :telpon_user, :status_user,:id_kecamatan_user,:status_aktif_user)";
+                $sql = "INSERT INTO user (password_user, nama_user, telpon_user, status_user,id_kecamatan_user,created_at,status_aktif_user) VALUE (:password_user, :nama_user, :telpon_user, :status_user,:id_kecamatan_user,:created_at,:status_aktif_user)";
                 $stmt = $this->db->prepare($sql);
                 $data = [
                     ":password_user"=>password_hash($body["password_user"], PASSWORD_BCRYPT),
@@ -964,6 +964,7 @@ return function (App $app) {
                     ":telpon_user" => $body["telpon_user"],
                     ":status_user"=>2,
                     ":id_kecamatan_user"=>$body["id_kecamatan_user"],
+                    ":created_at"=> date("Y/m/d"),
                     ":status_aktif_user"=>1
                 ];
                 if($stmt->execute($data)){
