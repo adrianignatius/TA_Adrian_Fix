@@ -1307,7 +1307,7 @@ return function (App $app) {
                 ];
                 $stmt=$this->db->prepare($sql);
                 $stmt->execute($data);
-                $available_until = strtotime($datetime);
+                $available_until = strtotime($date);
                 $final = date("Y-m-d", strtotime("+1 month", $available_until));
                 $sql="UPDATE user set premium_available_until=:premium_available_until,status_user=1 where id_user=:id_user";
                 $data=[
