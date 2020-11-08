@@ -1245,6 +1245,7 @@ return function (App $app) {
         });
 
         $app->post('/chargeUser/{id_user}', function ($request, $response,$args) {
+            $body = $request->getParsedBody();
             $id_user=$args["id_user"];
             $sql = "SELECT * FROM user where id_user='$id_user'";
             $stmt = $this->db->prepare($sql);
