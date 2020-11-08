@@ -827,10 +827,11 @@ return function (App $app) {
                 $sql="SELECT telpon_user FROM user WHERE id_kecamatan_user=:id_kecamatan_user AND status_user=2";
                 $stmt= $this->db->prepare($sql);
                 $stmt->execute([":id_kecamatan_user"=>$laporan["id_kecamatan"]]);
-                $result=$stmt->fetchAll();
-                $message="Ada masyarakat yang telah membuat laporan tentang ".$laporan["jenis_kejadian"]." di area pengawasanmu. Lokasi kejadian di ".$laporan["alamat_laporan"];
+                $daftar_kepala_keamanan=$stmt->fetchAll();
+                $message="Ada masyarakat yang telah membuat laporan tentang ".$laporan["jenis_kejadian"];
+                $message_location="Lokasi kejadian di ".$laporan["alamat_laporan"];
                 $content = array(
-                    "en" => $message
+                    "en" => $message." di area pengawasanmu. ".$message_location
                 );
                 $heading = array(
                     "en" => "Cek laporan baru di area pengawasan anda!"
@@ -853,10 +854,26 @@ return function (App $app) {
                     "thumbnail_gambar"=>$laporan["thumbnail_gambar"],
                     "jumlah_konfirmasi"=>$laporan["jumlah_konfirmasi"]
                 );
-                foreach($result as $kepala_keamanan){
+                foreach($daftar_kepala_keamanan as $kepala_keamanan){
                     sendOneSignalNotification($kepala_keamanan["telpon_user"],$content,$heading,$data);
                 }
-               
+                $sql="SELECT telpon_user FROM user WHERE calcDistance(last_lat_user,last_lng_user,:lat_laporan,:lng_laporan)<=3000";
+                $stmt= $this->db->prepare($sql);
+                $data=[
+                    ":lat_laporan"=>$laporan["lat_laporan"],
+                    ":lng_laporan"=>$laporan["lng_laporan"]
+                ];
+                $stmt->execute($data);
+                $daftar_user=$stmt->fetchAll();
+                $content = array(
+                    "en" => $message." dalam radius 3km dari lokasimu sekarang. ".$message_location.". Berhati-hatilah apabila melewati area tersebut!"
+                );
+                $heading = array(
+                    "en" => "Ada laporan kriminalitas baru di dekatmu!"
+                );
+                foreach($daftar_user as $user){
+                    sendOneSignalNotification($user["telpon_user"],$content,$heading,$data);
+                }
                 return $response->withJson(["status"=>"1","message"=>"Laporan berhasil dikonfirmasi"]);
             }else{
                 return $response->withJson(["status"=>"400","message"=>"Laporan gagal dikonfirmasi"]);
@@ -1297,7 +1314,6 @@ return function (App $app) {
             curl_close($curl);
             if($json["status_code"]=="200"){
                 $date=$body["tanggal_charge"];
-                //$datetime=date('Y-m-d');
                 $sql = "INSERT INTO order_subscription(id_order,order_ammount, order_date,id_user) VALUE (:id_order,:order_ammount,:order_date,:id_user)";
                 $data = [
                     ":id_order" => $id_order,
