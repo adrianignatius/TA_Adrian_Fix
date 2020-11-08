@@ -58,6 +58,7 @@ return function (App $app) {
     
 
     $app->group('/settings', function() use($app){
+
         $app->get('/getAllKantorPolisi', function ($request, $response) {   
             $sql = "SELECT * FROM kantor_polisi";
             $stmt = $this->db->prepare($sql);
@@ -1012,15 +1013,11 @@ return function (App $app) {
 
     $app->group('/user', function () use ($app) {
         $app->get('/getPremiumUserInformation', function ($request, $response) {
-            $sql="SELECT id_kecamatan FROM kecamatan where nama_kecamatan LIKE '%$kecamatan%'";
+            $sql="SELECT id_user, credit_card_token,premium_available_until FROM user WHERE status_user=1";
             $stmt=$this->db->prepare($sql);
             $stmt->execute();
-            $id_kecamatan = $stmt->fetchColumn();
-            if($id_kecamatan==null){
-                return $response->withJson(["status"=>"400","message"=>"Aplikasi ini hanya menjangkau area Surabaya saja"]);
-            }else{
-                return $response->withJson(["status"=>"1","id_kecamatan"=>$id_kecamatan]);
-            }
+            $result = $stmt->fetchAll();
+            return $response->withJson($result);
         });
 
         $app->put('/updateLocation/{id_user}',function ($request, $response,$args){
