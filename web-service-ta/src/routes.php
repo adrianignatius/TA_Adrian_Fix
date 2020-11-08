@@ -1245,7 +1245,6 @@ return function (App $app) {
         });
 
         $app->post('/chargeUser/{id_user}', function ($request, $response,$args) {
-            $body = $request->getParsedBody();
             $id_user=$args["id_user"];
             $sql = "SELECT * FROM user where id_user='$id_user'";
             $stmt = $this->db->prepare($sql);
@@ -1296,12 +1295,13 @@ return function (App $app) {
             $json = json_decode(utf8_encode($curl_response), true); 
             curl_close($curl);
             if($json["status_code"]=="200"){
-                 $datetime=date('Y-m-d');
+                $date=$body["tanggal_charge"];
+                //$datetime=date('Y-m-d');
                 $sql = "INSERT INTO order_subscription(id_order,order_ammount, order_date,id_user) VALUE (:id_order,:order_ammount,:order_date,:id_user)";
                 $data = [
                     ":id_order" => $id_order,
                     ":order_ammount"=>50000,
-                    ":order_date" => $datetime,
+                    ":order_date" => $date,
                     ":id_user"=>$id_user
                 ];
                 $stmt=$this->db->prepare($sql);
