@@ -836,7 +836,7 @@ return function (App $app) {
                 $heading = array(
                     "en" => "Cek laporan baru di area pengawasan anda!"
                 );
-                $data=array(
+                $data_onesignal=array(
                     "page"=>"1",
                     "id_laporan"=>$laporan["id_laporan"],
                     "judul_laporan"=>$laporan["judul_laporan"],
@@ -855,7 +855,7 @@ return function (App $app) {
                     "jumlah_konfirmasi"=>$laporan["jumlah_konfirmasi"]
                 );
                 foreach($daftar_kepala_keamanan as $kepala_keamanan){
-                    sendOneSignalNotification($kepala_keamanan["telpon_user"],$content,$heading,$data);
+                    sendOneSignalNotification($kepala_keamanan["telpon_user"],$content,$heading,$data_onesignal);
                 }
                 $sql="SELECT telpon_user FROM user WHERE calcDistance(last_lat_user,last_lng_user,:lat_laporan,:lng_laporan)<=3000";
                 $stmt= $this->db->prepare($sql);
@@ -872,7 +872,7 @@ return function (App $app) {
                     "en" => "Ada laporan kriminalitas baru di dekatmu!"
                 );
                 foreach($daftar_user as $user){
-                    sendOneSignalNotification($user["telpon_user"],$content,$heading,$data);
+                    sendOneSignalNotification($user["telpon_user"],$content,$heading,$data_onesignal);
                 }
                 return $response->withJson(["status"=>"1","message"=>"Laporan berhasil dikonfirmasi"]);
             }else{
