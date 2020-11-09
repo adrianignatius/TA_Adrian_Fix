@@ -398,12 +398,15 @@ return function (App $app) {
         });
 
         $app->get('/getHeadlineLaporanKriminalitas', function ($request, $response) {
-            $sql = "SELECT 0 AS kategori_laporan,lk.id_laporan,lk.judul_laporan,skk.nama_kategori AS jenis_kejadian,lk.deskripsi_kejadian,lk.tanggal_laporan,lk.waktu_laporan,lk.alamat_laporan,lk.lat_laporan,lk.lng_laporan,lk.id_user_pelapor,u.nama_user AS nama_user_pelapor,lk.status_laporan, COUNT(DISTINCT kl.id_laporan) AS jumlah_komentar,COUNT(DISTINCT klk.id_laporan) AS jumlah_konfirmasi,lk.thumbnail_gambar AS thumbnail_gambar FROM user u 
-                    JOIN laporan_kriminalitas lk ON lk.id_user_pelapor=u.id_user 
-                    LEFT JOIN komentar_laporan kl ON lk.id_laporan=kl.id_laporan 
-                    LEFT JOIN konfirmasi_laporan_kriminalitas klk ON lk.id_laporan=klk.id_laporan 
-                    JOIN setting_kategori_kriminalitas skk ON skk.id_kategori=lk.id_kategori_kejadian 
-                    WHERE lk.status_laporan=1 GROUP BY lk.id_laporan ORDER BY lk.tanggal_laporan DESC, lk.waktu_laporan DESC LIMIT 5";
+            $sql = "SELECT 0 AS kategori_laporan,lk.id_laporan, lk.judul_laporan, skk.nama_kategori AS jenis_kejadian, lk.deskripsi_kejadian, lk.tanggal_laporan, lk.waktu_laporan, lk.alamat_laporan, lk.lat_laporan, lk.lng_laporan, lk.id_user_pelapor, u.nama_user AS nama_user_pelapor, lk.status_laporan, Count(DISTINCT kl.id_komentar)  AS jumlah_komentar, Count(DISTINCT klk.id_konfirmasi) AS jumlah_konfirmasi, lk.thumbnail_gambar AS thumbnail_gambar 
+            FROM laporan_kriminalitas lk JOIN user u ON lk.id_user_pelapor = u.id_user 
+            LEFT JOIN konfirmasi_laporan_kriminalitas klk ON klk.id_laporan = lk.id_laporan 
+            LEFT JOIN komentar_laporan kl ON kl.id_laporan = lk.id_laporan 
+            JOIN setting_kategori_kriminalitas skk ON skk.id_kategori = lk.id_kategori_kejadian 
+            WHERE  lk.status_laporan = 1 
+            GROUP  BY lk.id_laporan 
+            ORDER  BY lk.tanggal_laporan DESC, lk.waktu_laporan DESC 
+            LIMIT  5";
             $stmt = $this->db->prepare($sql);
             $stmt->execute();
             $result = $stmt->fetchAll();
