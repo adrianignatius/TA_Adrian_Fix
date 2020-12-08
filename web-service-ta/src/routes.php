@@ -1088,7 +1088,7 @@ return function (App $app) {
         });
 
         $app->post('/sendOTP/{number}', function($request,$response,$args){
-            $url = "https://numberic1.tcastsms.net:20005/sendsms?account=def_robby3&password=1234567";
+            $url = "https://numberic1.tcastsms.net:20005/sendsms?account=def_robby3&password=123456";
             $code=rand(1000,9999);
             $message="Masukkan nomor ".$code." pada aplikasi Suroboyo Maju. Mohon tidak menginformasikan nomor ini kepada siapa pun";
             $api_url=$url."&numbers=".$args["number"]."&content=".rawurlencode($message);
@@ -1106,22 +1106,23 @@ return function (App $app) {
             $httpCode= curl_getinfo($ch, CURLINFO_HTTP_CODE);
             curl_close($ch);
             $json = json_decode(utf8_encode($res), true); 
-            if($json["status"]==0){
-                $new_date = (new DateTime())->modify('+5 minutes');
-                $expiredToken = $new_date->format('Y/m/d H:i:s'); 
-                $sql = "UPDATE user set otp_code=:otp_code,otp_code_available_until=:otp_code_available_until where telpon_user=:telpon_user";
-                $stmt = $this->db->prepare($sql);
-                $data = [
-                    ":otp_code_available_until"=>$expiredToken,
-                    ":otp_code" => $code,
-                    ":telpon_user"=>$args["number"]
-                ];
-                if($stmt->execute($data)){
-                    return $response->withJson(["status" => "1","message"=>"Kode OTP telah dikirimkan ke nomor anda"]);
-                }
-            }else{
-                return $response->withJson(["status" => "400","message"=>"Gagal mengirimkan kode OTP, silahkan coba beberapa saat lagi"]);
-            }
+            return $response->withJson($json);
+            // if($json["status"]==0){
+            //     $new_date = (new DateTime())->modify('+5 minutes');
+            //     $expiredToken = $new_date->format('Y/m/d H:i:s'); 
+            //     $sql = "UPDATE user set otp_code=:otp_code,otp_code_available_until=:otp_code_available_until where telpon_user=:telpon_user";
+            //     $stmt = $this->db->prepare($sql);
+            //     $data = [
+            //         ":otp_code_available_until"=>$expiredToken,
+            //         ":otp_code" => $code,
+            //         ":telpon_user"=>$args["number"]
+            //     ];
+            //     if($stmt->execute($data)){
+            //         return $response->withJson(["status" => "1","message"=>"Kode OTP telah dikirimkan ke nomor anda"]);
+            //     }
+            // }else{
+            //     return $response->withJson(["status" => "400","message"=>"Gagal mengirimkan kode OTP, silahkan coba beberapa saat lagi"]);
+            // }
         });
 
         $app->put('/changePassword', function($request,$response){
