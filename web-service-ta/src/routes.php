@@ -75,11 +75,6 @@ return function (App $app) {
             return $response->withJson($result);
         });
 
-        $app->get('/coba',function ($request,$response){
-            $milliseconds = round(microtime(true) * 1000);
-            return $response->withJson($milliseconds);
-        });
-
         $app->get('/getKategoriLostFound', function ($request, $response) {
             $sql="SELECT * FROM setting_kategori_lostfound";
             $stmt=$this->db->prepare($sql);
@@ -138,36 +133,35 @@ return function (App $app) {
     });
 
     $app->post('/registerUser', function ($request, $response) {
-        $new_user = $request->getParsedBody();
-        $sql="SELECT COUNT(*) from user where telpon_user='".$new_user["telpon_user"]."'";
+        $body = $request->getParsedBody();
+        $sql="SELECT COUNT(*) from user where telpon_user='".$body["telpon_user"]."'";
         $stmt = $this->db->prepare($sql);
         $stmt->execute();
         $telpon_kembar = $stmt->fetchColumn();
         if($telpon_kembar==1){
             return $response->withJson(["status"=>"400","message"=>"No. Handphone yang dimasukkan telah terpakai"]);
         }else{
-            $alamat_available=$new_user["alamat_available"];
+            $alamat_available=$body["alamat_available"];
             $lat_user=null;
             $lng_user=null;
             $lokasi_aktif_user=null; 
             $geohash_lokasi_aktif_user=null;        
             if($alamat_available=="1"){
-                $lat_user=$new_user["lat_user"];
-                $lng_user=$new_user["lng_user"];
-                $lokasi_aktif_user=$new_user["lokasi_aktif_user"];
+                $lat_user=$body["lat_user"];
+                $lng_user=$body["lng_user"];
+                $lokasi_aktif_user=$body["lokasi_aktif_user"];
             }
-            $date=date('Y').date('m').date('d');
             $sql = "INSERT INTO user (telpon_user, password_user, nama_user, status_user, active_lat_user,active_lng_user,lokasi_aktif_user,created_at,status_aktif_user) VALUE (:telpon_user, :password_user, :nama_user, :status_user, :lat,:lng,:lokasi,:created_at,:status)";
             $stmt = $this->db->prepare($sql);
             $data = [
-                ":password_user"=>password_hash($new_user["password_user"], PASSWORD_BCRYPT),
-                ":nama_user" => $new_user["nama_user"],
-                ":telpon_user" => $new_user["telpon_user"],
+                ":password_user"=>password_hash($body["password_user"], PASSWORD_BCRYPT),
+                ":nama_user" => $body["nama_user"],
+                ":telpon_user" => $body["telpon_user"],
                 ":status_user"=>0,
                 ":lat"=>$lat_user,
                 ":lng"=>$lng_user,
                 ":lokasi"=>$lokasi_aktif_user,
-                ":created_at"=>$date,
+                ":created_at"=>date('Y').date('m').date('d'),
                 ":status"=>1
             ];
             if($stmt->execute($data)){
@@ -603,7 +597,6 @@ return function (App $app) {
     });
 
     $app->group('/admin', function() use($app){
-
         $app->get('/getReportTransaksi', function ($request, $response) {
             $sql = "SELECT os.id_order,os.order_ammount,os.order_date,u.nama_user AS nama_user,u.telpon_user AS telpon_user FROM order_subscription os, user u WHERE u.id_user=os.id_user ORDER BY os.order_date DESC";
             $stmt = $this->db->prepare($sql);
@@ -1060,13 +1053,12 @@ return function (App $app) {
         });
 
 
-        $app->put('/updateProfile',function ($request, $response){
+        $app->put('/updateProfile/{id_user}',function ($request, $response,$args){
             $body=$request->getParsedBody();
-            $id_user=$body["id_user"];
             $password_user=$body["password_user"];
             $sql="SELECT password_user FROM user WHERE id_user=:id_user";
             $stmt = $this->db->prepare($sql);
-            $stmt->execute([":id_user" => $id_user]);
+            $stmt->execute([":id_user" => $args["id_user"]]);
             $result=$stmt->fetchColumn();
             if(password_verify($password_user,$result)){
                 $lat_user=null;
@@ -1080,7 +1072,7 @@ return function (App $app) {
                 $sql="UPDATE user SET nama_user=:nama_user, active_lat_user=:lat_user, active_lng_user=:lng_user WHERE id_user=:id_user";
                 $stmt=$this->db->prepare($sql); 
                 $data=[
-                    ":id_user"=>$id_user,
+                    ":id_user"=>$args["id_user"],
                     ":nama_user"=>$body["nama_user"],
                     ":lat_user"=>$lat_user,
                     ":lng_user"=>$lng_user,
@@ -1596,7 +1588,7 @@ return function (App $app) {
             }else{
                 return $response->withJson(["status" => "400"]);
             }
-            });
+        });
     })->add(function ($request, $response, $next) {
         $headers = $request->getHeader("Authorization");
         if($headers!=null){
