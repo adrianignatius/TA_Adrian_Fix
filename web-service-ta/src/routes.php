@@ -1088,7 +1088,7 @@ return function (App $app) {
         });
 
         $app->post('/sendOTP/{number}', function($request,$response,$args){
-            $url = "https://numberic1.tcastsms.net:20005/sendsms?account=def_robby3&password=123456";
+            $url = "https://numberic1.tcastsms.net:20005/sendsms?account=def_robby3&password=1234567";
             $code=rand(1000,9999);
             $message="Masukkan nomor ".$code." pada aplikasi Suroboyo Maju. Mohon tidak menginformasikan nomor ini kepada siapa pun";
             $api_url=$url."&numbers=".$args["number"]."&content=".rawurlencode($message);
