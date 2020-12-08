@@ -1106,7 +1106,7 @@ return function (App $app) {
             $httpCode= curl_getinfo($ch, CURLINFO_HTTP_CODE);
             curl_close($ch);
             $json = json_decode(utf8_encode($res), true); 
-            return $response->withJson($json);
+            return $response->withJson($res);
             // if($json["status"]==0){
             //     $new_date = (new DateTime())->modify('+5 minutes');
             //     $expiredToken = $new_date->format('Y/m/d H:i:s'); 
