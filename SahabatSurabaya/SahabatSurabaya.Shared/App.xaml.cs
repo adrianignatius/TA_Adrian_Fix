@@ -37,7 +37,7 @@ namespace SahabatSurabaya
             this.Suspending += OnSuspending;
 
 #if __ANDROID__
-            OneSignal.Current.StartInit("e77923cd-98e8-4e0d-b56e-b108dadf4e2e").HandleNotificationOpened(HandleNotificationOpened)
+            OneSignal.Current.StartInit("6fd226ba-1d41-4c7b-9f8b-a973a8fd436b").HandleNotificationOpened(HandleNotificationOpened)
                              .Settings(new Dictionary<string, bool>() {
                                                         { IOSSettings.kOSSettingsKeyAutoPrompt, false },
                                                         { IOSSettings.kOSSettingsKeyInAppLaunchURL, false } })
